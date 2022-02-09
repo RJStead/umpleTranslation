@@ -1,0 +1,59 @@
+comments
+    //
+    /*  */
+end comments
+
+%--------------------%
+%        Class       %
+%--------------------%
+define class_declaration
+    [class_header] [class_body_declaration]
+end define
+
+define class_header
+    'class [class_name]
+end define
+
+% Modified version taken from Java2Python
+%define class_body
+%    '{                                    [NL][IN]
+%       [repeat class_body_declaration]    [EX]
+%    '}                                    [NL][NL]
+%end define
+
+define class_body_declaration
+    [empty_class]
+%       [member_declaration]
+%       [method_declaration] 
+end define
+
+define empty_class
+    '{ '}
+end define
+
+define class_name
+   [id]
+end define
+
+
+%--------------------%
+%       Method       %
+%--------------------%
+%define method_declaration
+%    [method_header] [method_body]
+%end define
+
+%define method_header
+%        [constructor_header]
+    %|   [function_header]
+%end define
+
+%define constructor_header
+%    'class [class_name] 
+%end define
+
+%define method_body
+%    '{                                    [NL][IN]
+%       [repeat class_body_declaration]    [EX]
+%    '}                                    [NL][NL]
+%end define
