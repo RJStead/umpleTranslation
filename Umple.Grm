@@ -4,56 +4,95 @@ comments
 end comments
 
 %--------------------%
+%     Statements     %
+%--------------------%
+define parameters
+    [list var_name]
+end define
+
+define var_name
+    [id]
+end define
+
+define type
+        'String
+    |   'boolean
+    |   'byte
+    |   'char
+    |   'double
+    |   'float
+    |   'int
+    |   'long
+    |   'short
+end define
+
+% Generic variable assignment
+% TODO: make assignments more robust
+define var_assign
+        ';
+    |   '= [number] ';
+    |   '= [number]
+    |   '= [id]
+end define
+
+define var_decl
+    [opt type] [var_name] [var_assign] [NL]
+    |   'self. [var_name] [var_assign] [NL]
+    |   [empty]
+end define
+
+define stmt_return
+        'return 'self. [var_name]
+    |   'return [var_name]
+end define
+
+define statement
+        [var_decl]
+    |   [inheritance_decl]
+    |   'pass
+    |   [stmt_return]
+end define
+
+define statement_or_method
+        [statement]
+    |   [method_decl]
+end define
+
+define method_decl
+        'def [id] '( [list id] [SPOFF] '): [SPON] [NL] [IN] [method_body] [NL] [EX] [NL]
+end define
+
+define method_body
+    [repeat statement]
+    | [list id]
+end define
+
+%--------------------%
 %        Class       %
 %--------------------%
-define class_declaration
-    [class_header] [class_body_declaration]
+define class_decl
+    [class_header]
+    |   [class_header] '{ [class_body_decl] '}
+    |   [class_header] ': [NL] [IN] [class_body_decl] [NL] [EX] [NL]
 end define
 
 define class_header
     'class [class_name]
 end define
 
-% Modified version taken from Java2Python
-%define class_body
-%    '{                                    [NL][IN]
-%       [repeat class_body_declaration]    [EX]
-%    '}                                    [NL][NL]
-%end define
-
-define class_body_declaration
+define class_body_decl
     [empty_class]
-%       [member_declaration]
-%       [method_declaration] 
+    | [repeat statement_or_method]
 end define
 
 define empty_class
-    '{ '}
+    'pass
 end define
 
 define class_name
    [id]
 end define
 
-
-%--------------------%
-%       Method       %
-%--------------------%
-%define method_declaration
-%    [method_header] [method_body]
-%end define
-
-%define method_header
-%        [constructor_header]
-    %|   [function_header]
-%end define
-
-%define constructor_header
-%    'class [class_name] 
-%end define
-
-%define method_body
-%    '{                                    [NL][IN]
-%       [repeat class_body_declaration]    [EX]
-%    '}                                    [NL][NL]
-%end define
+define inheritance_decl
+    'isA [id] ';
+end define

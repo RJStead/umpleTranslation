@@ -8,7 +8,7 @@
  * Other examples in this manual show other things you 
  * can do with Umple 
  */  
-class HelloWorld {  
+class HelloWorld { 
   //public static void main(String [ ] args) {  
   //  System.out.println("Hello World");  
   //}  
