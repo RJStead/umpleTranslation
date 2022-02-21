@@ -1,0 +1,176 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+
+import java.util.*;
+import java.io.Serializable;
+
+// line 2 "model.ump"
+public class Student implements java.io.Serializable
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Student Attributes
+  private int id;
+  private transient Comparator<Mentor> mentorsPriority;
+
+  //Student Associations
+  private List<Mentor> mentors;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Student(int aId)
+  {
+    id = aId;
+    mentorsPriority = 
+      Comparator.comparing(Mentor::getName);
+    mentors = new ArrayList<Mentor>();
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setId(int aId)
+  {
+    boolean wasSet = false;
+    id = aId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setMentorsPriority(Comparator<Mentor> aMentorsPriority)
+  {
+    boolean wasSet = false;
+    mentorsPriority = aMentorsPriority;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getId()
+  {
+    return id;
+  }
+
+  public Comparator<Mentor> getMentorsPriority()
+  {
+    return mentorsPriority;
+  }
+  /* Code from template association_GetMany */
+  public Mentor getMentor(int index)
+  {
+    Mentor aMentor = mentors.get(index);
+    return aMentor;
+  }
+
+  public List<Mentor> getMentors()
+  {
+    List<Mentor> newMentors = Collections.unmodifiableList(mentors);
+    return newMentors;
+  }
+
+  public int numberOfMentors()
+  {
+    int number = mentors.size();
+    return number;
+  }
+
+  public boolean hasMentors()
+  {
+    boolean has = mentors.size() > 0;
+    return has;
+  }
+
+  public int indexOfMentor(Mentor aMentor)
+  {
+    int index = mentors.indexOf(aMentor);
+    return index;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfMentors()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToManyMethod */
+  public boolean addMentor(Mentor aMentor)
+  {
+    boolean wasAdded = false;
+    if (mentors.contains(aMentor)) { return false; }
+    mentors.add(aMentor);
+    if (aMentor.indexOfStudent(this) != -1)
+    {
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aMentor.addStudent(this);
+      if (!wasAdded)
+      {
+        mentors.remove(aMentor);
+      }
+    }
+    if(wasAdded)
+        Collections.sort(mentors, mentorsPriority);
+    
+    return wasAdded;
+  }
+  /* Code from template association_RemoveMany */
+  public boolean removeMentor(Mentor aMentor)
+  {
+    boolean wasRemoved = false;
+    if (!mentors.contains(aMentor))
+    {
+      return wasRemoved;
+    }
+
+    int oldIndex = mentors.indexOf(aMentor);
+    mentors.remove(oldIndex);
+    if (aMentor.indexOfStudent(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aMentor.removeStudent(this);
+      if (!wasRemoved)
+      {
+        mentors.add(oldIndex,aMentor);
+      }
+    }
+    return wasRemoved;
+  }
+
+
+  /* Code from template association_sorted_serializable_readObject */ 
+  private void readObject(java.io.ObjectInputStream in)
+  throws Exception
+  {
+    in.defaultReadObject();
+
+    mentorsPriority = 
+      Comparator.comparing(Mentor::getName);
+  }
+  
+  public void delete()
+  {
+    ArrayList<Mentor> copyOfMentors = new ArrayList<Mentor>(mentors);
+    mentors.clear();
+    for(Mentor aMentor : copyOfMentors)
+    {
+      aMentor.removeStudent(this);
+    }
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "id" + ":" + getId()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "mentorsPriority" + "=" + (getMentorsPriority() != null ? !getMentorsPriority().equals(this)  ? getMentorsPriority().toString().replaceAll("  ","    ") : "this" : "null");
+  }
+}

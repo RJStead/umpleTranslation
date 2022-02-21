@@ -1,0 +1,28 @@
+W142 Type is access specifier
+Errors and Warnings 100-999
+noreferences
+
+@@description
+
+<h2>Umple warning when a type looks like it was meant as a visibility specifier</h2>
+
+<p>
+Umple attributes do not support visibility specifiers such as public, private and protected.
+An attribute is private by default, and programmers are supposed to use the corresponding generated get
+method to read it, or the set method to modify it.
+</p>
+
+<p>This warning appears when one of the visibility keywords precedes an attribute.
+
+@@example
+@@source manualexamples/W142TypeIsAccessSpecifierAmbiguous.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W142TypeIsAccessSpecifierCorrect.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W142TypeIsAccessSpecifierExplicit.ump
+@@endexample
+

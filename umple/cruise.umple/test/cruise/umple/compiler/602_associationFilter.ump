@@ -1,0 +1,5 @@
+class X { * -- * Y; }
+class Y { * -- * Z; }
+class Z { * -- * P; }
+class P { * -- * Q; }
+class Q { }

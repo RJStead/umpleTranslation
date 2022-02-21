@@ -1,0 +1,435 @@
+
+namespace cruise.tracer.test;
+
+class GarageDoorA
+{
+    // UML state machine digram for a Garage door, written in Umple
+    GarageDoor {
+      	
+      	Open { buttonOrObstacle -> Closing;  }
+      	
+      	Closing {
+          buttonOrObstacle -> Opening;
+          reachBottom -> Closed;
+      	}
+
+      	Closed { buttonOrObstacle -> Opening; }
+
+      	Opening {
+          buttonOrObstacle -> HalfOpen;
+          reachTop -> Open;
+      	}
+
+      	HalfOpen { buttonOrObstacle -> Opening; }
+    }
+    
+    // trace a single state only
+    trace Closing;
+}
+
+class GarageDoorB
+{
+    GarageDoor {
+      	
+      	Open { 
+          buttonOrObstacle -> Closing;
+          entry / { closeGarageLights(); }
+          }
+      	
+      	Closing {
+          buttonOrObstacle -> Opening;
+          reachBottom -> Closed;
+      	}
+
+      	Closed {
+          buttonOrObstacle -> Opening;
+          entry / { openGarageLights(); }
+          }
+
+      	Opening {
+          buttonOrObstacle -> HalfOpen;
+          reachTop -> Open;
+      	}
+
+      	HalfOpen { buttonOrObstacle -> Opening; }
+    }
+    
+    // trace state entry
+    trace entry Closed;
+  
+    void openGarageLights() {}
+    void closeGarageLights() {}
+}
+
+class GarageDoorC
+{
+    GarageDoor {
+      	
+      	Open { 
+          buttonOrObstacle -> Closing;
+          
+          }
+      	
+      	Closing {
+          buttonOrObstacle -> Opening;
+          reachBottom -> Closed;
+      	}
+
+      	Closed {
+          buttonOrObstacle -> Opening;
+          entry / { openGarageLights(); }
+          exit / { closeGarageLights(); }
+          }
+
+      	Opening {
+          buttonOrObstacle -> HalfOpen;
+          reachTop -> Open;
+      	}
+
+      	HalfOpen { buttonOrObstacle -> Opening; }
+    }
+    
+    // trace state exit
+    trace exit Closed;
+  
+    void openGarageLights() {}
+    void closeGarageLights() {}
+}
+
+class GarageDoorD
+{
+    // UML state machine digram for a Garage door, written in Umple
+    GarageDoor {
+      	
+      	Open { buttonOrObstacle -> Closing;  }
+      	
+      	Closing {
+          buttonOrObstacle -> Opening;
+          reachBottom -> Closed;
+      	}
+
+      	Closed { buttonOrObstacle -> Opening; }
+
+      	Opening {
+          buttonOrObstacle -> HalfOpen;
+          reachTop -> Open;
+      	}
+
+      	HalfOpen { buttonOrObstacle -> Opening; }
+    }
+    
+    // trace event
+    trace buttonOrObstacle;
+}
+
+class GarageDoorZ
+{
+    // UML state machine digram for a Garage door, written in Umple
+    GarageDoor {
+      	
+      	Open { buttonOrObstacle -> Closing;  }
+      	
+      	Closing {
+          buttonOrObstacle -> Opening;
+          reachBottom -> Closed;
+      	}
+
+      	Closed { buttonOrObstacle -> Opening; }
+
+      	Opening {
+          buttonOrObstacle -> HalfOpen;
+          reachTop -> Open;
+      	}
+
+      	HalfOpen { buttonOrObstacle -> Opening; }
+    }
+    
+    // trace whole state machine
+    trace GarageDoor;
+}
+
+class LightFixtureA
+{
+  
+  status {
+    Open {
+      flip -> Closed;
+    }
+    Closed {
+      flip -> Open;
+      do 
+      {  
+        Thread.sleep(400);
+        measureClose();
+      }
+    }
+    // trace state with do activity
+    trace Closed;
+  }
+  
+  void measureClose() {};
+}
+
+
+class LightFixtureB
+{ 
+  bulb 
+  {
+    Off { flip -> On; }
+    On 
+    {
+      flip -> Off;
+      Normal { touch -> Dimmed; }
+      Dimmed { touch -> Off; }
+    }
+  }
+  // trace state with its nested state
+  trace On;
+}
+
+class NestedStateA {
+  
+  stm
+  {
+    sLevel1
+    {
+      e1 -> sLevel2b;
+      sLevel2a
+      {
+        sLevel2aLevel3a
+        {
+          e3 -> sLevel2aLevel3b;
+        }
+        sLevel2aLevel3b
+        {
+          e3 -> sLevel2aLevel3a;
+          sLevel2aLevel3bLevel4
+          {
+            e4 -> outsideNested;
+          }
+        }
+      }
+      sLevel2b
+      {
+        e2 -> sLevel2aLevel3a;
+      }
+    }
+    outsideNested
+    {}
+  }
+  
+  // trace state with it deep nested states
+  trace sLevel1;
+  
+}
+
+class NestedStateB
+{
+  status
+  {
+    On
+    {
+      turnOff -> Off;
+      Idle
+      {
+        flip -> Running;
+      }
+      Running
+      {
+        
+      }
+    }
+    Off
+    {
+      flip -> Idle;
+    }
+    
+  }
+  // trace nested state
+  trace Idle;
+}
+
+class NestedStateLevel1 {
+  
+  stm
+  {
+    sLevel1
+    {
+      e1 -> sLevel2b;
+      sLevel2a
+      {
+        sLevel2aLevel3a
+        {
+          e3 -> sLevel2aLevel3b;
+        }
+        sLevel2aLevel3b
+        {
+          e3 -> sLevel2aLevel3a;
+          sLevel2aLevel3bLevel4
+          {
+            e4 -> outsideNested;
+          }
+        }
+      }
+      sLevel2b
+      {
+        e2 -> sLevel2aLevel3a;
+      }
+    }
+    outsideNested
+    {}
+  }
+  
+  // trace state with it deep nested states
+  trace sLevel1 level 1;
+  
+}
+
+class NestedStateLevel2 {
+  
+  stm
+  {
+    sLevel1
+    {
+      e1 -> sLevel2b;
+      sLevel2a
+      {
+        sLevel2aLevel3a
+        {
+          e3 -> sLevel2aLevel3b;
+        }
+        sLevel2aLevel3b
+        {
+          e3 -> sLevel2aLevel3a;
+          sLevel2aLevel3bLevel4
+          {
+            e4 -> outsideNested;
+          }
+        }
+      }
+      sLevel2b
+      {
+        e2 -> sLevel2aLevel3a;
+      }
+    }
+    outsideNested
+    {}
+  }
+  
+  // trace state with it deep nested states
+  trace sLevel1 level 2;
+  
+}
+
+class NestedStateLevel4 
+{
+  stm
+  {
+    sLevel1
+    {
+      e1 -> sLevel2b;
+      sLevel2a
+      {
+        sLevel2aLevel3a
+        {
+          e3 -> sLevel2aLevel3b;
+        }
+        sLevel2aLevel3b
+        {
+          e3 -> sLevel2aLevel3a;
+          sLevel2aLevel3bLevel4
+          {
+            e4 -> outsideNested;
+          }
+        }
+      }
+      sLevel2b
+      {
+        e2 -> sLevel2aLevel3a;
+      }
+    }
+    outsideNested
+    {}
+  }
+  // trace state with it deep nested states
+  trace sLevel1 level 4;
+}
+
+class ConcurrentStmA
+{
+  status
+  {
+    Off
+    {
+      turnOn -> On;
+    }
+    On
+    {
+      turnOff -> Off;
+      MotorIdle
+      {
+        flip -> MotorRunning;
+        flup -> Off;
+      }
+      MotorRunning
+      {
+        flip -> MotorIdle;
+      }
+      
+      ||
+      
+      FanIdle
+      {
+        flop -> FanRunning;  
+      }
+      
+      FanRunning
+      {
+        flop -> FanIdle;
+      }
+    }
+  
+  }
+  // trace concurrent states
+  trace On;
+}
+
+class TimedEventA
+{
+  status {
+    Open { 
+      after(0.000001) -> Closed; 
+    }
+    Closed {
+      after(0.000001) -> Final; 
+    }
+  }
+  trace Closed;
+}
+
+class HisTest {
+
+ //trace sm;
+ sm {
+   s1 {
+     e2 -> s2;
+     s1a {
+       e1 -> s1b;
+     }
+     s1b {
+       e1 -> s1a;
+     }
+   }
+
+   s2 {
+     e2 -> s1;
+     s2a {
+       e1 -> s2b;
+     }
+     s2b {
+       e1 -> s2a;
+     }
+   }
+ }
+
+}

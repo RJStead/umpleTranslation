@@ -1,0 +1,17 @@
+E204 Self Use of Traits
+Errors and Warnings 100-999
+noreferences
+
+@@description
+
+<h2>Umple semantic error related to self use of traits </h2>
+
+<p align = "justify">
+In Umple, traits cannot be used in an explicit or implicit cyclic way. It means that a trait cannot use itself and it also cannot be used in a cyclic use. This error happens when a trait extends itself.
+</p>
+
+
+@@example
+@@source manualexamples/E204CyclicUse1.ump
+@@endexample
+

@@ -1,0 +1,21 @@
+namespace example;
+
+class Tracer
+{
+  
+  status {
+    Open {
+      flip -> Closed;
+    }
+    Closed {
+      flip -> Open;
+      do 
+      {  
+        Thread.sleep(400);
+        measureClose();
+      }
+    }
+  }
+  // trace state with do activity
+  trace Closed;
+}

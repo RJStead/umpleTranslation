@@ -1,0 +1,5 @@
+// The following shows how to avoid the error
+class X {
+  1 -- * Y;
+}
+class Y {}

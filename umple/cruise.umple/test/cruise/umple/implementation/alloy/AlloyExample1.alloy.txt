@@ -1,0 +1,42 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from AlloyExample1.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class Employee
+sig Employee {
+  worksIn : some Address
+}
+
+-- Defines a signature for class Address
+sig Address {
+  employees : some Employee
+}
+
+
+-- Defines constraints on association between Address and Employee
+fact AssociationFact {
+  Address <: employees in (Address) some -> some (Employee)
+}
+
+-- Defines bidirectionality rule between class Employee and class Address
+fact BidirectionalityRule {
+  all employee_1 : Employee, address_1 : Address |
+    employee_1 in employees[address_1] <=> address_1 in worksIn[employee_1]
+}
+
+-- Defines numeric bound rule for class Address
+fact NumericBoundFact {
+  no address_1 : Address |
+    #address_1.employees != 5
+}
+
+-- Defines numeric bound rule for class Employee
+fact NumericBoundFact {
+  no employee_1 : Employee |
+    #employee_1.worksIn != 4
+}

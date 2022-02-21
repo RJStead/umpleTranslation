@@ -1,0 +1,11 @@
+// Example asymmetric association with role name
+// on one end
+class Course {
+   * -- * Course prerequisite;
+}
+//$?[End_of_model]$?
+
+class Course
+{
+  position 158 30 109 45;
+}

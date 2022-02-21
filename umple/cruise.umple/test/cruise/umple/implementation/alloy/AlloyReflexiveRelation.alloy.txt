@@ -1,0 +1,26 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from AlloyReflexiveRelation.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class Person
+sig Person {
+  children : set Person
+}
+
+
+-- Defines no self relation rule for class Person
+fact NoSelfRelation {
+  no person_1 : Person |
+    person_1 in person_1.^children
+}
+
+-- Defines no extended relation rule for class Person
+fact NoExtendedRelation {
+  no disj person_1, person_2, person_3 : Person |
+    person_1 in children[person_2] && person_1 in children[person_3]
+}

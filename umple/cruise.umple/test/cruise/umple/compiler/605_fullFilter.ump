@@ -1,0 +1,23 @@
+class School{
+  name;
+  * -> * Mentor;
+  * -> * Student;
+}
+
+class Student{
+}
+
+class Mentor{
+  1 -- * Student;  
+}
+
+filter Roles
+{
+  hops{
+  super 2;
+  sub 2;
+  association 2;
+  }
+  
+  include Student, Mentor;
+}

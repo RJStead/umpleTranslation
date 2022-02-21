@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="build" name="UmpleCore" >
+
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="myenv" value="cc" />
+
+  <property name="project.output.path" value="temp" />
+  <property name="java.path" value="${project.output.path}/java" />
+  <property name="cpp.path" value="${project.output.path}/cpp" />
+  <property name="php.path" value="${project.output.path}/php" />
+  <property name="ruby.path" value="${project.output.path}/ruby" />
+
+  <property name="manualumpfiles.path" value="umpleonline/umplibrary/manualexamples" />
+  <property name="exampleumpfiles.path" value="umpleonline/umplibrary" />
+
+  <import file="_${myenv}.xml" />
+  <import file="_template.xml" />
+
+  <!-- options -->
+  <property name="logfile" value="UserManualAndExampleTests_output.txt" />
+  <property name="examplepattern" value="*" />
+  <property name="failfast" value="true" />
+  <property name="threadcount" value="4"/>
+  <property name="cleanonfinish" value="true" />
+
+  <!-- Entry points (SEE FURTHER BELOW THIS FOR NEWER EXPERIMENT)-->
+
+  <target name="allUserManualAndExampleTests" depends="startLog,deleteTempFolders,testSetup">
+    <echo>Building User Manual and UmpleOnline Examples</echo>
+    <echo>See ${fulllogfile} for build results</echo>
+
+    <!-- Forces ruby to be skipped unless allowruby is set to true 
+    on the command line or in the ruby-specific target. -->
+    <property name="allowruby" value="false" />
+    <antcall target="checkRuby" />
+
+    <!-- Forces C++ to be skipped unless allowcpp is set to true
+    on the command line or if the C++ specific target is used. -->
+    <property name="allowcpp" value="false" />
+    <antcall target="checkCpp" />
+
+    <trycatch>
+      <try>
+        <antcall target="newUserManualAndExampleTestsJava" /> <!-- New replacement for above -->
+        <!-- <antcall target="doCpp" />-->
+        <antcall target="newUserManualAndExampleTestsPhp" /> <!-- New replacement for above -->
+        <!--<antcall target="doRuby" />-->
+      </try>
+      
+      <finally>
+        <antcall target="finishLog" />
+        <if>
+          <equals arg1="${cleanonfinish}" arg2="true" />
+          <then>
+            <antcall target="deleteTempFolders" />
+          </then>
+        </if>
+        <echo>See build/${logfile} for build results</echo>
+      </finally>
+    </trycatch>
+  </target>
+
+  <!-- The following is a much more efficient total replacement for the earlier targets -->
+  
+  <target name="newUserManualAndExampleTestsJava">
+    <echo>Building User Manual and UmpleOnline Examples for Java and compiling Java using -c - option and method inside the compiler.</echo>
+  
+    <!-- Pick all the relevant examples to test -->
+    <fileset dir="${java.path}" includes="*.ump" id="javaumpfiles">
+      <!-- Special cases - temporary until error detection-->
+      <exclude name="E0*.ump" />
+      <exclude name="E1*.ump" />
+      <exclude name="E2*.ump" />
+      <exclude name="E3*.ump" />
+      <exclude name="E4*.ump" />      
+      <exclude name="WE1xxIdentifierInvalid1.ump" />
+      <exclude name="WE1xxIdentifierInvalid3.ump" />
+      <exclude name="WE1xxIdentifierInvalid5.ump" />
+      <exclude name="WE1xxIdentifierInvalid6.ump" />
+      <exclude name="WE1xxIdentifierInvalid7.ump" />
+      <exclude name="W142TypeIsAccessSpecifierAmbiguous.ump" />
+      <!-- This fails to compile because they are incomplete examples of umple -->
+      <exclude name="UseStatements1.ump" />
+      <!-- Temporary exclusion .. challenges compiling in ant only to fix -->
+      <exclude name="NamespaceDirectives4.ump" />
+      <exclude name="HtmlGeneration2.ump" />
+      <exclude name="OBDCarSystem.ump" />
+      <!-- The following is excluded because it embeds unsafe code which would need to be replaced -->
+      <exclude name="ComplexStateMachine.ump"/>
+      <!-- The following is temporarily excluded because of an odd Java error only on the server not Mac -->
+      <exclude name="W010SingletonMultiplicityOver12.ump"/>
+    </fileset>  
+
+    <pathconvert pathsep=";" property="javaumpfiles2" refid="javaumpfiles"/>
+    
+    <echo file="${java.path}/allExamplesList.txt">${javaumpfiles2}</echo>
+
+    <replace file="${java.path}/allExamplesList.txt" token=";" value="&#10;"/>
+    <echo>Umple examples to be tested and Java tested are in "${java.path}/allExamplesList.txt"</echo>
+
+    <copy file="${java.path}/allExamplesList.txt" todir="${dist.dir}/qa"/>
+
+    <!-- Compile in umple to Java and generate the Java -->
+      <trycatch>
+        <try>
+          <java jar="${dist.dir}/${dist.umple.jar}" fork="true" failonerror="true" dir="${java.path}">
+            <arg value="-g" />
+            <arg value="Java" />
+            <arg value="--path" />
+            <arg value="src-gen-umple" />
+            <!--arg value="-r" --> <!-- Uncomment to remove prev generated java+class files before each compile -->
+            <arg value="-w" /> <!-- Suppress expected warnings for files starting W -->
+            <arg value="-q" /> <!-- Comment out for more verbose trace -->
+            <arg value="-c" /> <!-- Do the Java compilation of whatever is produced by Umple -->
+            <arg value="-" />
+            <!--arg value="-x" --> <!-- Uncomment to use slower exec method of invoking compiler instead of internal -->           
+            <arg value="-f" /> <!-- Do separate generation and compilation for each line in this file -->
+            <arg value="allExamplesList.txt" />
+          </java>
+        </try>
+
+        <catch>
+          <echo>Failed to compile Umple and/or generate Java code from one or more examples and/or to compile the resulting Java</echo>
+          <if>
+            <equals arg1="${failfast}" arg2="true" />
+            <then>
+              <fail message="Failed tests of an Umpleonline or manual example when generating and compiling the Java"/>
+            </then>
+          </if>
+        </catch>
+      </trycatch>
+
+  </target>
+  
+  <target name="newUserManualAndExampleTestsPhp">
+    <echo>Building User Manual and UmpleOnline Examples for Php and checking validity of Php using -c - option.</echo>
+  
+    <!-- Pick all the relevant examples to test -->
+    <fileset dir="${php.path}" includes="*.ump" id="phpumpfiles">
+      <!-- Special cases - temporary until error detection-->
+      <exclude name="E0*.ump" />
+      <exclude name="E1*.ump" />
+      <exclude name="E2*.ump" />
+      <exclude name="E3*.ump" />
+      <exclude name="E4*.ump" />      
+      <exclude name="WE1xxIdentifierInvalid1.ump" />
+      <exclude name="WE1xxIdentifierInvalid3.ump" />
+      <exclude name="WE1xxIdentifierInvalid5.ump" />
+      <exclude name="WE1xxIdentifierInvalid6.ump" />
+      <exclude name="WE1xxIdentifierInvalid7.ump" />
+      <exclude name="W142TypeIsAccessSpecifierAmbiguous.ump" />
+      <!-- This fails to compile because they are incomplete examples of umple -->
+      <exclude name="UseStatements1.ump" />
+      <!-- Temporary exclusion .. challenges compiling in ant only to fix -->
+      <exclude name="NamespaceDirectives4.ump" />
+      <exclude name="HtmlGeneration2.ump" />
+      <exclude name="OBDCarSystem.ump" />
+      <!-- The following is ecluded because it embeds unsafe code which would need to be replaced -->
+      <exclude name="ComplexStateMachine.ump"/>
+      <exclude name="Tracers2.ump" />
+      <!-- These fail to compile because PHP has no log4j tracer -->
+      <exclude name="Tracers3.ump" />
+      <exclude name="Tracers4.ump" />
+      <!-- This fails to compile because PHP has no LTTNG tracer -->
+      <exclude name="Tracers5.ump" />
+      <!-- The following is temporarily excluded because of an odd Java error only on the server not Mac -->
+      <exclude name="W010SingletonMultiplicityOver12.ump"/>
+    </fileset>  
+
+    <pathconvert pathsep=";" property="phpumpfiles2" refid="phpumpfiles"/>
+    
+    <echo file="${php.path}/allExamplesListPhp.txt">${phpumpfiles2}</echo>
+
+    <replace file="${php.path}/allExamplesListPhp.txt" token=";" value="&#10;"/>
+    <echo>Umple examples to be tested and Php Compiled are in "${php.path}/allExamplesListPhp.txt"</echo>
+
+    <copy file="${php.path}/allExamplesListPhp.txt" todir="${dist.dir}/qa"/>
+
+    <!-- Compile in umple to Php and generate the Java -->
+      <trycatch>
+        <try>
+          <java jar="${dist.dir}/${dist.umple.jar}" fork="true" failonerror="true" dir="${php.path}">
+            <arg value="-g" />
+            <arg value="Php" />
+            <arg value="--path" />
+            <arg value="src-gen-umple" />
+            <!--arg value="-r" --> <!-- Uncomment to remove prev generated java+class files before each compile -->
+            <arg value="-w" /> <!-- Suppress expected warnings for files starting W -->
+            <arg value="-q" /> <!-- Comment out for more verbose trace -->
+            <arg value="-c" /> <!-- Do the Java compilation of whatever is produced by Umple -->
+            <arg value="-" />
+            <!--arg value="-x" --> <!-- Uncomment to use slower exec method of invoking compiler instead of internal -->           
+            <arg value="-f" /> <!-- Do separate generation and compilation for each line in this file -->
+            <arg value="allExamplesListPhp.txt" />
+          </java>
+        </try>
+
+        <catch>
+          <echo>Failed to compile Umple and/or generate Php code from one or more examples and/or to compile the resulting Php</echo>
+          <if>
+            <equals arg1="${failfast}" arg2="true" />
+            <then>
+              <fail message="Failed tests of an Umpleonline or manual example when generating and compiling the Php"/>
+            </then>
+          </if>
+        </catch>
+      </trycatch>
+
+  </target>
+  
+  <!-- Setup and teardown targets -->
+
+  <target name="testSetup">
+    <mkdir dir="${project.output.path}" />
+
+    <if>
+      <equals arg1="${failfast}" arg2="true" />
+      <then>
+        <property name="failsafe" value="false" />
+      </then>
+
+      <else>
+        <property name="failsafe" value="true" />
+      </else>
+    </if>
+    <if>
+      <not>
+        <equals arg1="${mode.notjava}" arg2="false" />
+      </not>
+      <then>
+        <mkdir dir="${java.path}" />
+        <mkdir dir="${java.path}/src-gen-umple" />
+        <mkdir dir="${java.path}/bin" />
+        <exec executable="ruby">
+          <arg value="build/get_testable_examples.rb" />
+          <arg value="-i" />
+          <arg value="${manualumpfiles.path}" />
+          <arg value="-i" />
+          <arg value="${exampleumpfiles.path}" />
+          <arg value="-o" />
+          <arg value="${java.path}" />
+          <arg value="-l" />
+          <arg value="java" />
+          <arg value="-s" />
+          <arg value="${examplepattern}" />
+        </exec>
+      </then>
+    </if>
+
+    <if>
+      <not>
+        <equals arg1="${mode.notcpp}" arg2="false" />
+      </not>
+      <then>
+        <mkdir dir="${cpp.path}" />
+        <mkdir dir="${cpp.path}/src-gen-umple" />
+        <mkdir dir="${cpp.path}/bin" />
+        <exec executable="ruby">
+          <arg value="build/get_testable_examples.rb" />
+          <arg value="-i" />
+          <arg value="${manualumpfiles.path}" />
+          <arg value="-i" />
+          <arg value="${exampleumpfiles.path}" />
+          <arg value="-o" />
+          <arg value="${cpp.path}" />
+          <arg value="-l" />
+          <arg value="cpp" />
+          <arg value="-s" />
+          <arg value="${examplepattern}" />
+        </exec>
+      </then>
+    </if>
+
+    <if>
+      <not>
+        <equals arg1="${mode.notphp}" arg2="false" />
+      </not>
+      <then>
+        <mkdir dir="${php.path}" />
+        <mkdir dir="${php.path}/src-gen-umple" />
+        <exec executable="ruby">
+          <arg value="build/get_testable_examples.rb" />
+          <arg value="-i" />
+          <arg value="${manualumpfiles.path}" />
+          <arg value="-i" />
+          <arg value="${exampleumpfiles.path}" />
+          <arg value="-o" />
+          <arg value="${php.path}" />
+          <arg value="-l" />
+          <arg value="php" />
+          <arg value="-s" />
+          <arg value="${examplepattern}" />
+        </exec>
+      </then>
+    </if>
+
+    <if>
+      <not>
+        <equals arg1="${mode.notruby}" arg2="false" />
+      </not>
+      <then>
+        <mkdir dir="${ruby.path}" />
+        <mkdir dir="${ruby.path}/src-gen-umple" />
+        <exec executable="ruby">
+          <arg value="build/get_testable_examples.rb" />
+          <arg value="-i" />
+          <arg value="${manualumpfiles.path}" />
+          <arg value="-i" />
+          <arg value="${exampleumpfiles.path}" />
+          <arg value="-o" />
+          <arg value="${ruby.path}" />
+          <arg value="-l" />
+          <arg value="ruby" />
+          <arg value="-s" />
+          <arg value="${examplepattern}" />
+        </exec>
+      </then>
+    </if>
+  </target>
+
+  <target name="deleteTempFolders">
+    <delete dir="${project.output.path}" failonerror="false" />
+  </target>
+
+  <target name="startLog">
+    <property name="fulllogfile" location="build/${logfile}" />
+    <touch file="${fulllogfile}" />
+    <record name="${fulllogfile}" action="start" loglevel="info" />
+  </target>
+
+  <target name="finishLog">
+    <exec executable="ruby">
+      <arg value="build/parallel_output_builder.rb" />
+      <arg value="${fulllogfile}"/>
+      <arg value="${project.output.path}"/>
+    </exec>
+  </target>
+
+  <target name="checkRuby">
+    <condition property="mode.notruby">
+      <isfalse value="${allowruby}" />
+    </condition>
+    <echo>NotRuby: ${mode.notruby}</echo>
+  </target>
+
+  <target name="checkCpp">
+    <condition property="mode.notcpp">
+      <isfalse value="${allowcpp}" />
+    </condition>
+    <echo>Not C++: ${mode.notcpp}</echo>
+  </target>
+</project>

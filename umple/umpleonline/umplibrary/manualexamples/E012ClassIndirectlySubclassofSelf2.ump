@@ -1,0 +1,11 @@
+// The following shows how to avoid the error
+class A {
+}
+
+class B {
+  isA A;
+}
+
+class C {
+  isA B;
+}

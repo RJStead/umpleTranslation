@@ -1,0 +1,61 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.17.0.2716 modeling language!*/
+
+
+
+public class Student
+{
+
+  //------------------------
+  // STATIC VARIABLES
+  //------------------------
+
+
+  /**
+   * Comment for a const attribute
+   */
+  public static final String a = "";
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Student Attributes
+
+  /**
+   * Comment for an internal attribute
+   */
+  private String b;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Student(String aB)
+  {
+    b = aB;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  /**
+   * Comment for a derived attribute
+   */
+
+  public int getC()
+  {
+    return 1+1;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "c" + ":" + getC()+ "]";
+  }
+}

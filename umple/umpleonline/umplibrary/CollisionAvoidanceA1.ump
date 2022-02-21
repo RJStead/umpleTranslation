@@ -1,0 +1,93 @@
+class CollisionAvoidanceA1 {
+	Integer warningRadius = 100;
+	Boolean driveSelected;	
+	Boolean lock;
+  Boolean emergencyDetected = (getSmObjectDetectorObjectDetector() == SmObjectDetectorObjectDetector.Emergency);
+	sm { 
+		CollisionAvoidance {
+			ObjectDetector {
+				Normal { objectDiscovered[warningRadius == 10] -> Warning; }	 
+				Warning { [warningRadius <= 3] -> Emergency; }
+				Emergency { -> Normal; }
+			}
+			||
+			Brake {
+				Released { 
+					applyBrake -> AntiLockBraking; 
+					[emergencyDetected] -> BrakeApplied;
+				} 
+				AntiLockBraking {
+					[emergencyDetected] -> BrakeApplied;
+					release -> Released;
+					Inactive {
+						wheelNormal -> BrakeApplied;
+						wheelLocked[ lock == true ] -> ResolveLock;
+					}
+					ResolveLock {
+						wheelNormal -> Inactive;
+						wheelLocked -> MonitorDeclaration;
+						decreasePressure[ lock == true ] -> PressureReduction;
+						applyBrake[ lock == false ] -> BrakeApplied;
+					}
+					MonitorDeclaration {
+						rapidDeclaration -> ResolveLock;
+						wheelNormal -> MonitorDeclaration;
+					}
+					PressureReduction {
+						decreasePressure[ lock == false ] -> ResolveLock;
+						decreasePressure[ lock == true ] -> PressureReduction;
+					}
+					BrakeApplied {
+						wheelLocked[ lock == true ] -> ResolveLock;
+						applyBrake -> BrakeApplied;
+					} 
+				} 
+			}
+			||
+			Transmission {
+				ParkAndNeutral {
+					[emergencyDetected] -> Park;
+					selectReverse -> Reverse;
+					selectDrive/{setDriveSelected(true); } -> Drive; 
+					Park { selectNeutral -> Neutral; }
+					Neutral { selectPark/{setDriveSelected(false);} -> Park; } 
+				}
+				Reverse { 
+					selectPark -> Park; 
+					[emergencyDetected] -> Park;
+				} 
+				Drive { 
+					selectNeutral -> Neutral; 
+					selectFirst -> First;
+					selectSecond -> Second;
+					[emergencyDetected] -> Park;
+					First { 
+						reachSecondSpeed[ driveSelected ] -> Second; 
+					}
+					Second { 
+						reachThirdSpeed[ driveSelected ] -> Third;
+					}
+					Third { 
+						dropBelowThirdSpeed -> Second; 
+					}
+				} 
+			}
+			||
+			Engine {
+				Off { 
+					turnOn -> Idle;
+				}
+				Idle { 
+					accelerate -> Driving; 
+					[emergencyDetected] -> Off;
+				}
+				Driving { 
+					release -> Idle;
+					applyBrake -> Idle; 
+					[emergencyDetected] -> Off;
+				} 
+			} 
+		} 
+	}	 
+}
+// @@@skipcompile incomplete Java

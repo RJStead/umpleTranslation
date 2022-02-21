@@ -1,0 +1,20 @@
+generate Java "../src-gen-umple";
+
+use TestHarnessAttributes.ump;
+use TestHarnessAssociations.ump;
+use TestHarnessAssociationClass.ump;
+use TestHarnessStateMachine.ump;
+use TestHarnessPooledStateMachine.ump;
+use TestHarnessQueuedStateMachine.ump;
+use TestHarnessStateMachineJava.ump;
+use TestHarnessPatterns.ump;
+use TestHarnessPatternsImmutable.ump;
+use TestHarnessTracer.ump;
+use TestHarnessConstraints.ump;
+use LocalHarness.ump;
+use TestHarnessAssociation0_1_mMultiplicity.ump;
+use TestHarnessCompositionsLeft.ump;
+use TestHarnessCompositionsRight.ump;
+use TestHarnessAssociationSpecializations.ump;
+use TestHarnessQueuedMethod.ump;
+

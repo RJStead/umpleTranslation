@@ -1,0 +1,31 @@
+Nested State Machines
+State Machines
+noreferences
+
+@@description
+<p>      
+A state machine can be nested inside another. This often allows for simpler Umple (or UML)
+notation, since events that need to cause effects in every substate of the outer state do not have to be repeated in each of the substates.
+</p>
+
+<p>
+The first example below illustrates nesting abstractly. The next example shows nesting in
+a concrete example. The third example is the same as the second, but with no nesting, to
+illustrate the difference.
+</p>
+
+
+@@example @@caption Abstract example of nested state machines @@endcaption
+@@source manualexamples/NestedStateMachines1.ump &diagramtype=state
+@@endexample
+
+
+@@example @@caption Concrete example of nested state machines @@endcaption
+@@source manualexamples/NestedStateMachines2.ump &diagramtype=state
+@@endexample
+
+
+
+@@example @@caption Concrete example of state machines without nesting @@endcaption
+@@source manualexamples/NestedStateMachines3.ump &diagramtype=state
+@@endexample

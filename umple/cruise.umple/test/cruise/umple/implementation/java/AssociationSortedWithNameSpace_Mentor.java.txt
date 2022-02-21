@@ -1,0 +1,175 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+
+import java.util.*;
+import java.io.Serializable;
+
+public class Mentor implements java.io.Serializable
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Mentor Attributes
+  private String name;
+  private transient Comparator<Student> myStudentsPriority;
+
+  //Mentor Associations
+  private List<Student> myStudents;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Mentor(String aName)
+  {
+    name = aName;
+    myStudentsPriority = 
+      Comparator.comparing(Student::getId);
+    myStudents = new ArrayList<Student>();
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setMyStudentsPriority(Comparator<Student> aMyStudentsPriority)
+  {
+    boolean wasSet = false;
+    myStudentsPriority = aMyStudentsPriority;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public Comparator<Student> getMyStudentsPriority()
+  {
+    return myStudentsPriority;
+  }
+  /* Code from template association_GetMany */
+  public Student getMyStudent(int index)
+  {
+    Student aMyStudent = myStudents.get(index);
+    return aMyStudent;
+  }
+
+  public List<Student> getMyStudents()
+  {
+    List<Student> newMyStudents = Collections.unmodifiableList(myStudents);
+    return newMyStudents;
+  }
+
+  public int numberOfMyStudents()
+  {
+    int number = myStudents.size();
+    return number;
+  }
+
+  public boolean hasMyStudents()
+  {
+    boolean has = myStudents.size() > 0;
+    return has;
+  }
+
+  public int indexOfMyStudent(Student aMyStudent)
+  {
+    int index = myStudents.indexOf(aMyStudent);
+    return index;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfMyStudents()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToManyMethod */
+  public boolean addMyStudent(Student aMyStudent)
+  {
+    boolean wasAdded = false;
+    if (myStudents.contains(aMyStudent)) { return false; }
+    myStudents.add(aMyStudent);
+    if (aMyStudent.indexOfProf(this) != -1)
+    {
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aMyStudent.addProf(this);
+      if (!wasAdded)
+      {
+        myStudents.remove(aMyStudent);
+      }
+    }
+    if(wasAdded)
+        Collections.sort(myStudents, myStudentsPriority);
+    
+    return wasAdded;
+  }
+  /* Code from template association_RemoveMany */
+  public boolean removeMyStudent(Student aMyStudent)
+  {
+    boolean wasRemoved = false;
+    if (!myStudents.contains(aMyStudent))
+    {
+      return wasRemoved;
+    }
+
+    int oldIndex = myStudents.indexOf(aMyStudent);
+    myStudents.remove(oldIndex);
+    if (aMyStudent.indexOfProf(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aMyStudent.removeProf(this);
+      if (!wasRemoved)
+      {
+        myStudents.add(oldIndex,aMyStudent);
+      }
+    }
+    return wasRemoved;
+  }
+
+
+  /* Code from template association_sorted_serializable_readObject */ 
+  private void readObject(java.io.ObjectInputStream in)
+  throws Exception
+  {
+    in.defaultReadObject();
+
+    myStudentsPriority = 
+      Comparator.comparing(Student::getId);
+  }
+  
+  public void delete()
+  {
+    ArrayList<Student> copyOfMyStudents = new ArrayList<Student>(myStudents);
+    myStudents.clear();
+    for(Student aMyStudent : copyOfMyStudents)
+    {
+      aMyStudent.removeProf(this);
+    }
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "name" + ":" + getName()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "myStudentsPriority" + "=" + (getMyStudentsPriority() != null ? !getMyStudentsPriority().equals(this)  ? getMyStudentsPriority().toString().replaceAll("  ","    ") : "this" : "null");
+  }
+}

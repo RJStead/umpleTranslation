@@ -1,0 +1,31 @@
+namespace distributed.rmi.directives3;
+distributable on;
+class CC
+{
+  isA Father;
+  public void someMethod1()
+  {}
+}
+class Father
+{
+	
+}
+class Microwave
+{	isA CC;
+	distributable;
+	public int method1(int f){
+
+	  return f*2;
+	}
+}
+class Client{
+	isA IClient;
+}
+interface IClient
+{
+	isA ClientI;
+}
+interface ClientI
+{
+	distributable;
+}

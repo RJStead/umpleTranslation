@@ -1,0 +1,17 @@
+E016 Non Immutable Superclass
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error reported when an immutable class is defined as having a superclass that is non-immutable.</h2>
+
+<p>In an inheritance hierarchy, all classes must be immutable, or all non-immutable, otherwise the substitutability principle would broken.
+
+</p>
+
+
+@@example
+@@source manualexamples/E016NonImmutableSuperclass1.ump
+@@endexample
+

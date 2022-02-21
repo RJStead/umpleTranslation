@@ -1,0 +1,9 @@
+
+class DemoNonUmpleType
+{
+  // If you use a non-umple type that is specific to a base
+  // programming language, then code will be generated
+  // consistent with that type, but generation of code
+  // independent of base language is no longer possible
+  int demoJavaInt;
+}

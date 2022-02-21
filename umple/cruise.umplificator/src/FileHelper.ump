@@ -1,0 +1,179 @@
+namespace cruise.umplificator;
+
+class FileHelper {
+
+depend java.io.*;
+depend java.util.Arrays;
+depend java.util.List;
+depend cruise.umple.compiler.*;
+depend cruise.umplificator.generator.UmpleToUmpleGenerator;
+depend cruise.umple.compiler.exceptions.UmpleCompilerException;
+
+public static final String [] EXTENSIONS = new String [] {".java",".ump"};
+public static final String SecondaryFileName = "_code" ;
+public static final String separator = System.getProperty("line.separator");
+
+ public static  List<File> getListOfFilesFromPath(String path, List<File> inputFiles){
+     // Get File or a Folder from path
+	  File aFile = new File(path);
+	  if (!aFile.isDirectory())
+	  {
+		  if (aFile.isFile()){
+			  int index = aFile.getName().lastIndexOf(".");
+			  if (index > 0) {
+				  String fileExtension = aFile.getName().substring(index);
+				  if (Arrays.asList(EXTENSIONS).contains(fileExtension)){
+						 inputFiles.add(aFile);
+				  }
+			  }
+		  }
+	  }
+	  else {
+			 for (File input: aFile.listFiles()){ 
+				 getListOfFilesFromPath(input.getAbsolutePath(), inputFiles);
+			 }	
+	  }
+	return inputFiles;
+  }
+  
+public static String getFileExtension (File file)
+{
+    return file.getName().substring(file.getName().lastIndexOf("."));
+}
+  
+  
+public static void printFilesToUmplify(List<File> srcFiles){
+
+	if (!srcFiles.isEmpty())
+	{
+	    StringBuffer outMessage = new StringBuffer();
+			outMessage.append(separator);
+			outMessage.append("Files to be umplified: ");
+			outMessage.append(separator);
+			for (File aFile: srcFiles)
+			{
+				outMessage.append(aFile.getName());
+				outMessage.append(separator);
+			}
+			outMessage.append(separator);
+			outMessage.append("-----------------------");
+		logger.info(outMessage.toString());
+	}
+	else
+	{
+		logger.error("No source files found! Exiting with error.");
+		System.exit(1);
+	}
+}
+  
+  public static  void writeFile(UmpleModel model, String outputFolder, boolean createSubdirectories, boolean testMode, boolean splitModel){
+	   if (testMode==false) {
+		   try
+		   {
+			   UmpleToUmpleGenerator generator = new UmpleToUmpleGenerator();
+			   String path="";
+			   if (createSubdirectories)	{	
+				   String subDirectories = (model.getDefaultNamespace() != null && model.getDefaultNamespace().length() > 0) ?model.getDefaultNamespace().replace(".", File.separator) :"";
+				   path = outputFolder + File.separator + subDirectories +File.separator;
+			   }
+			   else{
+				   path = outputFolder + File.separator;
+			   }
+			   // Create a file for each class in Umple Model 
+			   for (UmpleClass uClass: model.getUmpleClasses()){
+				   String filenameModel = path + uClass.getName() + EXTENSIONS[1];
+				   String filenameNoModel = path + uClass.getName() + SecondaryFileName  + EXTENSIONS[1];
+				   if (splitModel)
+				   {
+					   // Create 2 files, one for model, one for extracode (as in umple style)
+					   createFile( path,filenameModel,generator.getUmpleClassModelCode(uClass));
+					   createFile( path,filenameNoModel,generator.getUmpleClassExtraCode(uClass));		   
+				   }
+				   else
+				   {
+					   createFile( path,filenameModel,generator.getUmpleClassAllCode(uClass));		
+				   }
+				   logger.debug("--UmpleClass has been created for" +filenameModel +"--");
+			   }
+			   // Create a file for each interface in Umple Model 
+			   for (UmpleInterface uInterface: model.getUmpleInterfaces()){
+				   String filenameModel = path + uInterface.getName() + EXTENSIONS[1];  
+				   createFile( path,filenameModel,generator.getUmpleInterfaceAllCode(uInterface));		
+				   
+				   logger.debug("--UmpleInterface has been created for" +filenameModel +"--");
+			   }
+			  for (CodeBlock codeBlock: model.getExtraCodes()){
+				   String filenameModel = path + codeBlock.getName() + EXTENSIONS[1];  
+				   createFile( path,filenameModel,generator.generateTopExtraCode(codeBlock));		 
+				   logger.debug("--Top construct has been created for" +filenameModel +"--");
+			   }
+		   }
+		   catch (Exception e)
+		   {
+			   throw new UmpleCompilerException("There was a problem with generating UmpleSelf code." + e, e);
+		   }
+	   }
+   }
+
+
+   private static void createFile(String path, String filename, String content){
+	   try
+	   {
+		   File file = new File(path);
+		   file.mkdirs();
+		   BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+		   bw.write(content);
+		   bw.flush();
+		   bw.close();
+	   }
+	   catch (Exception e)
+	   {	   
+		   logger.error("Error creating file");
+		   throw new UmpleCompilerException("There was a problem with generating UmpleSelf code." + e, e);
+	   }
+   }
+
+   public static void writeMasterFile(List<String> filenames, String outputFolder, boolean needSubDirectories, boolean testMode, boolean splitModel){
+	   if (needSubDirectories && testMode==false) { writePerPackageMasterFile(filenames, outputFolder);}
+	   else { writeSingleMasterFile(filenames, outputFolder, testMode, splitModel); }
+   }
+   
+   private static  void writePerPackageMasterFile(List<String> filenames, String outputFolder){
+		// TODO
+   }
+  
+   private static void writeSingleMasterFile(List<String> filenames, String outputFolder,boolean testMode, boolean splitModel){
+	   if (testMode==false) {
+		   StringBuffer sb =  new StringBuffer();
+		   for (String s: filenames)
+		   {
+		   	   if (s != null){
+			    sb.append("use " + s + ".ump;" );
+			    sb.append(System.getProperty("line.separator"));
+			    	if (splitModel)
+			    	{
+			    	 sb.append("use " + s + "_code.ump;" );
+			   		 sb.append(System.getProperty("line.separator"));
+			    	}
+		   	   }
+		   }
+		   try
+		   {
+			   String path = outputFolder + File.separator;
+			   File file = new File(path);
+			   file.mkdirs();
+			   String masterFileName =  path + "Master.ump" ;
+			   BufferedWriter bw = new BufferedWriter(new FileWriter(masterFileName));
+			   bw.write(sb.toString());
+			   bw.flush();
+			   bw.close();
+		   }
+		   catch (Exception e)
+		   {
+			   throw new UmpleCompilerException("There was a problem with generating MasterFile." + e, e);
+		   }
+	   }
+   }
+   
+   
+  }

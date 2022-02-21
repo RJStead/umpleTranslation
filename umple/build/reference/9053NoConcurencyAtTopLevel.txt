@@ -1,0 +1,23 @@
+E053 No Concurrency At Top Level
+Errors and Warnings 51-99
+noreferences
+
+@@description
+
+<h2>Umple semantic error reported when concurrent substates are placed at the top level of a state machine</h2>
+
+<p>A state machine must be in one top level state at all times. Concurrent substates can exist in any substate at any level, but not directly in a top level state. The second example below shows how this can be handled simply by adding a level of nesting.</p>
+
+<p>If the intent is simply to create concurrent do activities, an alternative is to use Umple&#39;s active objects notation.
+</p>
+
+
+@@example
+@@source manualexamples/E053NoConcurrencyAtTopLevel1.ump &diagramtype=state
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E053NoConcurrencyAtTopLevel2.ump &diagramtype=state
+@@endexample
+
+

@@ -1,0 +1,151 @@
+<?php
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+class Student
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Student Attributes
+  private $number;
+
+  //Student Associations
+  private $pupil;
+  private $ta;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public function __construct($aNumber)
+  {
+    $this->number = $aNumber;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public function setNumber($aNumber)
+  {
+    $wasSet = false;
+    $this->number = $aNumber;
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function getNumber()
+  {
+    return $this->number;
+  }
+
+  public function getPupil()
+  {
+    return $this->pupil;
+  }
+
+  public function hasPupil()
+  {
+    $has = $this->pupil != null;
+    return $has;
+  }
+
+  public function getTa()
+  {
+    return $this->ta;
+  }
+
+  public function hasTa()
+  {
+    $has = $this->ta != null;
+    return $has;
+  }
+
+  public function setPupil($aNewPupil)
+  {
+    $wasSet = false;
+    if ($aNewPupil == null)
+    {
+      $existingPupil = $this->pupil;
+      $this->pupil = null;
+      
+      if ($existingPupil != null && $existingPupil->getTa() != null)
+      {
+        $existingPupil->setTa(null);
+      }
+      $wasSet = true;
+      return $wasSet;
+    }
+    
+    $currentPupil = $this->getPupil();
+    if ($currentPupil != null && $currentPupil != $aNewPupil)
+    {
+      $currentPupil->setTa(null);
+    }
+    
+    $this->pupil = $aNewPupil;
+    $existingTa = $aNewPupil->getTa();
+    
+    if ($this != $existingTa)
+    {
+      $aNewPupil->setTa($this);
+    }
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function setTa($aNewTa)
+  {
+    $wasSet = false;
+    if ($aNewTa == null)
+    {
+      $existingTa = $this->ta;
+      $this->ta = null;
+      
+      if ($existingTa != null && $existingTa->getPupil() != null)
+      {
+        $existingTa->setPupil(null);
+      }
+      $wasSet = true;
+      return $wasSet;
+    }
+    
+    $currentTa = $this->getTa();
+    if ($currentTa != null && $currentTa != $aNewTa)
+    {
+      $currentTa->setPupil(null);
+    }
+    
+    $this->ta = $aNewTa;
+    $existingPupil = $aNewTa->getPupil();
+    
+    if ($this != $existingPupil)
+    {
+      $aNewTa->setPupil($this);
+    }
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function equals($compareTo)
+  {
+    return $this == $compareTo;
+  }
+
+  public function delete()
+  {
+    if ($this->pupil != null)
+    {
+      $this->pupil->setTa(null);
+    }
+    if ($this->ta != null)
+    {
+      $this->ta->setPupil(null);
+    }
+  }
+
+}
+?>

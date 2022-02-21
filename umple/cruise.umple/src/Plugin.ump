@@ -1,0 +1,14 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+This file contains umplified hand written classes that were most likely used for the Xtext / Ecliipse plugin
+
+*/
+
+// None of the classes in this were being used so I removed them.
+// Following the convention established in Generator_Code.ump,
+// this file shall remain so the version history is more accessible.

@@ -1,0 +1,30 @@
+class UmpleTToPhpUnit {
+
+members_AllAssertions <<!<</*members_AllAssertions*/>><<#
+
+
+		if(as.getType().equals("assertTrue"))
+		{		
+		#>>		 
+		 			 $this->assertTrue(<<=as.getAssertCode()>>);
+		<<#}
+		
+		if(as.getType().equals("assertFalse"))
+		{#>>
+		 			 $this->assertFalse(<<=as.getAssertCode()>>);<<#}
+		
+		if(as.getType().equals("assertEqual"))
+		{#>>
+		 			 $this->assertEqual(<<=as.getAssertCode()>>);<<#}
+		
+		if(as.getType().equals("assertNull"))
+		{#>>
+		 			 $this->assertNull(<<=as.getAssertCode()>>);<<#}
+		
+		if(as.getType().equals("assertMethod"))
+		{#>>
+		 			 $this->assertMethod(<<=as.getAssertCode()>>);<<#}
+#>>
+!>>
+
+}

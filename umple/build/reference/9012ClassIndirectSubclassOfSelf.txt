@@ -1,0 +1,22 @@
+E012 Class Indirectly Subclass of Self
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error reported when a class is designated as a subclass of itself, through some other class.</h2>
+
+<p>The inheritance hierarchy cannot have cycles. It must be a strict tree. It is therefore not allowed to make a cycle or loop, in which a class is indirectly a subclass of itself.
+
+</p>
+
+
+@@example
+@@source manualexamples/E012ClassIndirectlySubclassofSelf1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E012ClassIndirectlySubclassofSelf2.ump
+@@endexample
+
+

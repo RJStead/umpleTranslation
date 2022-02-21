@@ -1,0 +1,16 @@
+Auto-Transitions
+State Machines
+noreferences
+
+@@description
+<p>      
+It is possible to arrange for a state machine to transition automatically from one state
+to the next immediately after completing entry actions or upon completion of a do activity. This is specified using a transition without any preceding event. Such transitions may have guards and transition actions.
+</p>
+
+@@syntax
+[[autoTransition]] [[autoTransitionBlock]] 
+ 
+@@example
+@@source manualexamples/Auto-Transitions1.ump &diagramtype=state
+@@endexample

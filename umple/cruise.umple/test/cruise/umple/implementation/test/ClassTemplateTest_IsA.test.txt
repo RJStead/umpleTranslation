@@ -1,0 +1,29 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE ${last.version} modeling language!*/
+
+
+
+////---- Tests for  ClassTemplateTest_IsA ----/////
+
+test SubMentor {
+
+ generate JUnit ;
+ 
+ depend  Mentor,SubMentor,SubMentor2 ; 
+
+
+
+ 
+ GIVEN:
+ ClassTemplateTest_IsA.ump;
+ 
+ 
+ 
+ THEN:
+ 
+
+  
+ 
+   
+
+}

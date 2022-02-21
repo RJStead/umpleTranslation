@@ -1,0 +1,32 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE ${last.version} modeling language!*/
+
+
+/*
+This is a student
+*/
+
+////---- Tests for  ClassTemplateTest_GarbageComment ----/////
+
+test Student {
+
+ generate JUnit ;
+ 
+ depend  Student ; 
+
+
+
+ 
+ GIVEN:
+ ClassTemplateTest_GarbageComment.ump;
+ 
+ 
+ 
+ THEN:
+ 
+
+  
+ 
+   
+
+}

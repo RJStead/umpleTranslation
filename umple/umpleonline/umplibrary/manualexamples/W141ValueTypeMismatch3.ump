@@ -1,0 +1,10 @@
+// The following shows how to solve
+// the above problem not even showing the type at all
+class X {
+  d = "2013-07-08";
+  i = 7;
+  s = "123";
+  b = true;
+  t = "12:00:00";
+  m = 2.3;
+}

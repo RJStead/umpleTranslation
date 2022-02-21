@@ -1,0 +1,65 @@
+<?php
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.20.1.4071 modeling language!*/
+
+class RangeX
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //RangeX Attributes
+  private $start;
+  private $end;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public function __construct($aStart, $aEnd)
+  {
+    $this->start = $aStart;
+    $this->end = $aEnd;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public function setStart($aStart)
+  {
+    $wasSet = false;
+    $this->start = $aStart;
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function setEnd($aEnd)
+  {
+    $wasSet = false;
+    $this->end = $aEnd;
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function getStart()
+  {
+    return $this->start;
+  }
+
+  public function getEnd()
+  {
+    return $this->end;
+  }
+
+  public function equals($compareTo)
+  {
+    return $this == $compareTo;
+  }
+
+  public function delete()
+  {}
+
+}
+?>

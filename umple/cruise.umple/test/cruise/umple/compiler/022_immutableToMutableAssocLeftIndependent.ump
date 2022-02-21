@@ -1,0 +1,13 @@
+class StudentF
+{
+}
+
+class MentorF
+{
+	immutable;
+}
+
+association
+{
+	* StudentF <- * MentorF;
+}

@@ -1,0 +1,60 @@
+# PLEASE DO NOT EDIT THIS CODE
+# This code was generated using the UMPLE 1.20.1.4071 modeling language!
+# NOTE: Ruby generator is experimental and is missing some features available in
+# in other Umple generated languages like Java or PHP
+
+
+
+class RangeX
+
+
+  #------------------------
+  # MEMBER VARIABLES
+  #------------------------
+
+  #RangeX Attributes - for documentation purposes
+  #attr_reader :start, :end
+
+  #------------------------
+  # CONSTRUCTOR
+  #------------------------
+
+  def initialize(a_start, a_end)
+    @initialized = false
+    @deleted = false
+    @start = a_start
+    @end = a_end
+    @initialized = true
+  end
+
+  #------------------------
+  # INTERFACE
+  #------------------------
+
+  def set_start(a_start)
+    was_set = false
+    @start = a_start
+    was_set = true
+    was_set
+  end
+
+  def set_end(a_end)
+    was_set = false
+    @end = a_end
+    was_set = true
+    was_set
+  end
+
+  def get_start
+    @start
+  end
+
+  def get_end
+    @end
+  end
+
+  def delete
+    @deleted = true
+  end
+
+end

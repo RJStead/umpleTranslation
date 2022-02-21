@@ -1,0 +1,15 @@
+
+class FlyingObject
+{
+	
+}
+class Airplane
+{
+  isA FlyingObject;
+  singleton;
+}
+
+class F16
+{
+  isA Airplane;
+}

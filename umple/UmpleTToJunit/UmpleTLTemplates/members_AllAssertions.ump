@@ -1,0 +1,30 @@
+class UmpleTToJUnit {
+
+members_AllAssertions <<!<</*members_AllAssertions*/>><<#
+
+
+		if(as.getType().equals("assertTrue"))
+		{		
+		#>>		 
+		 			 assertTrue (<<=as.getAssertCode()>>);
+		<<#}
+		
+		if(as.getType().equals("assertFalse"))
+		{#>>
+		 			 assertFalse (<<=as.getAssertCode()>>);<<#}
+		
+		if(as.getType().equals("assertEqual"))
+		{#>>
+		 			 assertEquals (<<=as.getAssertCode()>>);<<#}
+		
+		if(as.getType().equals("assertNull"))
+		{#>>
+		 			 assertNull (<<=as.getAssertCode()>>);<<#}
+		
+		if(as.getType().equals("assertMethod"))
+		{#>>
+		 			 assertMethod (<<=as.getAssertCode()>>);<<#}
+#>>
+!>>
+
+}

@@ -1,0 +1,15 @@
+namespace distributed.rmi3;
+interface ClientI
+{
+}
+class Client
+{
+  distributable;
+  isA ClientI;
+  isA CC;
+}
+class CC
+{
+  public void someMethod1()
+  {}	
+}

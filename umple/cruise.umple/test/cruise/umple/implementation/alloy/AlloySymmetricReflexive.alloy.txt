@@ -1,0 +1,26 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from AlloySymmetricReflexive.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class Course
+sig Course {
+  mutuallyExclusiveWith : set Course
+}
+
+
+-- Defines non-reflexive rule for class Course
+fact NonReflexiveRule {
+  no course_1 : Course |
+    course_1 in mutuallyExclusiveWith[course_1]
+}
+
+-- Defines symmetric rule for class Course
+fact SymmetricRelation {
+  all course_1, course_2 : Course |
+    course_1 in mutuallyExclusiveWith[course_2] <=> course_2 in mutuallyExclusiveWith[course_1]
+}

@@ -1,0 +1,65 @@
+bin/
+dist/
+nohup.out
+
+# Temporary
+/ump
+
+# umple specific
+umpleonline/ump/
+umpleonline/ump/tmp*
+umpleonline/ump/2*
+umpleonline/ump/1*
+umpleonline/ump/task*
+umpleonline/ump/ATempCrash*
+umpleonline/ump/index.html
+umpleonline/ump/aalertMessage.txt
+build/UserManualAndExampleTests_output.txt
+umpleonline/manual
+umpleonline/qr*
+umpleonline/countlog.txt
+umpleonline/scripts/commandcount.txt
+umpleonline/scripts/specialPort.txt
+umpleonline/scripts/versionRunning.txt
+
+# generated Umple code that is not saved
+src-gen-umple/
+src-gen/
+
+# generated umpleTL code that is not saved
+src-gen-[Uu]mple[Tt][Ll]/
+
+# os specific:
+.DS_Store
+
+#intelliJ
+.idea
+*.iml
+.recommenders
+
+*swp
+
+.bak
+.vscode
+
+# eclipse
+.classpath
+.project
+.settings
+.metadata
+
+*.class
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Gradle
+.gradle
+

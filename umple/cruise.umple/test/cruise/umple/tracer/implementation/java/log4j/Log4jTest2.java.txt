@@ -1,0 +1,71 @@
+
+package example;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class Tracer
+{
+
+  //------------------------
+  // STATIC VARIABLES
+  //------------------------
+
+
+  /**
+   * log4j version 2
+   * requires jars (log4j-api-2.0.1.jar) and (log4j-core-2.0.1.jar)
+   */
+  public static final Logger logger = LogManager.getLogger(Tracer.class);
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Tracer Attributes
+  private String x;
+  private int y;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Tracer(String aX, int aY)
+  {
+    x = aX;
+    y = aY;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setX(String aX)
+  {
+    boolean wasSet = false;
+    logger.debug( System.currentTimeMillis()+","+Thread.currentThread().getId()+",Log4jTest2.ump,9,Tracer,"+System.identityHashCode(this)+",at_s,x,"+x+","+(""+aX).toString().replace("\n","").replace(",",";") );
+    x = aX;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setY(int aY)
+  {
+    boolean wasSet = false;
+    logger.fatal( System.currentTimeMillis()+","+Thread.currentThread().getId()+",Log4jTest2.ump,10,Tracer,"+System.identityHashCode(this)+",at_s,y,"+y+","+(""+aY).toString().replace("\n","").replace(",",";") );
+    y = aY;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getX()
+  {
+    return x;
+  }
+
+  public int getY()
+  {
+    return y;
+  }
+
+  public void delete()
+  {}

@@ -1,0 +1,17 @@
+Inline Associations
+Associations
+noreferences
+@@tooltip An association specified within a class at one end or the other end
+
+@@description
+<p>An association represents a relationship between two classes.  Associations can be defined within a class, in a similar manner
+as you would define an attribute.</p>
+
+<p>Contrast this with the <a href="IndependentlyDefinedAssociations.html">same model defined using independently defined associations.</a></p>
+
+@@syntax
+[[inlineAssociation]] [[inlineAssociationEnd]] [[associationEnd]]
+
+@@example
+@@source manualexamples/InlineAssociations1.ump
+@@endexample

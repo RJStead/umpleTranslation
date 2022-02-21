@@ -1,0 +1,361 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+Helper classes that re needed by the Umple system, but are not key to understanding the metamodel
+
+*/
+
+namespace cruise.umple.util;
+
+class SampleFileWriter 
+{
+  
+  depend java.util.*;
+  depend java.io.*;
+  depend org.junit.*;
+  
+  public static File[] getAllFiles(File inputDirectory)
+  {
+    File[] allFiles = inputDirectory.listFiles();
+    Arrays.sort(allFiles, new Comparator<File>(){
+      public int compare(File f1, File f2)
+      {
+        return f1.getName().compareTo(f2.getName());
+      } 
+    });
+    return allFiles;
+  }
+
+  public static  String readContent(File filename){
+     return readContent(filename, null);
+  }
+  
+  public static String readContent(File filename, String exclusionPattern)
+  {
+    BufferedReader reader = null;
+    StringBuffer answer = new StringBuffer();
+    
+    try
+    {
+      reader = new BufferedReader(new FileReader(filename));
+      String nextLine = null;
+      while (( nextLine = reader.readLine()) != null)
+      {
+        if(exclusionPattern != null) {
+          nextLine = nextLine.replaceAll(exclusionPattern, "");
+        }
+        answer.append(nextLine);
+        answer.append("\n");
+      } 
+      
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException("Unable to read content",e);
+    }
+    finally
+    {
+      closeAsRequired(reader);
+    }    
+    return answer.toString();
+    
+  }
+  
+  public static void assertEitherFileContent(File expected1, File expected2, String actual)
+  {
+    try
+    {
+      assertFileContent(expected1,actual);
+    }
+    catch (AssertionError e)
+    {
+      assertFileContent(expected2,actual);
+    }
+  }
+  
+  private static String readLine(BufferedReader reader)
+  {
+    try{    
+        String nextLine = reader.readLine();
+        return nextLine == null ? null : nextLine.trim();
+    } catch (Exception e){
+        Assert.fail(e.getMessage());
+        return null;
+    }
+  }
+  
+  public static void assertPartialFileContent(File partial, String actual)
+  {
+    BufferedReader expectedReader = null;
+    BufferedReader actualReader = null;
+    boolean foundMatch = false;
+    
+    try
+    {
+      expectedReader = new BufferedReader(new FileReader(partial));
+      actualReader = new BufferedReader(new StringReader(actual));
+      
+      String expectedLine = null;
+      String actualLine = null;
+      
+      int line = 0;
+      do 
+      {
+        if (expectedLine == null || foundMatch)
+        {
+          expectedLine = readLine(expectedReader);
+        }
+        actualLine = readLine(actualReader);
+        // HACK: To deal with // line # comments
+        while (actualLine != null && (actualLine.indexOf("// line") != -1 ||  actualLine.indexOf("# line") != -1))
+        { //Ignore the line, go to next
+          actualLine = readLine(actualReader);
+        }
+
+        // Deal with Code from template
+        while (actualLine != null && actualLine.indexOf("/* Code from template") != -1)
+        { //Ignore the line, go to next
+          actualLine = readLine(actualReader);
+        }        
+        
+        line++;
+        
+        if (expectedLine == null) 
+        {
+          break; 
+        }
+        else if (foundMatch)
+        {
+          Assert.assertEquals("Failed at:" + line,expectedLine,actualLine);
+        }
+        else if (expectedLine.equals(actualLine))
+        {
+          foundMatch = true;
+        }
+      } 
+      while (expectedLine != null);
+    }
+    catch (Exception e)
+    {
+      Assert.fail(e.getMessage());
+    }
+    finally
+    {
+      closeAsRequired(expectedReader);
+      closeAsRequired(actualReader);
+    }
+    if (!foundMatch) { Assert.fail("Did not find expected lines"); }
+  }
+  
+  public static void assertFileContent(File expected, String actual)
+  {
+    assertFileContent(expected, actual, true);
+  }
+  
+  public static void assertFileContent(File expected, String actual, boolean ignoreLineComments){
+    try
+    {
+      assertFileContent(new BufferedReader(new FileReader(expected)),new BufferedReader(new StringReader(actual)),ignoreLineComments);
+    }
+    catch (FileNotFoundException e)
+    {
+      Assert.fail(e.getMessage());
+    }
+  }
+  
+  public static void assertFileContent(File expected, File actual, boolean ignoreLineComments){
+    try
+    {
+      assertFileContent(new BufferedReader(new FileReader(expected)),new BufferedReader(new FileReader(actual)),ignoreLineComments);
+    }
+    catch (FileNotFoundException e)
+    {
+      Assert.fail(e.getMessage());
+    }
+  }
+  
+  public static void assertFileContent(BufferedReader expectedReader, BufferedReader actualReader, boolean ignoreLineComments)
+  {
+    Boolean skippedActualLineDifference;
+    try
+    {
+      String expectedLine = null;
+      String actualLine = null;
+      
+      int line = 0;
+    do 
+      {
+        actualLine = actualReader.readLine();
+        expectedLine = expectedReader.readLine();
+        skippedActualLineDifference = false;
+        if (ignoreLineComments)
+        {
+          // Skip past elements that may change in updated code but are not important differences
+          while (actualLine != null && (actualLine.indexOf("// line") != -1 ||
+                    actualLine.indexOf("# line") != -1 ||
+                    actualLine.indexOf("/* Code from template") != -1 ||
+                    actualLine.matches("\\s*\\/\\/ END OF UMPLE (BEFORE|AFTER) INJECTION") ||
+                    actualLine.matches("\\s*\\# END OF UMPLE (BEFORE|AFTER) INJECTION")))
+          { //Ignore the line, go to next - line found has unimportant difference
+            actualLine = actualReader.readLine();
+            skippedActualLineDifference = true;
+          }
+          
+          while (expectedLine != null && (expectedLine.indexOf("// line") != -1 ||
+                    actualLine.indexOf("# line") != -1 ||
+                    expectedLine.indexOf("/* Code from template") != -1 ||  
+                    (skippedActualLineDifference == true && expectedLine.trim().isEmpty()) ||      
+                    expectedLine.matches("\\s*\\/\\/ END OF UMPLE (BEFORE|AFTER) INJECTION")||
+                    expectedLine.matches("\\s*\\# END OF UMPLE (BEFORE|AFTER) INJECTION")))
+          { 
+        	  expectedLine = expectedReader.readLine();
+        	  skippedActualLineDifference = false; // Only skip one blank
+          }
+             
+        } 
+        
+        line++;
+        
+        // HACK: To deal with umple version issues
+        if (expectedLine != null && expectedLine.indexOf("This code was generated using the UMPLE") == -1)
+        {
+          Assert.assertEquals("Failed at:" + line,expectedLine,actualLine);  
+        }
+      } 
+      while (expectedLine != null && actualLine != null);
+      
+      if(expectedLine == null && line == 1)
+      {
+      	Assert.fail(("Expected output file is empty."));
+      }
+    }
+    catch (Exception e)
+    {
+      Assert.fail(e.getMessage());
+    }
+    finally
+    {
+      closeAsRequired(expectedReader);
+      closeAsRequired(actualReader);
+    }    
+  }
+  
+  public static void assertFileExists(final String path) {
+    Assert.assertTrue("File, " + path + ", does not exist.", (new File(path)).exists());
+  }
+  
+  public static void closeAsRequired(BufferedReader reader)
+  {
+    if (reader != null)
+    {
+      try
+      {
+        reader.close();
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  public static void closeAsRequired(InputStream reader)
+  {
+    if (reader != null)
+    {
+      try
+      {
+        reader.close();
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  public static String rationalize(String rawPath)
+  {
+    String path = rawPath;
+    File f = new File(path);
+    if (f.exists())
+    {
+      return path;
+    }
+    
+    path = "../cruise.umple/" + rawPath;
+    f = new File(path);
+    if (f.exists())
+    {
+      return path;
+    }
+    
+    path = "/h/ralph/umple/trunk/cruise.umple/" + rawPath;
+    f = new File(path);
+    if (f.exists())
+    {
+      return path;
+    }
+
+    // TODO: this shouldn't be hardcoded - see issue 751
+    path = "dist/gradle/test/workingDir/" + rawPath;
+    return path;
+  }
+  
+  public static void createFile(String filename, String input)
+  {
+    File f = new File(filename);
+    f.getAbsoluteFile().getParentFile().mkdirs();
+    
+    try
+    {
+      BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+      out.write(input);
+      out.close();
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException("Unable to create file [" + filename + "]", e);
+    }
+  }
+  
+  /**
+   * Deletes a file or directory.
+   * @param filenames File paths to destroy
+   */
+  public static void destroy(String... filenames)
+  {
+    for (String filename: filenames) {
+    File file = new File(filename);
+    
+    if (file.isDirectory())
+    {
+      destroy(file);
+    }
+    else
+    {
+      file.delete();
+    }
+  }
+  }
+  
+  private static void destroy(File path)
+  {
+    if( path.exists() ) {
+      File[] files = path.listFiles();
+      for(int i=0; i<files.length; i++) {
+        if(files[i].isDirectory()) {
+          destroy(files[i]);
+        }
+        else {
+          files[i].delete();
+        }
+      }
+    }
+    path.delete();
+  }
+}

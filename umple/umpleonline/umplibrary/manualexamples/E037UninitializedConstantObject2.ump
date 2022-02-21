@@ -1,0 +1,9 @@
+// This example resolves error 37
+
+class X {
+  const Y A=new Y(3);
+}
+
+class Y {
+  Integer a;
+}

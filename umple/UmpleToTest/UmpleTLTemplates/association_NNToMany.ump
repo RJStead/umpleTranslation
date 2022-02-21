@@ -1,0 +1,45 @@
+
+class UmpleToTest {
+    association_NNToMany <<!<</*association_NNToMany*/>><<#
+/*
+This file creates the necessary for Optional One To Many Association 
+*/
+				  String myClass = uClass.getName();
+  				  String otherClass = av.getRelatedAssociation().getUmpleClass().getName();
+  				  String buffName = "some" +uClass.getName();#>>
+        		  /////// Association: -- <<=av.getRelatedAssociation().getMultiplicity().getRange()>> <<=av.getRelatedAssociation().getUmpleClass().getName()>> /////// 
+        		  //create ... without ...
+        		  test create<<=uClass.getName()>>Without<<=av.getRelatedAssociation().getUmpleClass().getName()>> {
+        		  
+        		  <<=gen.dependencyInjection(uClass)>>
+        		  <<=myClass>> <<=gen.initiateClass(uClass)>>;        		  
+        		  
+        		  assertEqual (a<<=uClass.getName()>>.numberOf<<=otherClass>>s() , <<=av.getMultiplicity().getLowerBound()>> );
+        		  }
+        		  
+        		  test overFlowIn<<=uClass.getName()>>For<<=av.getRelatedAssociation().getUmpleClass().getName()>> {
+        		  
+        		  <<=gen.dependencyInjection(uClass)>>
+        		  <<=myClass>> <<=gen.initiateClass(uClass)>>;  
+        		  
+        		  assertFalse(a<<=myClass>>.add<<=otherClass>>(a<<=otherClass>>));      		  
+        		  
+        		  assertEqual (a<<=uClass.getName()>>.numberOf<<=otherClass>>s() , <<=av.getMultiplicity().getLowerBound()>> );
+        		  }
+        		  
+        		  test belowBoundaryIn<<=uClass.getName()>>For<<=av.getRelatedAssociation().getUmpleClass().getName()>> {
+        		  
+        		  <<=gen.dependencyInjection(uClass)>>
+        		  <<=myClass>> <<=gen.initiateClass(uClass)>>;  
+        		  
+        		  assertFalse(a<<=myClass>>.remove<<=otherClass>>(a2a<<=otherClass>>));      		  
+        		  
+        		  assertEqual (a<<=uClass.getName()>>.numberOf<<=otherClass>>s() , <<=av.getMultiplicity().getLowerBound()>> );
+        		  }
+        		  
+        		  
+        		  <<#
+  
+  
+#>>!>>
+}

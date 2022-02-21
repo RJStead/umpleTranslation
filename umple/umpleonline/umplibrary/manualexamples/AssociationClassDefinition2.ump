@@ -1,0 +1,43 @@
+// The following shows how we might model sales of
+// Ticket for Seminars to Persons without using an
+// association class. Note, however, that in this
+// model, it would be possible to sell more than
+// one ticket to a Person for the same Seminar.
+// Using an association class would hence be
+// better than this.
+class Ticket
+{
+  Integer ticketNumber;
+  Double price = 0.0;
+  
+  * -- 1 Person attendee;
+  * -- 1 Seminar;
+}
+
+class Person
+{
+  name;
+}
+
+class Seminar
+{
+  Date when;
+  address;
+}//$?[End_of_model]$?
+
+class Person
+{
+  position 331 83 109 60;
+}
+
+class Ticket
+{
+  position 41 62 166 77;
+  position.association Seminar__Ticket 29,80 30,0;
+  position.association Person:attendee__Ticket 174,44 0,19;
+}
+
+class Seminar
+{
+  position 40 233 120 77;
+}

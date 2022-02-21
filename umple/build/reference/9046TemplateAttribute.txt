@@ -1,0 +1,25 @@
+W046 Attribute Has Template Type
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple syntactic warning reported when an attribute has a template type, characterized by brackets "<...>".</h2>
+
+<p>Template types do not follow Umple modelling conventions. Umple encourages users to take full advantage of associations in their modelling, which in almost all contexts replace the need for template types. Multivalued attributes can also be used.
+
+</p>
+
+
+@@example
+@@source manualexamples/W046AttributeHasTemplateType1.ump
+@@endexample
+
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W046AttributeHasTemplateType2.ump
+@@endexample
+
+@@example @@caption Another Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W046AttributeHasTemplateType3.ump
+@@endexample

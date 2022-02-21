@@ -1,0 +1,45 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE ${last.version} modeling language!*/
+
+
+
+////---- Tests for  AttributeInlineComment ----/////
+
+test Foo {
+
+ generate JUnit ;
+ 
+ depend  Foo ; 
+
+
+
+ 
+ GIVEN:
+ AttributeInlineComment.ump;
+ 
+ 
+ 
+ THEN:
+  //tests for :bar
+
+      test attribute_bar {
+    
+      
+        Foo aFoo("RandomString1");
+        
+        
+    assertTrue( aFoo.setBar("RandomString1"));
+    assertTrue( aFoo.getBar() =="RandomString1");
+    assertTrue( aFoo.setBar("RandomString2"));
+    assertTrue( aFoo.getBar()=="RandomString2");
+    assertFalse( aFoo.getBar() =="RandomString1");
+             
+          
+        	}
+
+
+  
+ 
+   
+
+}

@@ -1,0 +1,9 @@
+// This generates error 23 because
+// attribute b clashes with
+// class name B in the association
+class X23atdupassoc2 {
+   b;
+   1 -- 0..1 B;
+}
+
+class B {}

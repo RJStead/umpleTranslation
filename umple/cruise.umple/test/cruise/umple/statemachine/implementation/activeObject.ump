@@ -1,0 +1,13 @@
+namespace example;
+
+class Lamp {
+  String log;
+  
+  active {
+    log = "Active entry";
+  }
+  
+  active {
+    log = "Active entry";
+  }
+}

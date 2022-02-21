@@ -1,0 +1,48 @@
+#!/bin/csh -fb
+if ! $?UMPLEROOT then
+  if ( $cwd:t == 'build' ) then
+    if ( $1 == 'here' ) then
+      setenv UMPLEROOT `dirname "$cwd"`
+    else
+      echo If in a build directory specify \'bumple here\' to avoid default
+      exit
+    endif
+  else
+    setenv UMPLEROOT ~/umple
+  endif
+endif
+cd $UMPLEROOT/build
+set buildenv="local"
+if ( $?OSTYPE ) then
+  if ( $OSTYPE == 'cygwin' || $OSTYPE == 'msys' | $OSTYPE == 'win32' ) then
+    set buildenv="wlocal"
+  endif
+endif
+echo Doing FULL build of Umple at $UMPLEROOT using ant -Dmyenv=$buildenv
+echo Building repo at $UMPLEROOT
+# If you are running on Windows the above should run as myenv=wlocal
+echo This should take 2-5 minutes. Do not interrupt.
+echo You should always have done 'git pull' before running this and resolved conflicts
+set logfile="/tmp/umplebuildlog$$.txt"
+ant -Dmyenv=$buildenv | tee $logfile
+
+grep -qi failed $logfile
+set failedstatus=$status
+
+grep -qi 'Error ' $logfile
+if ($status == 0 || $failedstatus == 0) then
+  echo "************************"
+  echo Script bumple ended ABNORMALLY at $UMPLEROOT
+  echo The word FAILED or ERROR was found in the above. Build was NOT SUCCESSFUL.
+  echo Build log is at $logfile
+  echo Test log can be opened in a web browser at $UMPLEROOT/dist/qa/index.php
+  echo The following is a snippet of the log with the problem
+  grep -C3 -i -n -m 1  'Error ' $logfile 
+  grep -C3 -i -n -m 1  'failed' $logfile
+else
+  rm $logfile
+  echo Script bumple ended normally at $UMPLEROOT
+  echo Full build complete. You may push or open a PR.
+endif
+
+

@@ -1,0 +1,5 @@
+// This example generates the message
+class X {
+  Integer z = 1;
+  key { z }
+}

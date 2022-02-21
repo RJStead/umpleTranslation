@@ -1,0 +1,40 @@
+WE1xx Identifier Invalid
+Errors and Warnings 100-999
+noreferences
+
+@@description
+
+<h2>Umple syntactic error or warning reported when an identifier does not have the correct syntax</h2>
+
+<p>In Umple, identifiers used for classes, association role names, types, attributes, state machines, states, events and other elements must be alphanumeric. In addition, class and interface names should start with a capital letter (or _), and other elements should start with a lower case letter. The exact error message you received will tell you which identifier has the problem. The examples below will generate these messages.
+</p>
+
+
+@@example
+@@source manualexamples/WE1xxIdentifierInvalid1.ump
+@@endexample
+
+@@example
+@@source manualexamples/WE1xxIdentifierInvalid2.ump
+@@endexample
+
+
+@@example
+@@source manualexamples/WE1xxIdentifierInvalid3.ump
+@@endexample
+
+@@example
+@@source manualexamples/WE1xxIdentifierInvalid4.ump
+@@endexample
+
+@@example
+@@source manualexamples/WE1xxIdentifierInvalid5.ump
+@@endexample
+
+@@example
+@@source manualexamples/WE1xxIdentifierInvalid6.ump
+@@endexample
+
+@@example
+@@source manualexamples/WE1xxIdentifierInvalid7.ump
+@@endexample

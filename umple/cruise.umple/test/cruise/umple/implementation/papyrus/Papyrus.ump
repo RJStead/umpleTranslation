@@ -1,0 +1,62 @@
+generate Papyrus;
+namespace example;
+
+ class Garage {
+    Boolean entranceClear;
+    GarageDoor {
+      Closed {
+        entry/{stopMotor(); triggerEnergySaveMode();}
+        exit/ {triggerNormalEnergyMode();}
+        pressButton -> /{turnLightOn();} Opening;
+      }
+     Opening {
+       entry/{runMotorForward();}
+       openingCompleted -> Open;
+     }
+     Open {
+       entry/{stopMotor();}
+       do {wait(60000); turnLightOff();}
+       pressButton [getEntranceClear()] -> Closing;
+     }
+     Closing {
+       entry/{runMotorInReverse();}
+       closingCompleted -> Closed;
+       pressButton -> /{flashLightOn();} Opening;
+     }
+   }
+ }
+
+class Product
+{
+  description;
+  Integer available;
+  Double price;
+  Date createdDate;
+  Time createdTime;
+  Boolean isActive;
+  Float tax;
+}
+
+interface ICart
+{
+
+}
+
+class Cart
+{
+  isA ICart;
+}
+
+class CartItem
+{
+  3..* item -- 0..1 Product;
+}
+
+class PaymentMethod
+{
+}
+
+class Cheque
+{
+  isA PaymentMethod;
+}

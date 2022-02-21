@@ -1,0 +1,62 @@
+
+namespace cruise.tracer.test;
+
+//------------------------------- Comapny - Manager semantic tests
+
+// Bidirectional (--)
+
+class CompanyBiManyToManyRole
+{
+  * -- * Manager managerA;
+  trace managerA;
+}
+
+class CompanyBiManyToManyAdd
+{
+  * -- * Manager managerB;
+  trace add managerB;
+}
+
+class CompanyBiManyToManyRemove
+{
+  * -- * Manager managerC;
+  trace remove managerC;
+}
+
+// Unidirectional (->)
+
+class CompanyUniManyToManyRole
+{
+  * -> * Manager managerA;
+  trace managerA;
+}
+
+class CompanyUniManyToManyAdd
+{
+  * -> * Manager managerB;
+  trace add managerB;
+}
+
+class CompanyUniManyToManyRemove
+{
+  * -> * Manager managerC;
+  trace remove managerC;
+}
+
+class Manager {}
+class ManagerA {}
+class ManagerB {}
+class ManagerC {}
+class ManagerD {}
+
+//------------------------------- Student - Mentor semantic tests
+
+/*
+class MentorA
+{
+  0..1 mentor -- 0..1 StudentA student;
+}
+
+class StudentA
+{}
+*/

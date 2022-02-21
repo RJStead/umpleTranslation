@@ -1,0 +1,97 @@
+
+class UmpleToTest {
+    association_optionalOneToMany <<!<</*association_optionalOneToMany*/>><<#
+/*
+This file creates the necessary for Optional One To Many Association 
+*/
+
+  
+  				  String buffName = "some" +uClass.getName();
+  				  String buffName2 = "some"+av.getRelatedAssociation().getUmpleClass().getName();
+  				  String myClass = uClass.getName();
+  				  String otherClass = av.getRelatedAssociation().getUmpleClass().getName();
+  				  #>>
+        		  /////// Association: -- <<=av.getRelatedAssociation().getMultiplicity().getRange()>> <<=av.getRelatedAssociation().getUmpleClass().getName()>> /////// 
+        		  //create ... without ...
+        		  test Create<<=uClass.getName()>>Without<<=av.getRelatedAssociation().getUmpleClass().getName()>> {
+        		  
+        		  <<=gen.dependencyInjection(uClass)>>
+        		  <<=uClass.getName()>> <<=gen.initiateClass(uClass)>>;
+        		  int size = a<<=myClass>>.get<<=otherClass>>s().size(); 
+        		  assertTrue ( size == 0);
+        		  
+        		  }
+        		  <<#gen.resetInitializedObject();#>>
+        		  //replace
+        		  <<#buffName = "some"+av.getRelatedAssociation().getUmpleClass().getName();#>>
+        		  test ReplaceOptional<<=uClass.getName()>>In<<=av.getRelatedAssociation().getUmpleClass().getName()>> { 
+        		  
+        		  <<=av.getRelatedAssociation().getUmpleClass().getName()>> <<=gen.initiateClass(av.getRelatedAssociation().getUmpleClass())>>;
+        		  <<=av.getRelatedAssociation().getUmpleClass().getName()>> b<<=gen.initiateClass(av.getRelatedAssociation().getUmpleClass())>>;
+        		  <<=uClass.getName()>> <<=gen.initiateClass(uClass)>>;
+        		  <<=uClass.getName()>> b<<=gen.initiateClass(uClass)>>;
+        		  
+        		
+        		  assertTrue(a<<=uClass.getName()>>.add<<=av.getRelatedAssociation().getUmpleClass().getName()>>(a<<=av.getRelatedAssociation().getUmpleClass().getName()>>));
+        		  assertEqual ( a<<=myClass>>.get<<=otherClass>>(0),a<<=otherClass>>);
+        		  
+        		  assertTrue(a<<=av.getRelatedAssociation().getUmpleClass().getName()>>.set<<=uClass.getName()>>(ba<<=uClass.getName()>>));
+        		  assertTrue ( a<<=av.getRelatedAssociation().getUmpleClass().getName()>>.get<<=uClass.getName()>>() == ba<<=uClass.getName()>>);
+        		  }
+        		  
+        		  
+        		  <<#gen.resetInitializedObject();#>>
+        		  test delete<<=av.getRelatedAssociation().getUmpleClass().getName()>>From<<=myClass>> {
+        		  // delete <<=av.getRelatedAssociation().getUmpleClass().getName()>> in <<=uClass.getName()>>
+        		  
+        		  
+        		  <<=gen.dependencyInjection(av.getRelatedAssociation().getUmpleClass())>>
+        		  <<=otherClass>> b<<=gen.initiateClass(av.getRelatedAssociation().getUmpleClass())>>;
+        		  
+        		  <<=gen.dependencyInjection(uClass)>>
+        		  <<=uClass.getName()>> <<=gen.initiateClass(uClass)>>;
+        		  
+        		  assertTrue(a<<=myClass>>.add<<=otherClass>>(ba<<=otherClass>>));
+        		  
+        		  ba<<=otherClass>>.delete();
+        		  
+        		  int size = a<<=myClass>>.get<<=otherClass>>s().size(); 
+        		  assertTrue ( size == 0);
+        		  }
+        		  
+        		  
+        		  <<#gen.resetInitializedObject();#>>
+        		  test Add<<=av.getRelatedAssociation().getUmpleClass().getName()>>ToNew<<=uClass.getName()>> { 
+        		  
+        		  <<=gen.dependencyInjection(av.getRelatedAssociation().getUmpleClass())>>
+        		  <<=otherClass>> <<=gen.initiateClass(av.getRelatedAssociation().getUmpleClass())>>;
+        		  
+        		  <<=gen.dependencyInjection(av.getRelatedAssociation().getUmpleClass())>>
+        		  <<=otherClass>> b<<=gen.initiateClass(av.getRelatedAssociation().getUmpleClass())>>;
+        		  
+        		  <<=gen.dependencyInjection(uClass)>>
+        		  <<=uClass.getName()>> <<=gen.initiateClass(uClass)>>;
+        		  
+        		  <<=gen.dependencyInjection(uClass)>>
+        		  <<=uClass.getName()>> b<<=gen.initiateClass(uClass)>>;
+        		  
+        		          		        
+        		  
+        		  a<<=myClass>>.add<<=otherClass>>(a<<=otherClass>>);
+        		  ba<<=myClass>>.add<<=otherClass>>(a<<=otherClass>>);
+        		   
+        
+        		  assertEqual(ba<<=myClass>>.get<<=otherClass>>(0), a<<=otherClass>>) ;
+        		          		  
+        		   
+        		  assertEqual (a<<=myClass>>.numberOf<<=otherClass>>s(), 0);
+        		  
+        		  assertEqual (ba<<=myClass>>.numberOf<<=otherClass>>s(), 1);
+        		  }
+        		  <<#gen.resetInitializedObject();#>>
+        		  
+        		  <<#
+  
+  
+#>>!>>
+}

@@ -1,0 +1,47 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+// line 2 "Class_DistributableRMI.ump"
+public class ClientImpl implements java.io.Serializable , IClientImpl
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public ClientImpl()
+  {}
+  //------------------------
+  // Reference to the proxy
+  //------------------------
+  Client self;
+  
+  public void setSelf(Client proxy)
+  {
+    self=proxy;
+  }
+
+  //------------------------
+  // Returning the Hashcode
+  //------------------------
+  public int getHashCode()
+  {
+    return hashCode();
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public void delete()
+  {}
+
+}

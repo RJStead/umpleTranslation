@@ -1,0 +1,335 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+*/
+
+namespace cruise.umple.parser.analysis;
+
+/*
+  This is the base class for all Analyzers used in the GrammarAnalyzer.
+  
+  To properly extend and make use of Analyzer, implementing subclasses
+  must be named the same as the rule they are to analyze in titlecase.
+  
+  For example, if you were to write an analyzer for the rule "precondition",
+  the analyzer would be named "PreconditionAnalyzer". Then just override 
+  analyze(Token) or prepare(Token) as needed.
+*/
+class Analyzer
+{
+  abstract;
+  depend java.util.*;
+  depend cruise.umple.parser.*;
+  depend cruise.umple.parser.Token;
+  depend java.io.*;  
+  depend java.lang.reflect.*;
+  depend java.lang.IllegalStateException;
+  
+  name = null;
+  0..* parent -- 0..* Analyzer children;
+}
+
+ /*
+  This is a handler/delegate class that handles linked files supplied at 
+  compile time.
+  
+  Override this class to provide custom implementations for to file linkage.
+*/
+interface LinkedFileHandler
+{
+  
+  depend java.io.File;
+  
+  /*
+   * This method is called before parsing the main file to be linked. 
+   * It is supplied the input of the first file provided, along with the
+   * names of all the linked files supplied at compile-time. 
+   *
+   * Override this to provide custom implementations, such as manually 
+   * appending data from each file -- or appending custom "import <file>"
+   * notation that will be done prior to parsing. 
+   *
+   * Example:
+   *   This is used in Umple to produce a series of `use <filename>.ump` 
+   *   statements after the initial input.
+   *
+   * @param input the input from the first file
+   * @param linkedFilenames list of the linked filenames
+   *
+   * @return the modified string output
+   */
+  public String onFileLink( String input, File[] linkedFiles );
+}
+
+/*
+ This is a handler/delegate class that handles construction of Analyzer classes
+ at runtime. 
+ 
+ Override this class in order to construct Analyzer objects by name, where
+ necessary.
+*/
+interface AnalyzerGeneratorHandler{
+  
+  /*
+   * This method is called to create Analyzer objects by name.
+   *
+   * A null value being returned indicates that an Analyzer could not be created, and 
+   * a non-null object indicates an Analyzer was successfully created.
+   *
+   * @param name the name of the analyzer to construct
+   *
+   * @return the constructed analyzer if successful, null otherwise
+   */
+  public Analyzer generateFromName( String name );
+}
+
+/*
+  The rule based parser takes in umple grammar files and parses them into Rule objects(ChoiceRule, ChainRule, etc.). Really what happens is
+  that the rulebasedparser contstructs an initial rootToken that contains all the grammar rules, and then the grammaranalyzer turns those
+  into rules. Regardless, then we have a graph of rules which each has a parse function. The parse function is called on the root, and
+  the parsing begins. After that there is the cleanup, that is recovery if there was a failure or getting the rootToken and storing it
+  if not.
+*/
+class RuleBasedParser
+{
+  depend java.io.*;
+  depend java.util.*;
+  depend cruise.umple.parser.rules.*;
+
+  //the iteration of parsing done(there is a possibility to do two pass parsing, but for umple it is not implemented or neccessary yet)
+  public static int parsing = 0; 
+  
+  public static HashMap<String,ChoiceRule> choicerules = new HashMap<String,ChoiceRule>();
+  private static HashMap<String,String> todeclare = new HashMap<String,String>();
+  
+  // List of actions for the parser to perform. This has to be static because of choicerules and todeclare,
+  // but hopefully someday this will change.
+  private static Map<String,ParserAction> actionedTokens = new HashMap<String,ParserAction>();
+
+  //the Root Token that will be contain the result of the parse of the umple file
+  Token rootToken = null;
+  
+  // The handler to control linked files supplied at compile-time
+  static LinkedFileHandler linkedFileHandler = null;
+  
+  // The handler to control generation of Analyzer objects at runtime
+  static AnalyzerGeneratorHandler analyzerGenerator = null;
+
+  //The failed position, if one exists(i.e. if the parse failed). otherwise it will be null
+  1 -> 0..1 Position failedPosition;
+
+  //The parse's result, it will either have the value of success or failure, and should not be null after a parse
+  ParseResult parseResult = null;
+
+  //List of umple grammar files which will dictate the rule graph that is contructed.
+  String[] grammarFiles;
+}
+
+/*
+  This type of action is used only with useStatements at the moment but their general idea is that the parser can do some action
+  whenever it successfully contructs a certain token.
+*/
+interface ParserAction 
+{
+  depend java.util.*;
+  depend cruise.umple.parser.Token;
+  depend cruise.umple.parser.rules.*;
+
+  //method that will be called when this Action's token has been created successfully
+  public void onSuccess(Token token, ParserDataPackage data);
+}
+/*
+  ParserDataPackage is a structure which contains all the miscellaneous data during the parse. Most importantly it contains the linenumbers,
+  which are the linenumbers associated to the character numbers(or offsets) of a given \n. And couples which are initialized to be the character position
+  of the open and close of those couples, for example there is a couple for { and } which will matched {a {b }c }d 'a' with 'd' and 'b' with 'c'
+*/
+class ParserDataPackage
+{  
+  depend java.util.*;
+  depend java.io.*;  
+  depend cruise.umple.parser.Position;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.ErrorMessage;
+  depend cruise.umple.parser.rules.*;
+
+  //the filename of the file that is being parsed
+  filename;
+  
+  //This is used to save the full address of the fileName.
+  fullFileAddress = "";
+  
+  GrammarAnalyzer analyzer;
+  
+  //the string that is the file that is being parsed
+  input = "";
+
+  //for comparing the furthest position attained during the parse, represents the highest offset seen by this parserdatapackage object
+  int furthestGotten = 0;
+
+  //for comparing the furthest position attained during the parse, represents the second highest offset seen by this parserdatapackage object
+  int previousFurthest = 0;
+
+  //for passing around errors
+  ParseResult parseResult = new ParseResult(true);
+
+  //keeps track of the furthest token position attained during the parse.
+  Position position = new Position(aFilename,0,0,0);
+  
+  //Associated to each key is a couple
+  HashMap<String,ParsingCouple> couples = new HashMap<String,ParsingCouple>();
+
+  //a hashmap where the key represent the offset and the value represents the line number at that offset
+  LinkedHashMap<Integer,Integer> linenumbers = new LinkedHashMap<Integer,Integer>();
+  
+  //List of filenames that have already been parsed
+  List<String> hasParsed = new ArrayList<String>();
+
+  //They keys for the different couples {} for example
+  HashMap<String,String[]> keys = new HashMap<String,String[]>();
+  
+  //List of lines from the input
+  String[] lines;
+  
+  //carries the context of the "no spaces" rule
+  noSpaces = false;
+}
+
+external Thread { }
+
+/*
+  This class is for parsing multiple files at the same time. What happens is that when a useStatement is found, a RuleBasedParserThread is
+  created. This thread then parses that file in parallel. Ordering is preserved by having the result of the parse being put within the
+  useStatement. So, in effect, a useStatement is the root to a file's tokens.
+  
+*/
+class RuleBasedParserThread 
+{
+  isA Thread;
+  
+  depend java.util.*;
+  depend cruise.umple.parser.Token;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.rules.*;
+
+  //The root of the rule graph that will be used for parsing
+  ChoiceRule root;
+
+  //The root token which will be added to, after the parsing is complete
+  Token token;
+
+  //The filename of the file that this Thread will parse
+  filename;
+  
+  //The data package of the previous parse, so that things like keys and the filenames already parsed can be passed along
+  ParserDataPackage data;
+  
+}
+
+/*
+  The grammar analayzer deals with first analyzing the root token of the grammar files, and constructing the rule graph for the grammar
+  then it has a execute function which will use the rule graph in the parsing of the umple file.
+*/
+class GrammarAnalyzer 
+{
+  
+  depend java.util.*;
+  depend java.io.*;  
+  depend java.lang.reflect.*;
+  depend cruise.umple.parser.rules.*;
+  depend cruise.umple.parser.Position;
+  depend cruise.umple.parser.Token;
+  depend cruise.umple.parser.ParseResult;
+
+  /*
+    Inner class which is a wrapper for the objects that will go into the global hashmap
+  */
+  public class Getter<T>
+  {
+    public Getter()
+    {
+    }
+    @SuppressWarnings("unchecked")
+    public T get(String name)
+    {
+      return ((T)global.get(name));
+    }
+  }
+
+  /*
+    This funciton is used for putting things into the global hashmap that contains all objects
+  */
+  protected void set(String string, Object object)
+  {
+    global.put(string, object);
+  }
+
+  boolean done = false;
+  boolean first = true;
+
+  // The handler for dealing with linked files
+  LinkedFileHandler linkedFileHandler = null;
+
+  // The handler to control generation of Analyzer objects at runtime
+  AnalyzerGeneratorHandler analyzerGenerator = null;
+
+  //hashmap of global variables(local to the class, not local to methods)
+  HashMap<String,Object> global = new HashMap<String,Object>();
+
+  //rootToken which will be the result of the parsing of the umple file passed
+  Token rootToken = null;
+
+  //the data package used during the parsing.
+  ParserDataPackage data = null;
+
+  //the failed position, if there was one, it will remain null if the parse was successful
+  Position failedPosition = null;
+/*
+  Global variable getters and setters
+*/
+
+  Getter<ChoiceRule> rules = new Getter<ChoiceRule>();
+  Getter<Stack<ChoiceRule>> stacks = new Getter<Stack<ChoiceRule>>();
+  Getter<String> strings = new Getter<String>();
+  Getter<Integer> ints = new Getter<Integer>();
+
+  //currently only implemented with useStatement as the only element of this hashmap, but it is extendable, should the need arise.
+  HashMap<String,ParserAction> actionedTokens = new HashMap<String,ParserAction>();
+
+  //The keys that will be used by the couples of this hash map
+  HashMap<String,String[]> keys = new HashMap<String,String[]>();
+
+  //List of threads that have been created, these all will need to stop running before the execute method will be able to terminate
+  RuleBasedParserThread[] threads;
+  
+  //Umple file that will be parsed(like Master.ump)
+  File file = null;
+
+  //filename of the file to be parsed
+  String input = null;
+  
+  //if a balanced rule is created, it needs to know if the current context is nospaces or not
+  noSpaces = false;
+  
+  Stack<Analyzer> analyzerStack = new Stack<Analyzer>(); 
+  
+  Map<String,Analyzer> analyzerMap = new HashMap<String,Analyzer>();  
+
+  //resulting parse result from the parse
+  ParseResult parseResult = null;
+
+  //List of tokens of the form [token], which are open and need to be delimited
+  Terminal[] openTerminal;
+  
+  //List of tokens of the form [~token], which are closed minded enough to only accept alphanumerics, but still need to know if there are keyswords following them which cannot be the token's value, such as sorted being a rolename for an association. 
+  Terminal[] closeTerminal;
+  
+  ChoiceRule[] analyzerRules;
+  Analyzer[] analyzers;
+  boolean mustSetupAnalyzers = true;
+}
+
+use GrammarParsing_Code.ump;

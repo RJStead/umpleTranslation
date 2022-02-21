@@ -1,0 +1,73 @@
+namespace cruise.umple.alloy;
+
+class AlloyObject {
+  depend cruise.umple.compiler.*;
+  public String printObject(String cName){
+	return "\nabstract sig "+cName+" { }\n";
+  }
+  
+  protected Association convertEndsToAssociation(AssociationEnd beginEnd,AssociationEnd endToOutput){
+     AssociationEnd [] ends = new AssociationEnd[2];
+     ends[0] = new AssociationEnd(beginEnd.getRoleName(),beginEnd.getClassName(),
+					beginEnd.getModifier(),beginEnd.getReferenceToClassName(),beginEnd.getMultiplicity());
+     ends[1] = new AssociationEnd(endToOutput.getRoleName(),endToOutput.getClassName(),
+					endToOutput.getModifier(),endToOutput.getReferenceToClassName(),endToOutput.getMultiplicity());
+     return new Association(true,true,false,false,ends);
+  }
+}
+
+class Function {
+
+  depend cruise.umple.compiler.*;
+		
+  beginEndRoleName;
+  targetMult;
+  targetClassName;
+  1 -> 1 Utility utility;
+ 
+  public Function(Association assoc)
+  {
+	utility =  new Utility();
+	beginEndRoleName = assoc.getEnd(1).getRoleName();	
+	if(assoc.getEnd(1).getRoleName().equals("as"))
+	{
+      beginEndRoleName = assoc.getEnd(1).getRoleName()+ "_";  
+    }
+	targetMult = utility.getAlloyMultiplicity(utility.getRightEnd(assoc));
+	targetClassName = utility.getRightEndName(assoc);
+  }
+  
+  public Function(Attribute attr)
+  {
+    beginEndRoleName = attr.getName();
+    if(attr.getIsList())
+      targetMult = "set";
+    else
+      targetMult = "";
+    if(attr.getType().equals("Integer") || attr.getType().equals("Double") || attr.getType().equals("Float"))
+      targetClassName = "Int";
+    else if(attr.getType().equals("String") || attr.getType().equals("")
+    	|| attr.getType().equals("Date") || attr.getType().equals("Time"))
+      targetClassName = "String";
+    else 
+    	targetClassName = attr.getType();
+  }
+	
+  //Reflexive relation
+  public Function(Association assoc, String cName)
+  {
+	utility =  new Utility();
+	beginEndRoleName = assoc.getEnd(0).getRoleName();
+	if(assoc.getEnd(0).getRoleName().equals("as")){
+      beginEndRoleName = assoc.getEnd(0).getRoleName()+ "_";  
+    }
+	targetMult = utility.getAlloyMultiplicity(utility.getLeftEnd(assoc));
+	targetClassName = cName;
+  }
+	
+  public String printFunction(){
+    if(targetMult.equals(""))
+	  return "  "+beginEndRoleName+" : "+targetClassName;
+	return "  "+beginEndRoleName+" : "+targetMult+" "+targetClassName;
+  }
+}

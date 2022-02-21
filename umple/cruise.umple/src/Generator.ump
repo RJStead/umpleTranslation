@@ -1,0 +1,132 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+Definitions of the different code- or model-transformation generators
+Note that some generators such as Umlet and Violet are in their own files
+
+ */
+
+namespace cruise.umple.compiler;
+// Allows independent code generation tools
+// Different generators will do different things regarding where the files are put, etc.
+interface CodeGenerator
+{
+  boolean setModel(UmpleModel aUmpleModel);
+  boolean setOutput(String aString);
+  boolean setSuboption(String subopt);
+  boolean hasSuboption(String subopt);
+  void generate();
+  void prepare();
+  void postpare();
+}
+
+// Default implementation for generators with suboptions
+class CodeGeneratorWithSubptions
+{
+  isA CodeGenerator;
+  lazy String[] suboptions;
+  public boolean hasSuboption(String subopt)
+  {
+    return suboptions.contains(subopt);
+  }
+
+  public boolean setSuboption(String subopt)
+  {
+    return suboptions.add(subopt);
+  }
+}
+
+mixset StateMachine {
+  interface CodeTranslator {
+    String translate(String id, StateMachine stm);
+    String translate(String id, State st);
+    String translate(String id, Event e);
+    String translate(String id, Activity a);
+  }
+}
+
+mixset Trace {
+  interface CodeTranslator
+  {
+    String translate(String id, TraceItem traceItem);
+  }
+}
+
+interface CodeTranslator
+{
+  String translate(String id, Attribute attribute);  
+  String translate(String id, AssociationVariable aVar);
+  String translate(String id, ConstraintTree constraint);
+  String translate(String id, ConstraintVariable cv);
+  // TODO: LH#171
+  //String translate(String id, AssociationVariable associationVariable);
+}
+use Umple.ump;
+use generators/GeneratorHelper_Code.ump;
+use SuperCodeGeneratorGenerator;
+// All code above belongs to the base generator file (Generator.ump)
+
+//Below mixsets use statments. All mentioned mixsets are activited.
+use CodeGenerator, UmpleGenerator, RubyGenerator , JavaGenerator , RTCppGenerator, PhpGenerator, PythonGenerator; 
+use Uigu2Generator , SqlGenerator , UmpleSelfGenerator , USEGenerator , EcoreGenerator ,TestGenerator ; 
+use PapyrusGenerator, XmiGenerator, TextUmlGenerator, ScxmlGenerator, CodeGvClassTraitDiagramGenerator
+use EventSequenceGenerator,  FeatureDiagramCo,  EntityRelationshipCon,  SimulateGenerator,  YumlGenerator;
+use XtextGenerator,  JsonGenerator,  JsonMixedGenerator,  StructureDiagramGenerator , GvStateDiagramGenerator;
+use StateTableGenerator, SuperGvGeneratorGenerator, HtmlGenerator, UmpleModelWalkerGenerator,  CodeAnalysisGenerator;
+use AlloyGenerator,  NuSMVGenerators, NuSMVGenerator,   NuSMVOptimizerGenerator,  SimpleMetricsGenerator, PlainRequirementsDocGenerator, CodeGvClassDiagramGenerator;
+use UmpleAnnotaiveToCompositionGenerator;
+//End 
+
+// Base case generator, allows compilation without generation for testing command line, since Java is default
+use generators/Generator_CodeNothing.ump;
+
+// Below mixsets declarations. They contain inclusion of their files.
+mixset CodeGenerator { use generators/Generator_Code.ump; }
+mixset UmpleGenerator { use generators/Generator_CodeUmple.ump; }
+mixset RubyGenerator { 
+  use generators/Generator_CodeRuby.ump; 
+  use RubyGeneratorIntMixset;
+  }
+mixset JavaGenerator { use generators/Generator_CodeJava.ump; }
+mixset PythonGenerator { use generators/Generator_CodePython.ump; }
+mixset RTCppGenerator { use generators/Generator_CodeRTCpp.ump; }
+mixset PhpGenerator { use generators/Generator_CodePhp.ump; }
+mixset Uigu2Generator { use generators/Generator_CodeUigu2.ump; }
+mixset SqlGenerator { use generators/Generator_CodeSql.ump; }
+mixset UmpleSelfGenerator { use generators/Generator_CodeUmpleSelf.ump; }
+mixset USEGenerator { use generators/Generator_CodeUSE.ump; }
+mixset EcoreGenerator { use generators/ecoreGenerator/ecoreGeneratorConfig.ump; }
+mixset TestGenerator { use generators/Generator_CodeTest.ump; }
+mixset PapyrusGenerator{ use generators/papyrus/Generator_CodePapyrus.ump; }
+mixset XmiGenerator{ use generators/xmi/Generator_CodeXmi.ump; }
+mixset TextUmlGenerator{ use generators/Generator_CodeTextUml.ump; }
+mixset ScxmlGenerator{ use generators/Generator_CodeScxml.ump; }
+mixset GvStateDiagramGenerator {  use generators/statemachineDiagramGenerator/stateMachineDiagramConfig.ump;}
+mixset StateTableGenerator{ use generators/Generator_CodeStateTables.ump; }
+mixset EventSequenceGenerator{ use generators/Generator_CodeEventSequence.ump; }
+mixset SimpleMetricsGenerator{ use generators/Generator_CodeSimpleMetrics.ump; }
+mixset CodeGvClassDiagramGenerator{ use generators/Generator_CodeGvClassDiagram.ump;}
+mixset CodeGvClassTraitDiagramGenerator{ use generators/Generator_CodeGvClassTraitDiagram.ump; }
+mixset FeatureDiagramCo{ use generators/featureDiagramGenerator/FeatureDiagramConfig.ump; }
+mixset EntityRelationshipCon{ use generators/entityRelationshipDiagramGenerator/entityRelationshipConfig.ump}
+mixset AlloyGenerator{ use generators/alloy/Generator_CodeAlloy.ump; }
+mixset NuSMVGenerators{ use generators/NuSMV/nusmvGeneratorConfig.ump; }
+mixset SimulateGenerator{ use generators/Generator_CodeSimulate.ump; }
+mixset YumlGenerator{ use generators/Generator_CodeYuml.ump; }
+mixset XtextGenerator{ use generators/Generator_CodeXtext.ump; }
+mixset JsonGenerator{ use generators/Generator_CodeJson.ump; }
+mixset JsonMixedGenerator{ use generators/Generator_CodeJsonMixed.ump; }
+mixset StructureDiagramGenerator{ use generators/Generator_CodeStructureDiagram.ump; }
+mixset SuperCodeGeneratorGenerator{ use generators/Generator_SuperCodeGenerator.ump;}
+mixset SuperGvGeneratorGenerator{ use generators/Generator_SuperGvGenerator.ump; }
+mixset HtmlGenerator{ use generators/Generator_Html.ump;}
+mixset UmpleModelWalkerGenerator{ use generators/Generator_UmpleModelWalker.ump;}
+mixset CodeAnalysisGenerator{ use generators/Generator_CodeAnalysis.ump;}
+mixset PlainRequirementsDocGenerator{ use generators/Generator_CodePlainRequirementsDoc.ump; }
+mixset UmpleAnnotaiveToCompositionGenerator { use generators/Generator_CodeAnnotaiveToComposition.ump; }
+//End
+

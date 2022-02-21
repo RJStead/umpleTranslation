@@ -1,0 +1,127 @@
+package cruise.umplificator.rules
+
+import org.eclipse.jdt.core.dom.*;
+import cruise.umple.compiler.*;
+import function cruise.umplificator.rules.FieldAnalyzerHelper.getFieldContainerName
+import function cruise.umplificator.rules.FieldAnalyzerHelper.getFieldType
+import function cruise.umplificator.rules.FieldAnalyzerHelper.getAttributeType
+import function cruise.umplificator.rules.FieldAnalyzerHelper.getFieldName
+import function cruise.umplificator.rules.FieldAnalyzerHelper.isPrimitiveOrStringOrTime
+import function cruise.umplificator.rules.MethodAnalyzerHelper.getMethodContainerName
+import function cruise.umplificator.rules.MethodAnalyzerHelper.getMethodName
+import function cruise.umplificator.rules.MethodAnalyzerHelper.getMethodType
+import function cruise.umplificator.rules.MethodAnalyzerHelper.hasSignatureOfGetter
+import function cruise.umplificator.rules.MethodAnalyzerHelper.isSetterMethodName
+import function cruise.umplificator.rules.MethodAnalyzerHelper.isFieldInContructor
+import function cruise.umplificator.rules.MethodAnalyzerHelper.hasFieldAGetter
+import function cruise.umplificator.rules.MethodAnalyzerHelper.hasFieldASetter
+import function cruise.umplificator.rules.MethodAnalyzerHelper.getGetterName
+import function cruise.umplificator.rules.RefactorHelper.removeClassField
+import org.drools.core.*;
+/* --------------- RULES ------------------ /*
+/* Rules in Drools perform trasnformations to UmpleElements*/
+
+/* These rules extracts the name and type of a FieldDeclaration
+and sets the correponding fields for an UmpleAttribute.
+Finally, the UmpleAttribute is inserted into the working memory (forward chaining). 
+*/
+
+rule "JavaField_CanBeUmpleAttribute"
+	agenda-group "LEVEL2" 
+    when
+        fieldDeclaration: FieldDeclaration()
+        uClass: UmpleClass()
+        method: MethodDeclaration()
+       	eval(isPrimitiveOrStringOrTime(fieldDeclaration))				   
+        eval(uClass.getName().equals(getFieldContainerName(fieldDeclaration)))
+    	eval(uClass.getName().equals(getMethodContainerName(method)))
+    	eval(uClass.getAttribute(getFieldName(fieldDeclaration))== null)
+      	eval(hasFieldAGetter(method, fieldDeclaration, uClass.getName()))
+    then 
+    	String attrName = getFieldName(fieldDeclaration);
+    	String attrType  = getAttributeType(fieldDeclaration);
+  		Attribute uAttr = new Attribute(attrName, attrType, null, null, false, uClass);
+  		uAttr.setModifier("settable");
+  		uClass.addAttribute(uAttr);
+		removeClassField(fieldDeclaration, uClass);
+    	// We insert the atribute into the Working memory,
+    	// so it can accessed and modified by other Rules
+    	update(uClass);    	
+    	insert(uAttr);
+end
+
+
+rule "JavaField_isLazyAttribute"
+	agenda-group "LEVEL2.1" 
+	when
+	    fieldDeclaration: FieldDeclaration()
+        method: MethodDeclaration(method.isConstructor())
+		attribute: Attribute(isLazy==false)
+		uClass: UmpleClass(getAttributes().size() > 0 && getAttributes().contains(attribute))
+		eval(uClass.getName().equals(getFieldContainerName(fieldDeclaration)))
+		eval(uClass.getName().equals(getMethodContainerName(method)))
+		eval( attribute.getUmpleClass() == uClass) 
+		eval( attribute.getName().equals(getFieldName(fieldDeclaration))) 
+		eval(isFieldInContructor(method, fieldDeclaration, uClass.getName())==false);
+		eval(getFieldName(fieldDeclaration).equals(attribute.getName()));
+	then
+		attribute.setIsLazy(true);
+		update(attribute);
+end
+
+
+rule "JavaField_isImmutableAttribute"
+	agenda-group "LEVEL2.1" 
+	when	    
+		fieldDeclaration: FieldDeclaration()
+        method: MethodDeclaration(method.isConstructor==false && method.parameters().size==1 )
+		attribute: Attribute(isLazy==false && modifier != "immutable")
+		uClass: UmpleClass(getAttributes().size() > 0 && getAttributes().contains(attribute))
+		eval(uClass.getName().equals(getFieldContainerName(fieldDeclaration)))
+		eval(uClass.getName().equals(getMethodContainerName(method)))
+		eval( attribute.getUmpleClass() == uClass) 
+		eval( attribute.getName().equals(getFieldName(fieldDeclaration))) 
+		//eval(isFieldInContructor(method, fieldDeclaration, uClass.getName()));
+		//eval(isSetterMethodName(method, fieldDeclaration)==false)
+		eval(getFieldName(fieldDeclaration).equals(attribute.getName()));
+		eval(hasFieldASetter(method, fieldDeclaration, uClass.getName())==false && isSetterMethodName(method, fieldDeclaration)==false)
+	then
+
+		attribute.setModifier("immutable");
+		update(attribute);
+end
+
+
+/*
+rule "isConstant"
+when
+then
+end
+
+rule "isAutounique"
+when
+then
+end
+
+rule "isDefaulted"
+when
+then
+end
+*/
+
+/* ---------------QUERIES ------------------ /*
+/* Queries search for the working memory for facts that match the stated condition */
+
+query "Classes having empty constructors" 
+	uClass: UmpleClass()
+	method: MethodDeclaration(getMethodName(method).equals(uClass.getName) && (method.parameters().size() == 0) && method.isConstructor())
+	attribute: Attribute()
+end
+
+query "Fields having a Getter"
+	fieldDeclaration: FieldDeclaration()
+	method: MethodDeclaration(getMethodName(method).equals(getGetterName(fieldDeclaration)) && getMethodType(method).equals(getFieldType(fieldDeclaration)))
+	attribute: Attribute(name.equals(getFieldName(fieldDeclaration)))
+end
+
+

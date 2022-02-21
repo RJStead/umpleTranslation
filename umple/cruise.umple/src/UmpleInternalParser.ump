@@ -1,0 +1,96 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+*/
+
+external ErrorType{}
+external ErrorMessage{}
+
+/*
+This is our internal parser implementation for the Umple language.  It uses
+a generic Parser that can read an external EBNF grammar file, and then populate
+an abstract syntax tree.
+
+The work of the UmpleInternalParser is 
+
+a) The grammar definition (defined externally in *.grammar files)
+b) Analyzing the AST to populate an Umple meta model instance
+c) Delegating to our code generator to produce the necessary artifacts (i.e. Java / PHP / Ruby code)
+
+Please refer to UmpleInternalParser_Code.ump for implementation details.
+ */
+class UmpleInternalParser
+{
+  isA UmpleParser;
+  isA Parser;
+  depend java.io.*;
+  depend java.nio.file.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.analysis.*;
+  depend cruise.umple.parser.*;
+  depend cruise.umple.parser.analysis.*;
+  
+  currentPackageName = "";
+  redefinePackageName = "";
+  Boolean packageNameUsed = true;
+  Boolean outputUmpleSource = false;
+
+  // The Umple meta model which will be populated based on what was parsed.
+  UmpleModel model;
+  RuleBasedParser parser;
+  
+  // List of parsed namespaces.
+  // This is used to check the use of parsed namespaces.
+  1 -> * NameSpace parsedNameSpaces;
+
+  NameSpace lastParsedNameSpace = new NameSpace("",new Position("", 0, 0, 0));
+
+  Integer[] allowedMessages;
+  Integer[] ignoredMessages;
+  Integer[] disallowedMessages;
+  Integer[] expectedMessages;
+    // The strictness level. ModelOnly means warn on method body or extra code
+  strictness { 
+    none {
+      modelOnly -> modelOnly;
+      noExtraCode -> noExtraCode;
+      allowMessage(Integer id) -> / {allowedMessages.add(id);} none;
+      ignoreMessage(Integer id) -> / {ignoredMessages.add(id);} none;  
+      disallowMessage(Integer id) -> / {disallowedMessages.add(id);} none;  
+      expectMessage(Integer id) -> / {expectedMessages.add(id);} none;  
+    } 
+    modelOnly {
+      allowMessage(Integer id) -> / {allowedMessages.add(id);} modelOnly;
+      ignoreMessage(Integer id) -> / {ignoredMessages.add(id);} modelOnly;  
+      disallowMessage(Integer id) -> / {disallowedMessages.add(id);} modelOnly;  
+      expectMessage(Integer id) -> / {expectedMessages.add(id);} modelOnly; 
+    } 
+    noExtraCode {
+      allowMessage(Integer id) -> / {allowedMessages.add(id);} noExtraCode;
+      ignoreMessage(Integer id) -> / {ignoredMessages.add(id);} noExtraCode;  
+      disallowMessage(Integer id) -> / {disallowedMessages.add(id);} noExtraCode;  
+      expectMessage(Integer id) -> / {expectedMessages.add(id);} noExtraCode; 
+    }
+  }
+  
+  // List of errors or warnings to expect. It is an error if they do not occur.
+  // This is used to set up test cases for the presence of certain messages
+  1 -> * ErrorType messagesToExpect;
+  
+  // List of warnings to allow and ignore
+  // Used to suppress warnings that we do not care about
+  1 -> * ErrorType warningsToIgnore;
+
+  after setModel{if(model != null && model.getUmpleFile() != null) { super.setFilename(model.getUmpleFile().getFileName()); super.setRootToken(reset());}}
+}
+
+use UmpleParser.ump;
+use Parser.ump;
+use Umple.ump;
+use UmpleDiagram.ump;
+//use stateMachine/StateMachine.ump;
+use UmpleInternalParser_Code.ump;

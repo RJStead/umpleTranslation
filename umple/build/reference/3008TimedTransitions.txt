@@ -1,0 +1,24 @@
+Timed Transitions
+State Machines
+noreferences
+
+@@description
+<p>      
+A transition can be triggered after a specified delay (a floating point value, given in seconds). The transition will be taken after the delay provided the object is still in the state and any guard is true. This is accomplished using the 'after' keyword.
+</p>
+
+<p>
+The 'afterEvery' keyword, tries to trigger a transition repeatedly at a specified interval while the object remains in the state.</p>
+
+@@syntax
+
+[[afterEveryEvent]] [[afterEvent]]
+
+@@example
+@@source manualexamples/TimedTransitions1.ump &diagramtype=state
+@@endexample
+
+
+@@example
+@@source manualexamples/TimedTransitions2.ump &diagramtype=state
+@@endexample

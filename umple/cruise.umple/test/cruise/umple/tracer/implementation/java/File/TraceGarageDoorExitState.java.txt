@@ -1,0 +1,146 @@
+package example;
+import cruise.util.FileTracer;
+
+public class Tracer
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Tracer State Machines
+  public enum GarageDoor { Open, Closing, Closed, Opening, HalfOpen }
+  private GarageDoor garageDoor;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Tracer()
+  {
+    setGarageDoor(GarageDoor.Open);
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public String getGarageDoorFullName()
+  {
+    String answer = garageDoor.toString();
+    return answer;
+  }
+
+  public GarageDoor getGarageDoor()
+  {
+    return garageDoor;
+  }
+
+  public boolean buttonOrObstacle()
+  {
+    boolean wasEventProcessed = false;
+    
+    GarageDoor aGarageDoor = garageDoor;
+    switch (aGarageDoor)
+    {
+      case Open:
+        setGarageDoor(GarageDoor.Closing);
+        wasEventProcessed = true;
+        break;
+      case Closing:
+        setGarageDoor(GarageDoor.Opening);
+        wasEventProcessed = true;
+        break;
+      case Closed:
+        exitGarageDoor();
+    FileTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",TraceGarageDoorExitState.ump,32,Tracer,"+System.identityHashCode(this)+",sm_t,Closed,buttonOrObstacle,Opening" );
+        setGarageDoor(GarageDoor.Opening);
+        wasEventProcessed = true;
+        break;
+      case Opening:
+        setGarageDoor(GarageDoor.HalfOpen);
+        wasEventProcessed = true;
+        break;
+      case HalfOpen:
+        setGarageDoor(GarageDoor.Opening);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean reachBottom()
+  {
+    boolean wasEventProcessed = false;
+    
+    GarageDoor aGarageDoor = garageDoor;
+    switch (aGarageDoor)
+    {
+      case Closing:
+        setGarageDoor(GarageDoor.Closed);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean reachTop()
+  {
+    boolean wasEventProcessed = false;
+    
+    GarageDoor aGarageDoor = garageDoor;
+    switch (aGarageDoor)
+    {
+      case Opening:
+        setGarageDoor(GarageDoor.Open);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private void exitGarageDoor()
+  {
+    switch(garageDoor)
+    {
+      case Closed:
+    FileTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",TraceGarageDoorExitState.ump,32,Tracer,"+System.identityHashCode(this)+",sm_x,Closed,actionUmpleLine=20,garageDoor" );
+        closeGarageLights();
+        break;
+    }
+  }
+
+  private void setGarageDoor(GarageDoor aGarageDoor)
+  {
+    garageDoor = aGarageDoor;
+
+    // entry actions and do activities
+    switch(garageDoor)
+    {
+      case Closed:
+        openGarageLights();
+        break;
+    }
+  }
+
+  public void delete()
+  {}
+
+  public void openGarageLights(){
+    
+  }
+
+  public void closeGarageLights(){
+    
+  }
+
+}

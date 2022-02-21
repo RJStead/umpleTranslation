@@ -1,0 +1,20 @@
+W050 Target State Not Found
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic warning reported when the target state of a transition is not listed.</h2>
+
+<p>
+An end state (with no outgoing transitions) is generated. The purpose of the warning is to alert the developer that they may have a typographical error in the target state name.</p>
+
+
+@@example
+@@source manualexamples/W050TargetStateNotFound1.ump &diagramtype=state
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W050TargetStateNotFound2.ump &diagramtype=state
+@@endexample
+

@@ -1,0 +1,98 @@
+
+use members_AllAssertions.ump;
+use testcase_init.ump;
+
+class UmpleTToRubyUnit { 
+
+members_AllTestCases <<!<</*members_AllTestCases*/>><<#
+
+
+boolean skipTest = false;
+boolean isConcrete = false;
+
+for (TestCase tc : model.getTestSuite(0).getTestcases())
+{
+if (tc.getIsTargeted())
+  {
+    if(tc.getConcreteLanguage().equals( "PhpUnit") || tc.getConcreteLanguage().equals("JUnit") )
+    {
+     skipTest = true;
+    }
+  }
+
+
+	if (skipTest) {
+		//skipThisTest 
+	}
+else{
+
+#>>
+	def <<=tc.getName() >> < Test::Unitt::TestCase
+  <<#
+	  for (int i = 0; i<tc.getLocOrder();i++)
+		  {
+			if (tc.getInits().size()>0)
+			{
+			  for (TestInitialization init : tc.getInits())
+			  {
+				  if (init.getLocOrder() == i )
+				  {
+				  	
+			  		
+				  if (init.getLocOrder() == i )
+				  {
+				  	#>><<@UmpleTToRubyUnit.testcase_init>><<#
+				  }
+				
+					
+				  }
+				
+				
+			  }
+		  }//initEnd
+		  
+		  if (tc.hasActions())
+		  {
+	  		for ( Action act : tc.getActions())
+	  		{
+				if (act.getLocOrder() == i)
+				{
+					#>>
+					  <<=act.getCode()>><<#
+				}
+				
+			}
+		  	
+		  }//ActionsEND
+		  
+		  
+		  if (tc.hasAssertions())
+		  {
+		  
+			  for (Assertion as: tc.getAssertions())
+			  {
+			  	String assertCode =  as.getAssertCode().replace(".","->");
+				  if (as.getLocOrder() ==i)
+				  {
+			  		#>><<@UmpleTToRubyUnit.members_AllAssertions>><<#
+					
+				  }
+				
+			  }
+			
+		  }// AssertionsEnd
+			  
+			  
+			
+		  }//locEnd	
+	  
+	  #>>
+	<<#
+}
+
+
+skipTest = false;
+}
+
+#>>!>>
+}

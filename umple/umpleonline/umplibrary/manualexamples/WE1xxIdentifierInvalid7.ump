@@ -1,0 +1,8 @@
+// State  name with special characters (152)
+class X {
+  ed4 {
+    s*1 {}
+  }
+}
+//$?[End_of_model]$?
+// @@@skipcompile

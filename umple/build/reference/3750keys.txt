@@ -1,0 +1,24 @@
+Keys for Equality and Hashing
+Patterns
+noreferences
+@@tooltip Keys specify one or more attributes, such that if objects have the same values of these attributes, then the objects should be considered to describe the same real-world thing
+
+
+@@description
+<p>In any class you can specify a set of attributes and associations as
+keys. The associations must have a multiplicity of 1 at the other end.
+This allows Umple to generate code that defines what objects of the
+class are equal (they have the same values for the key).</p>
+
+<p>Umple will also generate a hashCode method in any class that has a defined key. This helps
+when looking up an object in a set.</p>
+
+<p>Place the comma-separated list of key elements in curly brackets, after the word key. <a href="W007KeyAlreadySpecified.html">If you have multiple key statements, a warning is generated.</a></p>
+
+@@syntax
+
+[[keyDefinition]] [[defaultKey]] [[key]] [[softwarePattern]]
+
+@@example
+@@source manualexamples/KeysforEqualityandHashing1.ump
+@@endexample

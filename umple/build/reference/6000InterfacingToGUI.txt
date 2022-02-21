@@ -1,0 +1,25 @@
+Interfacing to External Code
+Examples
+noreferences
+
+@@description
+<p>This example shows some of the techniques that can be used when writing Umple code that will be connected to code written separately, such as code in a GUI library. Use of the:</o>
+
+<ul>
+
+<li><a href="AttributeDefinition.html">internal keyword to specify an attribute</a> for which getters and setters will not be generated (i.e. treated as a standard instance variable)
+
+<li><a href="AssociationDefinition.html">external keyword to indicate a class that has been compiled separately</a>.
+
+<li><a href="interfaceDefinition.html">isA keyword to have a class implement an interface</a>
+
+<li><a href="BeforeandAfterStatements.html">before and after keywords</a> to inject code to link two attributes
+
+<li>'after constructor' to inject additional constructor code
+
+</ul>
+
+
+@@example
+@@source ExternalInterface.ump
+@@endexample

@@ -1,0 +1,21 @@
+Events With Parameters
+State Machines
+noreferences
+
+@@description
+<p>      
+An event can have a parameter (of any valid type that the generated language can accept). The generated event method will have this parameter. The value of the parameter can be used in guards or transition actions.
+</p>
+
+<p>
+It is absolutely necessary that all events with the same name have the same parameter
+type, or else <a href="E051EventParametersMustMatch.html">an error will be raised</a>.
+</p>
+
+@@syntax
+
+[[eventWithArgs]]
+
+@@example
+@@source manualexamples/EventsWithParameters1.ump &diagramtype=state
+@@endexample

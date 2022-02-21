@@ -1,0 +1,145 @@
+package example;
+import cruise.util.StringTracer;
+
+public class Tracer
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Tracer State Machines
+  public enum Status { On, Off }
+  public enum StatusOn { Null, SemiOn, FullOn }
+  private Status status;
+  private StatusOn statusOn;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Tracer()
+  {
+    setStatusOn(StatusOn.Null);
+    setStatus(Status.On);
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public String getStatusFullName()
+  {
+    String answer = status.toString();
+    if (statusOn != StatusOn.Null) { answer += "." + statusOn.toString(); }
+    return answer;
+  }
+
+  public Status getStatus()
+  {
+    return status;
+  }
+
+  public StatusOn getStatusOn()
+  {
+    return statusOn;
+  }
+
+  public boolean flip()
+  {
+    boolean wasEventProcessed = false;
+    
+    Status aStatus = status;
+    switch (aStatus)
+    {
+      case On:
+        exitStatus();
+    StringTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",TraceState.ump,18,Tracer,"+System.identityHashCode(this)+",sm_t,On,flip,Off" );
+        setStatus(Status.Off);
+        wasEventProcessed = true;
+        break;
+      case Off:
+    StringTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",TraceState.ump,18,Tracer,"+System.identityHashCode(this)+",sm_t,Off,flip,On" );
+        setStatus(Status.On);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private boolean enterOn()
+  {
+    boolean wasEventProcessed = false;
+    
+    StatusOn aStatusOn = statusOn;
+    switch (aStatusOn)
+    {
+      case Null:
+        setStatusOn(StatusOn.SemiOn);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private boolean exitOn()
+  {
+    boolean wasEventProcessed = false;
+    
+    StatusOn aStatusOn = statusOn;
+    switch (aStatusOn)
+    {
+      case SemiOn:
+        setStatusOn(StatusOn.Null);
+        wasEventProcessed = true;
+        break;
+      case FullOn:
+        setStatusOn(StatusOn.Null);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private void exitStatus()
+  {
+    switch(status)
+    {
+      case On:
+        exitOn();
+        break;
+    }
+  }
+
+  private void setStatus(Status aStatus)
+  {
+    status = aStatus;
+
+    // entry actions and do activities
+    switch(status)
+    {
+      case On:
+        if (statusOn == StatusOn.Null) { setStatusOn(StatusOn.SemiOn); }
+        break;
+    }
+  }
+
+  private void setStatusOn(StatusOn aStatusOn)
+  {
+    statusOn = aStatusOn;
+    if (status != Status.On && aStatusOn != StatusOn.Null) { setStatus(Status.On); }
+  }
+
+  public void delete()
+  {}
+
+}

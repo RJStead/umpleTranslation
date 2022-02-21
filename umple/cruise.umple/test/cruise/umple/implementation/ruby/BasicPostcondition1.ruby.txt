@@ -1,0 +1,63 @@
+# PLEASE DO NOT EDIT THIS CODE
+# This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!
+# NOTE: Ruby generator is experimental and is missing some features available in
+# in other Umple generated languages like Java or PHP
+
+
+
+class Client
+
+
+  #------------------------
+  # MEMBER VARIABLES
+  #------------------------
+
+  #Client Attributes - for documentation purposes
+  #attr_reader :minAge
+
+  #------------------------
+  # CONSTRUCTOR
+  #------------------------
+
+  def initialize(a_minAge)
+    @initialized = false
+    @deleted = false
+    @minAge = a_minAge
+    @initialized = true
+  end
+
+  #------------------------
+  # INTERFACE
+  #------------------------
+
+  def set_minAge(a_minAge)
+    was_set = false
+    @minAge = a_minAge
+    was_set = true
+    was_set
+  end
+
+  def get_minAge
+    @minAge
+  end
+
+  def delete
+    @deleted = true
+  end
+
+  def someMethod (arg)
+    result = someMethod_original(arg)
+    if arg<=5 then
+        raise RuntimeError, 'Please provide a valid arg'
+    end
+    return result
+  end
+
+  def someMethod_original(arg)
+    // rest of stuff that we don't interpret
+   return 0;
+  end
+
+
+
+end

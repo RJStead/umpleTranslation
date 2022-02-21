@@ -1,0 +1,25 @@
+W010 Singleton Multiplicity Over 1
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic warning reported when a singleton class has an
+association with incoming multiplicity > 1</h2>
+
+<p> Since there can only be one instance of a singleton class, it is
+logically impossible for another class to have links to more than one instance
+of the singleton class.
+
+</p>
+
+
+@@example
+@@source manualexamples/W010SingletonMultiplicityOver11.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W010SingletonMultiplicityOver12.ump
+@@endexample
+
+

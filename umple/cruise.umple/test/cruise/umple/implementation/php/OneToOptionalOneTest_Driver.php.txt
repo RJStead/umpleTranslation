@@ -1,0 +1,98 @@
+<?php
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+class MyDriver
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //MyDriver Attributes
+  private $name;
+
+  //MyDriver Associations
+  public $mySubordinate; //until PHP 5.3 (setAccessible)
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public function __construct($aName)
+  {
+    $this->name = $aName;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public function setName($aName)
+  {
+    $wasSet = false;
+    $this->name = $aName;
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function getName()
+  {
+    return $this->name;
+  }
+
+  public function getMySubordinate()
+  {
+    return $this->mySubordinate;
+  }
+
+  public function hasMySubordinate()
+  {
+    $has = $this->mySubordinate != null;
+    return $has;
+  }
+
+  public function setMySubordinate($aNewMySubordinate)
+  {
+    $wasSet = false;
+    if ($this->mySubordinate != null && $this->mySubordinate != $aNewMySubordinate && $this == $this->mySubordinate->getMyDriver())
+    {
+      //Unable to setMySubordinate, as existing mySubordinate would become an orphan
+      return $wasSet;
+    }
+    
+    $this->mySubordinate = $aNewMySubordinate;
+    $anOldMyDriver = $aNewMySubordinate != null ? $aNewMySubordinate->getMyDriver() : null;
+    
+    if ($this != $anOldMyDriver)
+    {
+      if ($anOldMyDriver != null)
+      {
+        $anOldMyDriver->mySubordinate = null;
+      }
+      if ($this->mySubordinate != null)
+      {
+        $this->mySubordinate->setMyDriver($this);
+      }
+    }
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function equals($compareTo)
+  {
+    return $this == $compareTo;
+  }
+
+  public function delete()
+  {
+    $existingMySubordinate = $this->mySubordinate;
+    $this->mySubordinate = null;
+    if ($existingMySubordinate != null)
+    {
+      $existingMySubordinate->delete();
+    }
+  }
+
+}
+?>

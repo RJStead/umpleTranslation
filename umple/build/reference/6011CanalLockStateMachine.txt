@@ -1,0 +1,14 @@
+Canal Lock State Machine
+Examples
+noreferences
+
+@@description
+
+<p>Canal Lock State Machine
+
+<p>See also the <a href="CanalSystem.html"> class diagram and requirements for the canal system.</a>
+
+
+@@example
+@@source CanalLockStateMachine.ump &diagramtype=state
+@@endexample

@@ -1,0 +1,11 @@
+// Attribute type with special characters
+// that looks like an association (140)
+// If this is supposed to be an association,
+// put spaces before and after the --
+class X {
+  1--* Y;
+}
+
+class Y {}
+//$?[End_of_model]$?
+// @@@skipcompile

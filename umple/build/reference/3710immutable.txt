@@ -1,0 +1,32 @@
+Immutable Pattern
+Patterns
+noreferences
+@@tooltip Immutable is a pattern whereby attributes and 1-ended associations, or entire classes are not allowed to change values after creation
+
+@@description
+<p>Mark a class as immutable to force all its contents to be immutable. The code ensures all attributes and associations can only be set in the constructor, and cannot be modified again subsequently.</p>
+
+<p>The only associations allowed to be immutable are directed associations to other immutable classes.</p>
+
+<p>A class can only be immutable if all its superclasses are also immutable. Declaring a superclass immutable forces its subclasses to be immutable; in other words, immutability is inherited. If the subclasses break immutability constraints (such as the type of attributes allowed), then errors will be raised.</p>
+
+<p>Individual attributes and associations can be marked as immutable instead of the entire class. An attribute can be marked as <a href="LazyImmutableAttributes.html">lazy immutable</a> if it needs to be initialized after the constructor has finished. An immutable class cannot have an association to a non-immutable class.</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Immutable_object" target="wikipedia">For more details on the Immutable pattern, see this Wikipedia page.</a></p>
+
+<br />
+
+@@syntax
+[[association]] [[inlineAssociation]] [[derivedAttribute]] [[complexAttribute]] [[immutable]] [[softwarePattern]]
+
+@@example @@caption Immutable class @@endcaption
+@@source manualexamples/ImmutablePattern1.ump
+@@endexample
+
+@@example @@caption Immutable class with reference to another class @@endcaption
+@@source manualexamples/ImmutablePattern2.ump
+@@endexample
+
+@@example @@caption Immutable association @@endcaption
+@@source manualexamples/ImmutablePattern3.ump
+@@endexample

@@ -1,0 +1,12 @@
+Election System
+Examples
+noreferences
+
+@@description
+<br />
+<img src="examples/election.png" title="Election System UML Model"/>
+
+
+@@example
+@@source ElectionSystem.ump
+@@endexample

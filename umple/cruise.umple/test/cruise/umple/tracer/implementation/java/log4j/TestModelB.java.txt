@@ -1,0 +1,35 @@
+package example;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class B
+{
+
+  //------------------------
+  // STATIC VARIABLES
+  //------------------------
+
+
+  /**
+   * log4j version 2
+   * requires jars (log4j-api-2.0.1.jar) and (log4j-core-2.0.1.jar)
+   */
+  public static final Logger logger = LogManager.getLogger(B.class);
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public B()
+  {}
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public void delete()
+  {}

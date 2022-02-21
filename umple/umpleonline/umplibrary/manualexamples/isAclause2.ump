@@ -1,0 +1,17 @@
+// A superclass-subclass relationship defined
+// by embedding the subclass in the superclass
+class Person
+{
+  name;
+  
+  class Student
+  {
+    Integer number;
+  }
+}
+//$?[End_of_model]$?
+
+class Person
+{
+  position 59 24 109 60;
+}

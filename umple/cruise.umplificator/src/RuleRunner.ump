@@ -1,0 +1,169 @@
+namespace cruise.umplificator.rules;
+
+class RuleService{
+
+
+depend java.io.*;
+depend org.kie.api.runtime.KieSession;
+depend cruise.umplificator.core.Umplificator.RefactoringLevel;
+
+RuleRunner runner;
+  
+public KieSession startRuleEngine(RefactoringLevel level){
+	//logger.debug("RuleService.startRuleEngine");
+    try {
+    	// Depending on the desired level of refactoring, we activate the rule files
+    	runner.addRuleFile("cruise/umplificator/rules", "Rules_ClassLevel.drl");
+		if (level== RefactoringLevel.ATTRIBUTES) {runner.addRuleFile("cruise/umplificator/rules", "Rules_Fields.drl"); } 
+		if (level==RefactoringLevel.ASSOCIATIONS) {
+			runner.addRuleFile("cruise/umplificator/rules", "Rules_Fields.drl");
+			runner.addRuleFile("cruise/umplificator/rules", "Rules_Associations.drl");
+		}
+		return runner.buildKnowledgeSession();
+	} catch (FileNotFoundException e) {
+		logger.error("RuleService.startRuleEngine - FileNotFoundException");
+		logger.error(e.getStackTrace());
+		return null;
+	} catch (IOException ex) {
+		logger.error("RuleService.startRuleEngine - IOException");
+		logger.error(ex.getStackTrace());
+		return null;
+	}
+ }
+}
+
+class RuleRunner
+{
+
+depend org.kie.api.KieServices;
+depend org.kie.api.builder.KieBuilder;
+depend org.kie.api.builder.KieFileSystem;
+depend org.kie.api.builder.KieRepository;
+depend org.kie.api.builder.Message.Level;
+depend org.kie.api.io.KieResources;
+depend org.kie.api.io.Resource;
+depend org.kie.api.runtime.KieContainer;
+depend org.kie.api.runtime.KieSession;
+depend java.io.*;
+depend cruise.umplificator.visitor.JavaClassVisitor;
+depend cruise.umple.compiler.*;
+depend org.eclipse.jdt.core.dom.FieldDeclaration;
+depend org.eclipse.jdt.core.dom.EnumDeclaration;
+depend org.eclipse.jdt.core.dom.ImportDeclaration;
+depend org.eclipse.jdt.core.dom.MethodDeclaration;
+
+     KieServices kieServices;
+     KieContainer kieContainer;
+     KieSession kieSession;
+     KieResources kieResources;
+     KieFileSystem kieFileSystem;
+     KieRepository kieRepository;
+
+    public RuleRunner()
+    {
+        //logger.debug("Instantiate RuleRunner- Resources, FileSystem and Repository created");
+        this.kieServices = KieServices.Factory.get();
+        this.kieResources = kieServices.getResources();
+        this.kieFileSystem = kieServices.newKieFileSystem();
+        this.kieRepository = kieServices.getRepository();
+    }
+
+
+    public void addRuleFile(String packagename, String rulefile) throws FileNotFoundException, IOException{
+       // logger.debug("RuleRunner.addRuleFile - Add Rule Files to Session");
+	    Resource resource = kieResources.newClassPathResource(rulefile);
+	    kieFileSystem.write("src/main/resources/"+packagename+"/"+rulefile, resource);
+    }
+
+
+    public KieSession buildKnowledgeSession()
+    {
+        KieBuilder kb = kieServices.newKieBuilder(kieFileSystem);
+
+        kb.buildAll();
+
+        if (kb.getResults().hasMessages(Level.ERROR))
+        {
+        	logger.error("RuleRunner.buildKnowledgeSession - Errors in rule files");
+            throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
+        }
+
+        kieContainer = kieServices.newKieContainer(kieRepository.getDefaultReleaseId());
+
+        kieSession = this.kieContainer.newKieSession();
+
+        return kieSession;
+    } 
+    
+    public KieSession insertJavaElements(JavaClassVisitor visitor){
+      // logger.debug("RuleRunner.insertJavaElements - Insert Java elements into working memory");
+	   for (ImportDeclaration importDecl : visitor.getImportDeclarations())
+	   {
+		   kieSession.insert(importDecl); 
+	   }
+	   for (MethodDeclaration methodDecl : visitor.getMethodDeclarations())
+	   {
+		   kieSession.insert(methodDecl); 
+	   }
+	   for (FieldDeclaration fieldDeclaration : visitor.getFieldDeclarations())
+	   {
+		   kieSession.insert(fieldDeclaration); 
+	   }
+	   for (EnumDeclaration enumDeclaration : visitor.getEnumDeclarations())
+	   {
+		   kieSession.insert(enumDeclaration); 
+	   }
+
+	   kieSession.insert(visitor.getTypeDeclaration()); 
+	    
+	   kieSession.insert(visitor.getPackageDeclaration());
+	   
+	   return kieSession;
+    }
+  
+ 	public KieSession insertUmpleClass(UmpleClass uClass){
+ 	  //logger.debug("RuleRunner.insertUmpleClass - Insert uClass into working memory");
+	  kieSession.insert(uClass);
+	  return kieSession;
+  	}  
+  	
+  	public KieSession insertUmpleModel(UmpleModel uModel){
+ 	  //logger.debug("RuleRunner.insertUmpleModel - Insert Umple Model into working memory");
+	  kieSession.insert(uModel);
+	  return kieSession;
+  	}  
+  	
+  	public KieSession insertUmpleInterface(UmpleInterface uInterface){
+ 	  //logger.debug("RuleRunner.insertUmpleInterface- Insert uInterface into working memory");
+	  kieSession.insert(uInterface);
+	  return kieSession;
+  	}  
+    
+    public KieSession fireAllRules()
+    {
+    	// Agenda works as a stack
+     //	logger.debug("RuleRunner.fireAllRules - Fire rules");
+     	logger.debug("RuleRunner.fireAllRules - Fire rules LEVEL3");
+		kieSession.getAgenda().getAgendaGroup( "LEVEL3" ).setFocus();
+		logger.debug("RuleRunner.fireAllRules - Fire rules LEVEL2");
+		kieSession.getAgenda().getAgendaGroup( "LEVEL2" ).setFocus();
+		logger.debug("RuleRunner.fireAllRules - Fire rules LEVEL2.1");
+		kieSession.getAgenda().getAgendaGroup( "LEVEL2.1" ).setFocus();
+		logger.debug("RuleRunner.fireAllRules - Fire rules LEVEL1");
+		kieSession.getAgenda().getAgendaGroup( "LEVEL1" ).setFocus();
+        kieSession.fireAllRules();
+
+        return kieSession;
+    }
+
+    public void dispose()
+    {
+        this.kieSession.dispose();
+    } 
+}
+  external KieServices  {}
+  external KieContainer {}
+  external KieSession {}
+  external KieResources {}
+  external KieFileSystem {}
+  external KieRepository {}

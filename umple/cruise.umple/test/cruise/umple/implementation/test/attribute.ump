@@ -1,0 +1,22 @@
+generate Test;
+
+
+
+class A {
+
+id;
+Integer number;
+Float number2;
+Double number3;
+
+}
+
+
+class B{
+
+name;
+
+address;
+id;
+
+}

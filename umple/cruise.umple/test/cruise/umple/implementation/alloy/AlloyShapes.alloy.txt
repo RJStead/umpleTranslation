@@ -1,0 +1,59 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from AlloyShapes.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class Shape2D
+sig Shape2D {
+  center : one Point
+}
+
+-- Defines a signature for class Point
+sig Point {
+  x : Int,
+  y : Int
+}
+
+-- Defines a signature for class EllipticalShape
+sig EllipticalShape extends Shape2D {
+  semiMajorAxis : String
+}
+
+-- Defines a signature for class Polygon
+sig Polygon extends Shape2D { }
+
+-- Defines a signature for class Circle
+sig Circle extends EllipticalShape { }
+
+-- Defines a signature for class Ellipse
+sig Ellipse extends EllipticalShape { }
+
+-- Defines a signature for class SimplePolygon
+sig SimplePolygon extends Polygon { }
+
+-- Defines a signature for class ArbitraryPolygon
+sig ArbitraryPolygon extends Polygon {
+  points : Int
+}
+
+-- Defines a signature for class Rectangle
+sig Rectangle extends SimplePolygon {
+  height : Int,
+  width : Int
+}
+
+-- Defines a signature for class RegularPolygon
+sig RegularPolygon extends SimplePolygon {
+  numPoints : Int,
+  radius : Int
+}
+
+
+-- Defines constraints on association between Shape2D and Point
+fact AssociationFact {
+  Shape2D <: center in (Shape2D) one -> one (Point)
+}

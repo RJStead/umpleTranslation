@@ -1,0 +1,115 @@
+namespace cruise.umplificator.core;
+	
+class Umplificator {
+
+public boolean umplify(List<File> srcFiles) {
+	StopWatch watch = new LoggingStopWatch("model");
+	logger.debug("start time : "+watch.getStartTime());
+	
+    FileHelper.printFilesToUmplify(srcFiles);
+    // Initializing a new Umple Model
+    outputModel = new UmpleModel(null);
+    // Initialize drools engine
+	ruleRunner = new RuleRunner();
+	RuleService ruleService = new RuleService (ruleRunner);
+	ruleService.startRuleEngine(currentLevel);
+	ruleRunner.insertUmpleModel(outputModel);
+	
+    for (File aFile : srcFiles){
+    	 umplifyElement(aFile);
+    }
+    // Generates a MasterFile if we have processed more than one file
+   FileHelper.writeMasterFile(filesUmplified, outputFolder, needSubDirectories,testMode, splitModel);
+   // generate Umple Code
+   FileHelper.writeFile(outputModel, outputFolder,needSubDirectories,testMode,splitModel);
+   logger.debug("Elapsed Time : "+ watch.getElapsedTime());
+   logger.debug("Stop Time : "+watch.stop());
+   return true;
+}
+
+public boolean umplifyElement(File file){
+    String language = FileHelper.getFileExtension(file);
+    boolean result=false;
+    logger.debug("Input language is: " + language);
+	switch(language)
+	{	
+		case ".java": result = umplifyJava(file);
+			break;
+		case ".ump":  result = umplifyUmple(file);
+			break;
+		case ".cpp": result =  umplifyCPP(file);
+			break;
+	}
+	return result;
+}
+
+public boolean umplifyUmple(File file)
+{
+	logger.info("Attempting Umplification of " + file.getName());
+    try {
+			UmpleFile umpleFile = new UmpleFile(file);
+    	    UmpleModel inputUmpleModel = new UmpleModel(umpleFile);
+    	    inputUmpleModel.run();
+    	    UmpleClass uClass=  inputUmpleModel.getUmpleClass(0);
+    		// Use the Java Parser for extra code 
+ 		   	JavaParser javaParser =new JavaParser();
+		    String content =  IOUtils.toString(file.toURI());
+		    logger.debug("---Input---");
+		    logger.debug(content);
+		    javaParser.parseBodyDeclarations(uClass.getExtraCode());
+		    // initialize drools engine
+		    RuleRunner ruleRunner = new RuleRunner();
+		    RuleService ruleService = new RuleService (ruleRunner);
+			ruleService.startRuleEngine(currentLevel);
+			ruleRunner.insertJavaElements(javaParser.getJavaVisitor());
+			ruleRunner.fireAllRules();
+			// generate Umple Code
+			outputModel = new UmpleModel(umpleFile);
+			outputModel.addUmpleClass(uClass);
+			filesUmplified.add(umpleFile.getSimpleFileName());
+			// generate Umple Code
+			FileHelper.writeFile(outputModel, outputFolder,needSubDirectories,testMode, splitModel);
+		} catch (IOException e) {
+			logger.error("IOException in Umplificator.umplifyUmpleFile");
+			logger.error(e.getStackTrace());
+			return false;
+		} 
+	logger.info("Umplification process completed for " + file.getName() + "!");
+	return true;
+}
+
+public boolean umplifyJava(File file)
+{
+		logger.info("Attempting Umplification of " + file.getName());
+		try {
+			// GetContent from file
+			// Parse File
+			// The visitor is automatically assigned to the Parser
+			UmpleFile umpleFile = new UmpleFile(file);
+ 		   	JavaParser javaParser =new JavaParser();
+		    String content =  IOUtils.toString(file.toURI());;
+   			logger.debug("---Input---");
+		    logger.debug(content);
+		    javaParser.parseUnit(content);
+			// Insert Java Elements
+			ruleRunner.insertJavaElements(javaParser.getJavaVisitor());
+			ruleRunner.fireAllRules();
+		    filesUmplified.add(umpleFile.getSimpleFileName());
+
+		} catch (IOException e) {
+			logger.error("IOException in Umplificator.umplifyJava");
+			logger.error(e.getStackTrace());
+			return false;
+		} 
+     logger.info("Umplification process completed for " + file.getName() + "!");
+	 return true;
+}
+
+
+public boolean umplifyCPP(File file)
+{
+    throw new UnsupportedOperationException( "CPP Reverse Eng. will be implemented soon");
+}
+
+
+}

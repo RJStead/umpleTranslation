@@ -1,0 +1,14 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from isARelationship.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class A
+sig A { }
+
+-- Defines a signature for class B
+sig B extends A { }

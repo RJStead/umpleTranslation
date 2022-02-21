@@ -1,0 +1,31 @@
+// In this example, we have made the address
+// optional. Now, it does not appear on the
+// constructor. However when you add an address it
+// still cannot be null.
+//
+// Note also that in this example, the role name
+// 'address' is left off to show  it is optional.
+
+class Person {
+  name;
+  
+  * -> 0..1 Address;
+}
+
+class Address {
+  street;
+  city;
+  postalCode;
+  country;
+}//$?[End_of_model]$?
+
+class Person
+{
+  position 49 29 113 63;
+  position.association Address__Person 30,63 30,0;
+}
+
+class Address
+{
+  position 49 131 149 114;
+}

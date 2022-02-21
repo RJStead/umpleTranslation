@@ -1,0 +1,26 @@
+namespace cruise.umple.validator;
+
+class CodeGenValidator {
+	
+	abstract;
+	
+	depend cruise.umple.compiler.*;
+	depend cruise.umple.compiler.java.*;
+
+	public abstract boolean validateGeneratedCode (UmpleFile uFile);
+	
+	public ILang getLanguageFor(UmpleElement aElement){
+	  if (aElement instanceof UmpleInterface)
+	  {
+		  return new JavaInterfaceGenerator();
+	  }
+	  else if (aElement instanceof UmpleClass)
+	  {
+		  return new JavaClassGenerator();
+	  } 
+	  else{
+		  return null;        
+	  }
+   }
+
+}

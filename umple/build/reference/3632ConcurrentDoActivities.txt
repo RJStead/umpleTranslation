@@ -1,0 +1,15 @@
+Concurrency Using Do Activities
+Concurrency
+noreferences
+
+@@description
+
+<p>Multiple concurrent blocks that become active when in a particular state can be accomplished in Umple using a state machine with two substates separated by the || symbol, each with a do activity. Both do activities will run concurrently.</p>
+
+@@example
+@@source manualexamples/ConcurrencyUsingDoActivities1.ump
+@@endexample
+
+@@example
+@@source manualexamples/ConcurrencyUsingDoActivities2.ump
+@@endexample

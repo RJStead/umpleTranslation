@@ -1,0 +1,89 @@
+
+namespace cruise.umple.util;
+
+external Task {};
+
+/**
+ * Defines an Ant task to use in Ant-like build environments
+ */
+class UmplecAntTask {
+  depend org.apache.tools.ant.*;
+  depend cruise.umple.UmpleConsoleConfig;
+  depend cruise.umple.UmpleConsoleMain;
+  depend java.util.*;
+  depend java.util.stream.*;
+  depend java.io.File;
+  depend java.nio.file.*;
+
+  isA Task;
+
+  // The method executing the task
+  void execute() throws BuildException {
+    if (!srcPath.isPresent()) {
+      throw new BuildException("src was not set.");
+    }
+
+    final Path srcDir = this.srcPath.get().getParent();
+    if (srcDir == null) {
+      throw new BuildException("src does not have a parent folder {src=" + this.srcPath.get() + "}");
+    }
+
+    this.linkedFiles.stream().map(LinkedFile::getSrc).map(p -> srcDir.relativize(p)).map(Path::toString).forEach(this.cfg::addLinkedFile);
+
+    UmpleConsoleMain console = new UmpleConsoleMain(this.cfg);
+    int res = console.runConsole();
+
+    if (res != 0) {
+      throw new BuildException("Error running Umple task: " + res + ".");
+    }
+
+  }
+
+  internal UmpleConsoleConfig cfg = new UmpleConsoleConfig("");
+  internal List<LinkedFile> linkedFiles = new ArrayList<>(4);
+
+  internal Path cwd = Paths.get(System.getProperty("user.dir"));
+  internal Optional<Path> srcPath = Optional.empty();
+
+  public void setSrc(File aSrc) {
+    srcPath = Optional.of(aSrc.toPath());
+
+    this.cfg.setUmpleFile(cwd.relativize(srcPath.get()).toString());
+  	}
+
+  public void setLinkedFile(File linkedFile) {
+  	LinkedFile lf = createLinkedFile();
+    lf.setSrc(linkedFile);
+    linkedFiles.add(lf);
+  }
+
+  public void setGenerate(String generate) {
+    this.cfg.setGenerate(generate);
+  }
+
+  public void setOverride(boolean override) {
+    this.cfg.setOverride(override);
+  }
+
+  public void setDest(File dest) {
+    this.cfg.setPath(dest.getAbsolutePath());
+  }
+
+  public LinkedFile createLinkedFile() {
+    LinkedFile f = new LinkedFile();
+    linkedFiles.add(f);
+    return f;
+  }
+
+  protected static class LinkedFile {
+    private Path p = null;
+
+    public void setSrc(File f) { this.p = f.toPath(); }
+    public Path getSrc() { return this.p; } 
+
+    public String toString() {
+      return "LinkedFile{src=" + p.toString() + "}";
+    }
+  }
+
+}

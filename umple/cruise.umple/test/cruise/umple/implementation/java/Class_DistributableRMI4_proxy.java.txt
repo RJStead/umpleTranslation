@@ -1,0 +1,67 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi4;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.io.Serializable;
+import distributed.rmi4.UmpleRuntime;
+public class Microwave extends CC implements java.io.Serializable
+{  public void setRealObject(IMicrowaveImpl aObject)
+  {
+  super.setRealObject(aObject);
+    realObject=aObject;
+  }
+
+  IMicrowaveImpl realObject;
+  public Microwave(UmpleRuntime.UmpleComponent component)
+  {
+    if(this.getClass()== Microwave.class)    setRealObject(UmpleRuntime.getInstance().newMicrowave(component, this));
+  }
+  public Microwave()
+  {
+    if(this.getClass()== Microwave.class)    setRealObject(UmpleRuntime.getInstance().newMicrowave(this));
+  }
+  public void setSelf(Microwave proxy)
+  {
+    while(true)
+      try{
+        realObject.setSelf(proxy);
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public int getHashCode()
+  {
+    while(true)
+      try{
+        return realObject.getHashCode();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void delete()
+  {
+    while(true)
+      try{
+        realObject.delete();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+   public int method1(int f)
+  {
+    while(true)
+      try{
+        return realObject.method1(f);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+
+  public boolean equals(Object obj)
+  {    if(obj.getClass()!=this.getClass())
+      return false;
+    return (getHashCode()==((Microwave)obj).getHashCode());
+  }
+}

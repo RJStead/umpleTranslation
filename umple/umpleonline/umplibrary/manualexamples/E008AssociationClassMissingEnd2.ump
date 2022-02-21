@@ -1,0 +1,9 @@
+// The following shows how to avoid the error
+class A {}
+
+class B {}
+
+associationClass C {
+   * A;
+   * B;
+}

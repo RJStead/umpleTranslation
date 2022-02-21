@@ -1,0 +1,119 @@
+// Hospital system - sample UML class diagram in Umple
+
+class Hospital
+{
+     1 -- * Employee;
+     1 -- 1..* Ward;
+}
+
+// Subsections within the hospital.
+class Ward
+{
+     String name;
+     Integer capacity;
+     1..* -- * Employee;
+     1 -- * Patient;
+}
+
+// The people who work at the hospital.
+class Employee
+{
+     String name;
+     Integer id;
+     Integer salary;
+     1 -- 1..* Shift;
+     1 -- 1..* Privilege;
+}
+
+// Working shifts that the employees have.
+class Shift
+{
+     Date date;
+     Integer startTime;
+     Integer endTime;
+}
+
+// Various privileges and roles that the employees have.
+class Privilege
+{
+     String privilege;
+}
+
+// Specialized employee who looks after patients.
+class Doctor
+{
+     isA Employee;
+}
+
+// Specialized doctor who performs advanced procedures on patients.
+class Surgeon
+{
+     isA Doctor;
+}
+
+// Employee who maintains the cleanliness of the hospital.
+class Janitor
+{
+     isA Employee;
+}
+
+// Patient who is at the hospital to get better.
+class Patient
+{
+     String name;
+     * -- * Doctor;
+}
+//$?[End_of_model]$?
+
+class Hospital
+{
+  position 231 11 109 45;
+  position.association Employee__Hospital 49,46 55,0;
+  position.association Hospital__Ward 110,37 74,0;
+}
+
+class Doctor
+{
+  position 272 245 109 45;
+}
+
+class Surgeon
+{
+  position 272 355 109 45;
+}
+
+class Janitor
+{
+  position 150 360 109 45;
+}
+
+class Patient
+{
+  position 439 336 113 68;
+  position.association Doctor__Patient 0,0 110,44;
+  }
+
+
+class Shift
+{
+  position 17 32 149 93;
+}
+
+class Privilege
+{
+  position 42 222 126 60;
+}
+
+class Employee
+{
+  position 213 80 124 92;
+  position.association Employee__Shift 0,9 149,57;
+  position.association Employee__Privilege 0,65 30,0;
+}
+
+class Ward
+{
+  position 421 87 139 75;
+  position.association Employee__Ward 0,8 124,13;
+  position.association Patient__Ward 79,75 61,0;
+}

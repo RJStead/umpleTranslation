@@ -1,0 +1,7 @@
+class Teacher {
+ 1 -- 0..2 Foo myFooss;
+}
+
+class Foo {
+  abstract;
+}

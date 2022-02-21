@@ -1,0 +1,63 @@
+package example;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class Tracer
+{
+
+  //------------------------
+  // STATIC VARIABLES
+  //------------------------
+
+
+  /**
+   * log4j version 2
+   * requires jars (log4j-api-2.0.1.jar) and (log4j-core-2.0.1.jar)
+   */
+  public static final Logger logger = LogManager.getLogger(Tracer.class);
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Tracer Attributes
+  private String x;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Tracer(String aX)
+  {
+    x = aX;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setX(String aX)
+  {
+    boolean wasSet = false;
+    x = aX;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getX()
+  {
+    return x;
+  }
+
+  public void delete()
+  {}
+
+  public void method(){
+    logger.error( System.currentTimeMillis()+","+Thread.currentThread().getId()+",Log4jTest5.ump,9,Tracer,"+System.identityHashCode(this)+",me_e,method"+",logging method entry" );
+    
+  }
+
+  public void method2(int x){
+    x++;
+    logger.fatal( System.currentTimeMillis()+","+Thread.currentThread().getId()+",Log4jTest5.ump,11,Tracer,"+System.identityHashCode(this)+",me_x,method2"+",exiting method2" );
+  }

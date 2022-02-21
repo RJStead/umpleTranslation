@@ -1,0 +1,71 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE ${last.version} modeling language!*/
+
+package example;
+import cruise.util.FileTracer;
+
+public class Tracer
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Tracer Attributes
+  private int id;
+  private String name;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Tracer()
+  {
+    id = 0;
+    name = null;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setId(int aId)
+  {
+    boolean wasSet = false;
+    FileTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",tmp.ump,11,Tracer,"+System.identityHashCode(this)+",at_s,id,"+id+","+(""+aId).toString().replace("\n","").replace(",",";")+",interesting behavior" );
+    FileTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",tmp.ump,12,Tracer,"+System.identityHashCode(this)+",at_s,id,"+id+","+(""+aId).toString().replace("\n","").replace(",",";")+",Even more interesting" );
+    id = aId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    FileTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",tmp.ump,11,Tracer,"+System.identityHashCode(this)+",at_s,name,"+name+","+(""+aName).toString().replace("\n","").replace(",",";")+",interesting behavior" );
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getId()
+  {
+    return id;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "id" + ":" + getId()+ "," +
+            "name" + ":" + getName()+ "]";
+  }
+}

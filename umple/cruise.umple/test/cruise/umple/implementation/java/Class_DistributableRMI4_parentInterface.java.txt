@@ -1,0 +1,11 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi4;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+public interface ICCImpl extends java.rmi.Remote, IFatherImpl
+{
+  public void delete() throws RemoteException;
+   public void someMethod1() throws RemoteException;
+}

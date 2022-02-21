@@ -1,0 +1,376 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi5;
+import java.util.*;
+import java.io.Serializable;
+
+// line 39 "../../Class_DistributableRMI5.ump"
+public class Microwave implements java.io.Serializable, IMicrowaveImpl
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Microwave Attributes
+  private  transient int x;
+  private  transient String f;
+
+  //Microwave Associations
+  private transient  List<Client> clients;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Microwave(int aX, String aF, UmpleRuntime.UmpleComponent umpleComponent)
+  {
+    if(umpleComponent.getNode().getId()!=UmpleRuntime.getThisNodeId())
+    {
+      if(this.getClass()== Microwave.class)
+        UmpleRuntime.getInstance().newMicrowave(aX, aF, umpleComponent, this);
+
+      return;
+    }
+    else
+    {
+      UmpleRuntime.getInstance().newMicrowave(this);
+    }
+
+    x = aX;
+    f = aF;
+    clients = new ArrayList<Client>();
+  }
+  //------------------------
+  // Returning the Hashcode
+  //------------------------
+  public int getHashCodeImpl()
+  {
+    return hashCode();
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setXImpl(int aX)
+  {
+    boolean wasSet = false;
+    x = aX;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setFImpl(String aF)
+  {
+    boolean wasSet = false;
+    f = aF;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getXImpl()
+  {
+    return x;
+  }
+
+  public String getFImpl()
+  {
+    return f;
+  }
+
+  public Client getClientImpl(int index)
+  {
+    Client aClient = clients.get(index);
+    return aClient;
+  }
+
+  /**
+   * key{x,f}
+   */
+  public List<Client> getClientsImpl()
+  {
+    List<Client> newClients = Collections.unmodifiableList(clients);
+    return newClients;
+  }
+
+  public int numberOfClientsImpl()
+  {
+    int number = clients.size();
+    return number;
+  }
+
+  public boolean hasClientsImpl()
+  {
+    boolean has = clients.size() > 0;
+    return has;
+  }
+
+  public int indexOfClientImpl(Client aClient)
+  {
+    int index = clients.indexOf(aClient);
+    return index;
+  }
+
+  public static int minimumNumberOfClients()
+  {
+    return 0;
+  }
+
+  public boolean addClientImpl(Client aClient)
+  {
+    boolean wasAdded = false;
+    if (clients.contains(aClient)) { return false; }
+    clients.add(aClient);
+    if (aClient.indexOfMicrowave(this) != -1)
+    {
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aClient.addMicrowave(this);
+      if (!wasAdded)
+      {
+        clients.remove(aClient);
+      }
+    }
+    return wasAdded;
+  }
+
+  public boolean removeClientImpl(Client aClient)
+  {
+    boolean wasRemoved = false;
+    if (!clients.contains(aClient))
+    {
+      return wasRemoved;
+    }
+
+    int oldIndex = clients.indexOf(aClient);
+    clients.remove(oldIndex);
+    if (aClient.indexOfMicrowave(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aClient.removeMicrowave(this);
+      if (!wasRemoved)
+      {
+        clients.add(oldIndex,aClient);
+      }
+    }
+    return wasRemoved;
+  }
+
+  public boolean addClientAtImpl(Client aClient, int index)
+  {  
+    boolean wasAdded = false;
+    if(addClient(aClient))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfClients()) { index = numberOfClients() - 1; }
+      clients.remove(aClient);
+      clients.add(index, aClient);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveClientAtImpl(Client aClient, int index)
+  {
+    boolean wasAdded = false;
+    if(clients.contains(aClient))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfClients()) { index = numberOfClients() - 1; }
+      clients.remove(aClient);
+      clients.add(index, aClient);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addClientAt(aClient, index);
+    }
+    return wasAdded;
+  }
+
+  public void deleteImpl()
+  {
+    ArrayList<Client> copyOfClients = new ArrayList<Client>(clients);
+    clients.clear();
+    for(Client aClient : copyOfClients)
+    {
+      aClient.removeMicrowave(this);
+    }
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "x" + ":" + getX()+ "," +
+            "f" + ":" + getF()+ "]";
+  }
+  public void setRealObject(IMicrowaveImpl aObject)
+  {
+    realObject=aObject;
+  }
+
+  transient IMicrowaveImpl realObject=this;
+  public Microwave(int aX, String aF)
+  {
+
+this(aX,aF,UmpleRuntime.getComponent("Microwave"));
+  }
+  public int getHashCode()
+  {
+    while(true)
+      try{
+        return realObject.getHashCodeImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean setX(int aX)
+  {
+    while(true)
+      try{
+        return realObject.setXImpl(aX);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean setF(String aF)
+  {
+    while(true)
+      try{
+        return realObject.setFImpl(aF);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public int getX()
+  {
+    while(true)
+      try{
+        return realObject.getXImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public String getF()
+  {
+    while(true)
+      try{
+        return realObject.getFImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public Client getClient(int index)
+  {
+    while(true)
+      try{
+        return realObject.getClientImpl(index);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public List<Client> getClients()
+  {
+    while(true)
+      try{
+        return realObject.getClientsImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public int numberOfClients()
+  {
+    while(true)
+      try{
+        return realObject.numberOfClientsImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean hasClients()
+  {
+    while(true)
+      try{
+        return realObject.hasClientsImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public int indexOfClient(Client aClient)
+  {
+    while(true)
+      try{
+        return realObject.indexOfClientImpl(aClient);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean addClient(Client aClient)
+  {
+    while(true)
+      try{
+        return realObject.addClientImpl(aClient);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean removeClient(Client aClient)
+  {
+    while(true)
+      try{
+        return realObject.removeClientImpl(aClient);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean addClientAt(Client aClient, int index)
+  {
+    while(true)
+      try{
+        return realObject.addClientAtImpl(aClient,index);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean addOrMoveClientAt(Client aClient, int index)
+  {
+    while(true)
+      try{
+        return realObject.addOrMoveClientAtImpl(aClient,index);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void delete()
+  {
+    while(true)
+      try{
+        realObject.deleteImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+
+  protected  IMicrowaveImpl remoteObject;  
+  public void setRemoteObject(IMicrowaveImpl aRemoteObject)
+  {
+    remoteObject=aRemoteObject;
+  }
+  public IMicrowaveImpl getRemoteObject()
+  {
+    return (IMicrowaveImpl)remoteObject;
+  }
+  private void readObject(java.io.ObjectInputStream in) throws Exception
+  {
+    try
+    {
+      in.defaultReadObject();
+      realObject=(IMicrowaveImpl)remoteObject;
+    }
+    catch(Exception e)
+    {
+      throw e;
+    }
+    
+  }
+ 
+  public boolean equals(Object obj)
+  {    if(obj.getClass()!=this.getClass())
+      return false;
+    return (getHashCode()==((Microwave)obj).getHashCode());
+  }
+}

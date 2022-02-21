@@ -1,0 +1,11 @@
+namespace example;
+
+tracer log4j root=all debug = console fatal = file monitorInterval=30;
+
+class Tracer
+{
+  x;
+  int y;
+  trace x;
+  trace y;
+}

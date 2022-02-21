@@ -1,0 +1,25 @@
+Canal System
+Examples
+noreferences
+
+@@description
+
+<p>Canal system class diagram.
+
+<p>See also the <a href="CanalLockStateMachine.html"> state diagram for the canal lock.</a>
+
+<p>The following are the requirements from which this was derived:
+
+<p>The Canal Monitoring and Control System is used to automate canal locks in response to water craft that want to pass through a canal system. The system can be installed in any network of canals. Each canal is divided up into segments. Each segment has two ends which can either be a bend, a lock gate, a low bridge, or a system entry/exit point (where boats can move to or from other waterways such as rivers and lakes). A special kind of canal segment is a lock. The water level in a lock can be raised or lowered so its height matches the height of an adjacent segment. Several locks can exist side by side (as in the Rideau Canal next to Parliament Hill in Ottawa). A low bridge is a location where the bridge needs raising for a boat to pass. A bend is simply a place where the canal changes direction - keeping track of these helps simplify mapping of the system.
+
+<p>The system keeps track of the GPS co-ordinates of each segment end, the height of the water above sea level in each segment (which can change in locks), and optionally a name given to a series of locks or segments.
+
+<p>Each water craft using the system must have a transponder. The transponder includes a GPS unit and transceiver. When the captain of a craft wants to travel through the system, he enters his plannned destination in the transponder. The size of the boat is also tracked. The transponder regularly transmits the location of the craft to the control system so the control system can monitor traffic.
+
+<p>When a craft reaches a gate, the system knows it is there and needs to pass through since it has received the data about the desired destination. The control system takes care of opening the gate, raising or lowering of the water level, and then opening the next gate, etc. When a boat reaches a low bridge, a similar procedure takes place, except that raising or lowering the water doesn't happen.
+
+<p>When there are a lot of boats, the system makes several of them queue up so they can pass through a lock or low bridge at the same time. The system has, however, to ensure that only the right number and size of boats are put into a lock at once, so the lock doesn't become overly full (the system knows the size of each lock). Complicating matters is the fact that there will be boats travelling in both directions.
+
+@@example
+@@source CanalSystem.ump
+@@endexample

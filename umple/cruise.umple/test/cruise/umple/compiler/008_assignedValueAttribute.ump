@@ -1,0 +1,6 @@
+
+class Student
+{
+  settable String s = "s";
+  s2 = "s2";
+}

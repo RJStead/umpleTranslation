@@ -1,0 +1,6 @@
+MyTitle
+MyGroup
+noreferences
+@@description
+This is a description
+@@Filename 006_noref.txt

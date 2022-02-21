@@ -1,0 +1,28 @@
+isA clause
+Classes and Interfaces
+noreferences
+@@tooltip The isA clause is used to specify class generalization, implementation of an interface and inclusion of a trait
+
+@@description
+<p>The isA keyword is used to denote an inheritance relationship (generalization) between two classes, or a class and the <a href="interfaceDefinition.html">interfaces</a> it implements, or a class and the <a href="Traits.html">traits</a> it includes.</p>
+
+<p>This corresponds to keywords such as 'extends', 'subclass', etc. in other languages. The isA keyword was chosen so as to be independent of other languages, and due to the strong conceptual similarity between interfaces, classes and traits.</p>
+
+<p>Note that it is possible to avoid using the isA keyword for class generalization, by directly embedding a subclass inside a superclass. Note that this does <i>not</i> create an inner class in the Java sense, but instead creates a subclass. The two examples below give identical results.</p>
+
+<p>The following is how a generalization appears in UML. The corresponding Umple is below. Note that in UmpleOnline, the expected layout for generalizations places superclasses above subclasses.</p>
+
+<img src="examples/PersonStudentGeneralization.png" alt="Generalization with Person as superclass and Student as subclass"/>
+
+<br />
+
+@@syntax
+[[isA]] [[singleIsA]] [[multipleIsA]]
+
+@@example @@caption Example Showing Student as a Subclass of Person @@endcaption
+@@source manualexamples/isAclause1.ump
+@@endexample
+
+@@example @@caption The Same Model as Above but Using Nesting Instead of IsA @@endcaption
+@@source manualexamples/isAclause2.ump
+@@endexample

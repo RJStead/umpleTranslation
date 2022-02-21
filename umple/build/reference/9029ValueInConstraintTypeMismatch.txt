@@ -1,0 +1,22 @@
+E029 Constraint Type Mismatch
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error reported when there is a type mismatch in a constraint</h2>
+
+<p>It is only possible to compare a String to a String, a Boolean to a Boolean, and a number to a number, etc. Violations result in a type mismatch error.
+
+</p>
+
+
+@@example
+@@source manualexamples/E029ConstraintTypeMismatch1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E029ConstraintTypeMismatch2.ump
+@@endexample
+
+

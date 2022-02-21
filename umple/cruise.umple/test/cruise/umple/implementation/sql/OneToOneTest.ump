@@ -1,0 +1,16 @@
+generate Sql;
+
+namespace example;
+
+class Mentor 
+{
+  name;
+  lazy id;
+  1 -- 1 Student;
+}
+
+class Student
+{
+  name;
+  Integer number;
+}

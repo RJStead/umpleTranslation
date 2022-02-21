@@ -1,0 +1,175 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+Model for the subsystem used to syncronize elements in UmpleOnline
+
+*/
+
+namespace cruise.umple.sync;
+
+class SynchronizationAction
+{
+  deltaCode;
+  umpleCode;
+  filename;
+}
+
+class UpdatePositioningAction
+{
+  isA SynchronizationAction;
+  
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.Token;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.util.*;
+  
+  internal UmpleParser umpleParser = null;
+  internal TextParser textParser = null;
+  internal JsonParser jsonParser = null;
+  internal Json json = null;
+  internal String[] addedPositions = new ArrayList<String>();
+}
+
+class NewAction
+{
+  isA SynchronizationAction;
+  
+  depend java.io.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+}
+
+class EditAction
+{
+  isA SynchronizationAction;
+  
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.parser.Token;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.util.*;
+}
+
+
+class DeleteAction
+{
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+
+  isA SynchronizationAction;
+}
+
+
+class NewAssociationAction
+{
+  isA SynchronizationAction;
+  
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+}
+
+
+class EditAssociationAction
+{
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+  
+  isA SynchronizationAction;
+}
+
+class DeleteAssociationAction
+{
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+  depend cruise.umple.parser.Position;
+
+  isA SynchronizationAction;
+}
+
+class DeleteGeneralizationAction
+{
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+
+  isA SynchronizationAction;
+}
+
+class DeleteTransitionAction
+{
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+
+  isA SynchronizationAction;
+}
+
+class NewGeneralizationAction
+{
+  isA SynchronizationAction;
+  
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+}
+
+class NewTransitionAction
+{
+  isA SynchronizationAction;
+  
+  depend java.io.*;
+  depend cruise.umple.compiler.*;
+  depend cruise.umple.util.*;
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
+}
+
+use Parser.ump;
+use sync/DeleteAction_Code.ump;
+use sync/DeleteAssociationAction_Code.ump;
+use sync/DeleteGeneralizationAction_Code.ump;
+use sync/DeleteTransitionAction_Code.ump;
+use sync/EditAction_Code.ump;
+use sync/EditAssociationAction_Code.ump;
+use sync/NewAction_Code.ump;
+use sync/NewAssociationAction_Code.ump;
+use sync/NewGeneralizationAction_Code.ump;
+use sync/NewTransitionAction_Code.ump;
+use sync/SynchronizationAction_Code.ump;
+use sync/UpdatePositioningAction_Code.ump;

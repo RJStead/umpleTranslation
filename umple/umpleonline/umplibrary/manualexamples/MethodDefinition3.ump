@@ -1,0 +1,12 @@
+generate Java;
+
+// A class with a method that uses 'public'.
+class Person
+{
+  name;
+  
+  public String displayName()
+  {
+    return("Hello, my name is " + getName());
+  }
+}

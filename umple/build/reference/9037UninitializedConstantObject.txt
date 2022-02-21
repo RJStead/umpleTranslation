@@ -1,0 +1,17 @@
+E037 Uninitialized Constant Object
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error generated when an Object constant is not initialized</h2>
+
+<p>It makes little sense to have a constant unless it is given a value. Since there is no obvious default value for arbitrary data types, it is an error to declare an uninitialized constant unless it is of one of the builtin Umple data types. (For builtin datatypes this is not a problem since a number can be initialized as zero by default, and a string as empty by default).</p>
+
+@@example
+@@source manualexamples/E037UninitializedConstantObject1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E037UninitializedConstantObject2.ump
+@@endexample

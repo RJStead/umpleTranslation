@@ -1,0 +1,15 @@
+// This example generates the warning
+// because one participating class is
+// missing from the key
+class Passenger {}
+
+class Flight {}
+
+associationClass Booking {
+  Integer number;
+  * Passenger passenger;
+  * Flight flight;
+  key {number, flight}
+}
+//$?[End_of_model]$?
+// @@@skipphpcompile - remove when issue 697 is fixed

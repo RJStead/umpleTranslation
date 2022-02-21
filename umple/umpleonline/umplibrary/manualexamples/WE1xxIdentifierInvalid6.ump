@@ -1,0 +1,9 @@
+// State machine name with special
+// characters (150)
+class X {
+  ed%4 {
+    s1 {}
+  }
+}
+//$?[End_of_model]$?
+// @@@skipcompile

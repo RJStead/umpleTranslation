@@ -1,0 +1,28 @@
+E200 Trait Identifier Invalid
+Errors and Warnings 100-999
+noreferences
+
+@@description
+
+<h2>Umple syntactic error related to identifiers of traits </h2>
+
+<p align = "justify" >
+In Umple, identifiers used for traits must be alphanumeric. It means that must start with an alpha character, or _ .
+</p>
+
+
+@@example
+@@source manualexamples/E200InvalidTraitIdentifierE1.ump
+@@endexample
+
+@@example
+@@source manualexamples/E200InvalidTraitIdentifierE2.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E200ValidTraitIdentifier1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E200ValidTraitIdentifier2.ump
+@@endexample

@@ -1,0 +1,7 @@
+class Employee{
+ 5 -- 4 Address worksIn;
+}
+
+class Address{
+
+}

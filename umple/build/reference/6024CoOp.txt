@@ -1,0 +1,20 @@
+Co-Op Education
+Examples
+noreferences
+
+@@description
+
+<p>Requirements for a University System to Manage Co-Op Programs</p>
+
+<p>The co-op system works as follows. Employers contact the university and list potential jobs. Each job has a description, employer, location, start and end date, and a list of programs (e.g. SEG, CSI, MCG) for which it is applicable.</p>
+
+<p>Each student in the system has a name, student number, list of available time slots (when they are not in courses, or not doing interviews), resume and transcript.</p>
+
+<p>Students in various programs apply for jobs. Students choose a set of jobs they are interested in. The system shows the list of interested students to employers, and employers pick a set of students to interview. The system sets interview times that match the employee’s and student’s availability (set of available time slots).</p>
+
+<p>At the end of the process, the system arranges for the employer to offer each job to a student. If the first student does not accept, the system arranges for other students (the employer’s second, third choices, etc. ) to be offered the job.</p>
+
+
+@@example
+@@source CoOpSystem.ump
+@@endexample

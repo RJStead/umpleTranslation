@@ -1,0 +1,67 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.20.1.4071 modeling language!*/
+
+
+
+public class RangeX
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //RangeX Attributes
+  private int start;
+  private int end;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public RangeX(int aStart, int aEnd)
+  {
+    start = aStart;
+    end = aEnd;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setStart(int aStart)
+  {
+    boolean wasSet = false;
+    start = aStart;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setEnd(int aEnd)
+  {
+    boolean wasSet = false;
+    end = aEnd;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getStart()
+  {
+    return start;
+  }
+
+  public int getEnd()
+  {
+    return end;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "start" + ":" + getStart()+ "," +
+            "end" + ":" + getEnd()+ "]";
+  }
+}

@@ -1,0 +1,68 @@
+// UML class diagram in Umple representing a system for
+// reporting of accidents by an employer
+
+namespace accidents;
+
+class AccidentType
+{
+  code;
+  description;
+  key {code}
+}
+
+class SeriousnessLevel
+{
+  code;
+  description;
+  key {code}
+}
+
+class Employee
+{
+  id;
+  department;
+  name;
+  supervisor;
+  other_employee_details;
+}
+
+class Accident
+{
+  id;
+  description;
+  Date date;
+  Time time;
+  other_details;
+  
+  * -- 1 Employee;
+  * -> 1 AccidentType;
+  * -> 1 SeriousnessLevel;
+  
+  key {id}
+}
+//$?[End_of_model]$?
+//Positioning
+
+
+class AccidentType
+{
+  position 57 247 148 75;
+}
+
+class SeriousnessLevel
+{
+  position 305 55 148 75;
+}
+
+class Employee
+{
+  position 242 207 236 126;
+}
+
+class Accident
+{
+  position 39 29 163 126;
+  position.association Accident__Employee 163,126 56,0;
+  position.association Accident__SeriousnessLevel 163,46 0,20;
+  position.association Accident__AccidentType 49,126 31,0;
+}

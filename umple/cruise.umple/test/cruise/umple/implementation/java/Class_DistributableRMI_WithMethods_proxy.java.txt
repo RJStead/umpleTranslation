@@ -1,0 +1,194 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi.withMethods;
+import java.util.*;
+import java.lang.Thread;
+import java.io.Serializable;
+
+import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.server.UnicastRemoteObject;
+public class MicrowaveRemote implements IMicrowaveImpl
+{
+  Microwave realObject;
+  public void setRealObject(Microwave aObject)
+  {
+    realObject=aObject;
+  }
+  public MicrowaveRemote()
+  {}
+  public MicrowaveRemote(Microwave aObject)
+  {
+      realObject=aObject;
+  }
+  public int getHashCodeImpl()
+  {
+    while(true)
+      try{
+        return realObject.getHashCodeImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean setLightOnImpl(boolean aLightOn)
+  {
+    while(true)
+      try{
+        return realObject.setLightOnImpl(aLightOn);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean setPowerTubeOnImpl(boolean aPowerTubeOn)
+  {
+    while(true)
+      try{
+        return realObject.setPowerTubeOnImpl(aPowerTubeOn);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean setIsDoorOpenedImpl(boolean aIsDoorOpened)
+  {
+    while(true)
+      try{
+        return realObject.setIsDoorOpenedImpl(aIsDoorOpened);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean setIsButtonPressedImpl(boolean aIsButtonPressed)
+  {
+    while(true)
+      try{
+        return realObject.setIsButtonPressedImpl(aIsButtonPressed);
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean getLightOnImpl()
+  {
+    while(true)
+      try{
+        return realObject.getLightOnImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean getPowerTubeOnImpl()
+  {
+    while(true)
+      try{
+        return realObject.getPowerTubeOnImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean getIsDoorOpenedImpl()
+  {
+    while(true)
+      try{
+        return realObject.getIsDoorOpenedImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean getIsButtonPressedImpl()
+  {
+    while(true)
+      try{
+        return realObject.getIsButtonPressedImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean _doorOpenedImpl()
+  {
+    while(true)
+      try{
+        return realObject._doorOpenedImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean _buttonPressedImpl()
+  {
+    while(true)
+      try{
+        return realObject._buttonPressedImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public boolean _doorClosedImpl()
+  {
+    while(true)
+      try{
+        return realObject._doorClosedImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void deleteImpl()
+  {
+    while(true)
+      try{
+        realObject.deleteImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void doorOpenedImpl ()
+  {
+    while(true)
+      try{
+        realObject.doorOpenedImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void buttonPressedImpl ()
+  {
+    while(true)
+      try{
+        realObject.buttonPressedImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void doorClosedImpl ()
+  {
+    while(true)
+      try{
+        realObject.doorClosedImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void runImpl ()
+  {
+    while(true)
+      try{
+        realObject.runImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+   public void turnLightOnImpl(boolean on)
+  {
+    while(true)
+      try{
+        realObject.turnLightOnImpl(on);
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+   public void energizePowerTubeImpl(boolean on)
+  {
+    while(true)
+      try{
+        realObject.energizePowerTubeImpl(on);
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+   public void turnOffImpl()
+  {
+    while(true)
+      try{
+        realObject.turnOffImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+
+}

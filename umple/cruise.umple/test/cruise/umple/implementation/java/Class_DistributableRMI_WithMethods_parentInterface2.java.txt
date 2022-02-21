@@ -1,0 +1,13 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi.withMethods2;
+import java.rmi.RemoteException;
+public interface ICCImpl extends java.rmi.Remote
+{
+  public void setSelf(CC proxy) throws RemoteException;
+  public int getHashCode() throws RemoteException;
+  public void delete() throws RemoteException;
+   public void energizePowerTube(boolean on) throws RemoteException;
+   public void turnOff() throws RemoteException;
+}

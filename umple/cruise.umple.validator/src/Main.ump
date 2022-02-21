@@ -1,0 +1,34 @@
+namespace cruise.umple;
+
+class CodeGenValidatorMainConsole {
+
+	depend cruise.umple.compiler.UmpleFile;
+	depend cruise.umple.validator.*;
+	
+	public static String console ;
+
+	public static void main(String[] args) {
+		if (args != null && args.length== 2){ 
+			UmpleFile uFile = new UmpleFile(args[1]);
+			String lang = args[0];
+			boolean isJava = lang.contains("java") ? true : false;
+			if (isJava) {
+				JavaCodeGenValidator java_validator = new JavaCodeGenValidator();
+			    console = java_validator.validateGeneratedCode(uFile) ? "Success!":"Error" ;
+			}
+			else {
+				CPPCodeGenValidator cpp_validator = new CPPCodeGenValidator();
+			 	console = cpp_validator.validateGeneratedCode(uFile) ? "Success!":"Error" ;
+			}
+			System.out.print(console);
+		}
+		else {
+		    printUsage();
+		}
+	}
+	
+	private static  void printUsage(){
+		console = "Usage: java -jar umplevalidator.jar [-java |-cpp] <umple_file>\nExample: java -jar umplevalidator.jar -j test.ump";
+    	System.out.println(console);
+	}
+}

@@ -1,0 +1,6 @@
+// The following example shows how
+// to generate this error.
+class X {
+  a;
+  a;
+}

@@ -1,0 +1,15 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi4;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+public interface IMicrowaveImpl extends java.rmi.Remote, ICCImpl
+{
+  public void setSelf(Microwave proxy) throws RemoteException;
+  public int getHashCode() throws RemoteException;
+  public void delete() throws RemoteException;
+   public int method1(int f) throws RemoteException;
+}

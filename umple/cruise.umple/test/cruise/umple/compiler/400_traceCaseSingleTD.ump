@@ -1,0 +1,8 @@
+class Tracer
+{
+	String name;
+	tracecase tc1 {
+  	trace name;
+	}
+	activate tc1;
+}

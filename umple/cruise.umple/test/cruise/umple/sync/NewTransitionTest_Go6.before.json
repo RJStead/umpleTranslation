@@ -1,0 +1,1 @@
+{"classId": "CourseSection", "fromStateId": "EnoughStddudents", "toStateId": "Closed","event": "classSizeExceedsMaximum", "name": "EnoughStudents_classSizeExceedsMaximum_Closed" }

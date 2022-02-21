@@ -1,0 +1,43 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE ${last.version} modeling language!*/
+
+
+/*
+* I am a class comment.
+ * 
+ * Notice how there are 4 empty lines below me.
+ * 
+ * 
+ * 
+ * 
+ * And 2 below me.
+ * 
+ * 
+ * These lines should come out as we see here.
+ * Comments such as these are often used to improve readability through whitespace clarity.
+*/
+
+////---- Tests for  ClassCommentWithEmptyLines ----/////
+
+test Foo {
+
+ generate JUnit ;
+ 
+ depend  Foo ; 
+
+
+
+ 
+ GIVEN:
+ ClassCommentWithEmptyLines.ump;
+ 
+ 
+ 
+ THEN:
+ 
+
+  
+ 
+   
+
+}

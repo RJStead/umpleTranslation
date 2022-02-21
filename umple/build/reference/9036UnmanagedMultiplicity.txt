@@ -1,0 +1,21 @@
+W036 Unmanaged Multiplicity
+Errors and Warnings 1-50
+noreferences
+
+@@description
+<h2>Umple semantic warning generated when a directed association has a multiplicity with hard constraints</h2>
+
+<p>Umple generates code to manage the manipulation of the directed end (with the arrowhead) of a directed association. However there are no inverse references in such a case. In the example below, there are no references from class B to class X. As a result, the multiplicity on the undirected end is purely 'documentation'. 
+</p>
+
+<p>
+Specifying a hard constraint such as 1 or 2 for the upper or lower bound in such a case may be misleading and is typically incorrect. This error is raised whenever the multiplicity is other than * or 0..1  </p>
+</p>
+
+@@example
+@@source manualexamples/W036UnmanagedMultiplicity1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W036UnmanagedMultiplicity2.ump
+@@endexample

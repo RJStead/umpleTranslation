@@ -1,0 +1,6 @@
+
+// The following will resolve the issue
+
+class X {
+  const String A = "Something Interesting";
+}

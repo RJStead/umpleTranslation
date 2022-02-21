@@ -1,0 +1,22 @@
+W003 Redundant Lazy With Initialization
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple syntactic warning reported when the lazy keyword in specified when there is also an initializer</h2>
+
+<p>The function of the 'lazy' keyword is to indicate that an attribute is not to appear in the constructor. However an initializer for the attribute has the same effect, so specifying both 'lazy' and an initializer is redundant, and hints that there may be a mistake. The solution is just to remove the extraneous 'lazy'.
+
+</p>
+
+
+@@example
+@@source manualexamples/W003RedundantLazyWithInitialization1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W003RedundantLazyWithInitialization2.ump
+@@endexample
+
+

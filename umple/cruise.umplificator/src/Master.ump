@@ -1,0 +1,35 @@
+/*
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+This is the Umple master files that calls all other Umple files. By compiling this file,
+Umple will regenerate all Java files.
+
+The following instructs the system to inject comments on every class point to the source
+@outputumplesource
+*/
+strictness allow 30;
+strictness allow 31;
+strictness allow 1006;
+strictness allow 1007;
+strictness allow 1008;
+strictness allow 1006;
+
+generate Java "../src-gen-umple";
+
+use Main.ump;
+use UmplificatorVersion.ump;
+use Umplificator_core.ump;
+use Umplificator_core_code.ump;
+use Parser_Java.ump;
+use CodeVisitors.ump;
+use FileHelper.ump;
+use StringHelper.ump;
+use RuleRunner.ump;
+use Generator_CodeUmple.ump;
+use ExtractorHelper.ump;
+use RefactorHelper.ump;
+use UmpleCodeFormatter.ump;
+use Umplificator_traces.ump;

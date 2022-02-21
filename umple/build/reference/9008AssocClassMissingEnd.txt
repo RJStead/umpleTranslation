@@ -1,0 +1,21 @@
+E008 Association Class Missing End
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error reported when an association class is only defined with one end</h2>
+
+<p>An <a href="AssociationClassDefinition.html">association class</a> must have two classes designated as its ends. Instances of the association class represent links between instances of the associated classes, so it is illogical for an association class to have only one end.
+</p>
+
+
+@@example
+@@source manualexamples/E008AssociationClassMissingEnd1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E008AssociationClassMissingEnd2.ump
+@@endexample
+
+

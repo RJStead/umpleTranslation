@@ -1,0 +1,54 @@
+<?php
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.17.0.2716 modeling language!*/
+
+class Tracer
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Tracer Attributes
+  private $x;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public function __construct($aX)
+  {
+    $this->x = $aX;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public function setX($aX)
+  {
+    $wasSet = false;
+    if ($aX==100)
+    {
+      ConsoleTracer::handle( gettimeofday(true).",".uniqid().",ConsoleTracer_TraceSingleAttributeWhere.ump,6,Tracer,".spl_object_hash( $this ).",at_s,x,".$this->x.",".(""+$aX)null );
+    }
+    $this->x = $aX;
+    $wasSet = true;
+    return $wasSet;
+  }
+
+  public function getX()
+  {
+    return $this->x;
+  }
+
+  public function equals($compareTo)
+  {
+    return $this == $compareTo;
+  }
+
+  public function delete()
+  {}
+
+}
+?>

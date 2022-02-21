@@ -1,0 +1,13 @@
+namespace cruise.attributes.test;
+
+class BoatA
+{
+	Integer age;
+	[(age > 18)]
+}
+
+class BoatB
+{
+  Integer age;
+  [! (age > 18)]
+}

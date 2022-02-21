@@ -1,0 +1,30 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from Alloy_AssociationOneToOne.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class A
+sig A {
+  b : one B
+}
+
+-- Defines a signature for class B
+sig B {
+  a : one A
+}
+
+
+-- Defines constraints on association between B and A
+fact AssociationFact {
+  B <: a in (B) one -> one (A)
+}
+
+-- Defines bidirectionality rule between class A and class B
+fact BidirectionalityRule {
+  all a_1 : A, b_1 : B |
+    a_1 in a[b_1] <=> b_1 in b[a_1]
+}

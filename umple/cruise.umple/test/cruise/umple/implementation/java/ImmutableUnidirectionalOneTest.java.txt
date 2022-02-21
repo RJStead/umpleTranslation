@@ -1,0 +1,73 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package example;
+
+public class Student
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Student Attributes
+  private String number;
+
+  //Student Associations
+  private Mentor mentor;
+
+  //Helper Variables
+  private boolean canSetMentor;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Student(String aNumber, Mentor aMentor)
+  {
+    number = aNumber;
+    canSetMentor = true;
+    if (!setMentor(aMentor))
+    {
+      throw new RuntimeException("Unable to create Student due to aMentor. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public String getNumber()
+  {
+    return number;
+  }
+
+  public Mentor getMentor()
+  {
+    return mentor;
+  }
+
+  private boolean setMentor(Mentor aNewMentor)
+  {
+    boolean wasSet = false;
+    if (!canSetMentor) { return false; }
+    canSetMentor = false;
+    if (aNewMentor != null)
+    {
+      mentor = aNewMentor;
+      wasSet = true;
+    }
+    return wasSet;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "number" + ":" + getNumber()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "mentor = "+(getMentor()!=null?Integer.toHexString(System.identityHashCode(getMentor())):"null");
+  }
+}

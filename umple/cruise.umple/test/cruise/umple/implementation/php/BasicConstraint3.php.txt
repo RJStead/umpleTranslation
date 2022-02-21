@@ -1,0 +1,76 @@
+<?php
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.16.0.2388 modeling language!*/
+
+// attributes on both sides of the constraint's boolean expression
+class Client
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Client Attributes
+  private $minAge;
+  private $age;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public function __construct($aMinAge, $aAge)
+  {
+    $this->minAge = $aMinAge;
+    $this->age = $aAge;
+    if ($aAge<=$aMinAge)
+    {
+      throw new RuntimeException("Please provide a valid age and minAge [age>minAge]");
+    }
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public function setMinAge($aMinAge)
+  {
+    $wasSet = false;
+    if ($this->getAge()>$aMinAge)
+    {
+    $this->minAge = $aMinAge;
+    $wasSet = true;
+    }
+    return $wasSet;
+  }
+
+  public function setAge($aAge)
+  {
+    $wasSet = false;
+    if ($aAge>$this->getMinAge())
+    {
+    $this->age = $aAge;
+    $wasSet = true;
+    }
+    return $wasSet;
+  }
+
+  public function getMinAge()
+  {
+    return $this->minAge;
+  }
+
+  public function getAge()
+  {
+    return $this->age;
+  }
+
+  public function equals($compareTo)
+  {
+    return $this == $compareTo;
+  }
+
+  public function delete()
+  {}
+
+}
+?>

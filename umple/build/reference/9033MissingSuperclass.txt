@@ -1,0 +1,21 @@
+W033 Missing Superclass
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic warning issued when a referenced superclass is not found</h2>
+
+<p>When you declare a superclass of a class, that class must exist. If the class does not exist, then this warning is issued.</p>
+
+<p>It might be the case that the class is in fact declared in some code that is defined externally. In that case, the existence of the external class should be made known to Umple using the external keyword, such as in the second example.
+</p>
+
+@@example
+@@source manualexamples/W033MissingSuperclass1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W033MissingSuperclass2.ump
+@@endexample
+

@@ -1,0 +1,19 @@
+// The following example is a simple class that
+// shows an association class using both a
+// single role name for one associated class (a1)
+// and two role names to make links to the
+// other associated class.
+class A{
+    f;
+}
+
+
+associationClass B{
+    * A a1;
+    * b2 C c1;
+}
+
+
+class C {
+    d;
+}

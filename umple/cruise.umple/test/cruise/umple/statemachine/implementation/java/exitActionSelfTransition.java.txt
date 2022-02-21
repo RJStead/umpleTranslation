@@ -1,0 +1,141 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.29.0.4179.f58ce0d5e modeling language!*/
+
+
+
+// line 1 "A.ump"
+public class A
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //A Attributes
+  private boolean result;
+
+  //A State Machines
+  public enum Sm { created, initialized }
+  private Sm sm;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public A()
+  {
+    result = false;
+    setSm(Sm.created);
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setResult(boolean aResult)
+  {
+    boolean wasSet = false;
+    result = aResult;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean getResult()
+  {
+    return result;
+  }
+
+  public String getSmFullName()
+  {
+    String answer = sm.toString();
+    return answer;
+  }
+
+  public Sm getSm()
+  {
+    return sm;
+  }
+
+  public boolean init()
+  {
+    boolean wasEventProcessed = false;
+    
+    Sm aSm = sm;
+    switch (aSm)
+    {
+      case created:
+        if (getResult()==false)
+        {
+          exitSm();
+          setSm(Sm.created);
+          wasEventProcessed = true;
+          break;
+        }
+        if (getResult()==true)
+        {
+          exitSm();
+          setSm(Sm.initialized);
+          wasEventProcessed = true;
+          break;
+        }
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean getback()
+  {
+    boolean wasEventProcessed = false;
+    
+    Sm aSm = sm;
+    switch (aSm)
+    {
+      case initialized:
+        setSm(Sm.created);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private void exitSm()
+  {
+    switch(sm)
+    {
+      case created:
+        // line 5 "A.ump"
+        execute_exit_code();
+        break;
+    }
+  }
+
+  private void setSm(Sm aSm)
+  {
+    sm = aSm;
+
+    // entry actions and do activities
+    switch(sm)
+    {
+      case created:
+        // line 6 "A.ump"
+        execute_entry_code();
+        break;
+    }
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "result" + ":" + getResult()+ "]";
+  }
+}

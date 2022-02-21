@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="build" name="UmpleCore" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+
+  <!-- ```````````````````````````
+    Environment Variables
+  ``````````````````````````` -->
+  <import file="_template.xml" />
+  
+  <deps-declare-taskdef />
+
+  <property name="project.path" value="cruise.umple"/>
+  <property name="xtext.project.path" value="cruise.umple.xtext"/>
+  <property name="bin.path" value="${project.path}/bin"/>
+  <property name="dist.path" value="${dist.dir}/cruise.umple"/>
+  <property name="test.output.path" value="${dist.dir}/qa/cruise.umple"/>
+  <property name="vendors.path" value="${dist.dir}/vendors"/>
+
+  <path id="project.classpath">
+    <pathelement location="${bin.path}"/>
+  </path>
+
+  <path id="xtext.project.classpath">
+    <pathelement location="${bin.path}"/>
+  </path>
+
+  <path id="validator.project.classpath">
+    <pathelement location="cruise.umple.validator/bin"/>
+  </path>
+
+  <path id="umplificator.project.classpath">
+    <pathelement location="cruise.umplificator/bin"/>
+  </path>
+
+  <!-- ```````````````````````````
+    Clean up and initialize any potential byproduct
+  ``````````````````````````` -->
+
+  <target name="clean">
+    <antcall target="template.clean" />
+    <delete dir="${project.path}/src-gen-umple" failonerror="false" />
+    <delete dir="${project.path}/src-gen-umpleTL" failonerror="false" />
+    <delete dir="${project.path}/src-gen-umpletl" failonerror="false" />
+  	<delete dir="UmpleToRTCpp/src-gen-UmpleTL" failonerror="false" />
+    <delete dir="${project.path}/bin" failonerror="false" />
+    <delete dir="${project.path}/src/cruise" failonerror="false" />
+    <delete dir="cruise.umplificator/src-gen-umple" failonerror="false" />
+    <delete dir="cruise.umple.validator/src-gen-umple" failonerror="false" />
+  </target>
+
+  <target name="init">
+    <antcall target="template.init" />
+  </target>
+
+  <!-- Compiles Umple itself using the most recent stable downloaded build from cc -->
+  <target name="resetUmpleSelf">
+    <delete file="cruise.umple/src/rules.grammar"/>
+    <delete file="cruise.umple/bin/rules.grammar"/>
+
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+
+    <echo message="Compiling Umple using compiler built on CruiseControl: ${umple.stable.jar}"/>
+    <parallel>
+      <java jar="${umple.stable.jar}" fork="true" failonerror="true">
+        <arg value="cruise.umple/src/Master.ump"/>
+        <jvmarg value="-Xmx500m"/>
+      </java>
+      <!--java jar="${umple.stable.jar}" fork="true" failonerror="true">
+        <arg value="cruise.umple.validator/src/Master.ump"/>
+        <jvmarg value="-Xmx500m"/>
+      </java-->
+       <!--java jar="${umple.stable.jar}" fork="true" failonerror="true">
+        <arg value="cruise.umplificator/src/Master.ump"/>
+        <jvmarg value="-Xmx500m"/>
+      </java-->
+    </parallel>
+  </target>
+
+  <!-- Compiles Umple itself using the most recent build on this
+       machine (which in case of cc is the same as resetUmpleSelf) -->
+  <target name="umpleSelf">
+    <delete file="cruise.umple/src/rules.grammar"/>
+    <delete file="cruise.umple/bin/rules.grammar"/>
+
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+    
+    <!-- On cruiseControl the jar built here IS the stable one -->
+    <condition property="umplejar.built.here" value="${umple.stable.jar}" else="${dist.dir}/${dist.umple.jar}">
+      <equals arg1="${myenv}" arg2="cc" />
+    </condition>
+
+    <echo message="Compiling Umple using compiler built on this machine: ${umplejar.built.here}"/>
+    <parallel>
+      <java jar="${umplejar.built.here}" fork="true" failonerror="true">
+        <arg value="cruise.umple/src/Master.ump"/>
+      </java>
+      <!--java jar="${umplejar.built.here}" fork="true" failonerror="true">
+        <arg value="cruise.umple.validator/src/Master.ump"/>
+      </java-->
+      <!--java jar="${umplejar.built.here}" fork="true" failonerror="true">
+        <arg value="cruise.umplificator/src/Master.ump"/>
+      </java-->
+    </parallel>
+  </target>
+
+  <!-- Compiles Just the umple documenter - relies on the rest to be already compiled -->
+  <target name="umpleDocumenter">
+
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+    
+    <!-- On cruiseControl the jar built here IS the stable one -->
+    <condition property="umplejar.built.here" value="${umple.stable.jar}" else="${dist.dir}/${dist.umple.jar}">
+      <equals arg1="${myenv}" arg2="cc" />
+    </condition>
+
+    <echo message="Compiling Umple using compiler built on this machine: ${umplejar.built.here}"/>
+    <parallel>
+      <java jar="${umplejar.built.here}" fork="true" failonerror="true">
+        <arg value="cruise.umple/src/Documenter.ump"/>
+      </java>
+    </parallel>
+  </target>
+
+
+
+ <!-- ```````````````````````````
+    Generate Templates
+  ``````````````````````````` -->
+
+  <!-- Move the generic templates into the various UmpleTo* projects -->
+  <target name="templates">
+    <echo>Copying of common templates no longer active</echo>
+  </target>
+
+  <!-- Unzip JDT libraries into the jar construction folder -->
+  <target name="validatorJar">
+    <unjar src="lib/umplificatorplugins/org.eclipse.core.contenttype_3.4.200.v20130326-1255.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+    <unjar src="lib/umplificatorplugins/org.eclipse.core.jobs_3.5.300.v20130429-1813.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+    <unjar src="lib/umplificatorplugins/org.eclipse.core.resources_3.8.100.v20130521-2026.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+    <unjar src="lib/umplificatorplugins/org.eclipse.core.runtime_3.9.0.v20130326-1255.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+    <unjar src="lib/umplificatorplugins/org.eclipse.equinox.preferences_3.5.100.v20130422-1538.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+    <unjar src="lib/umplificatorplugins/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+    <unjar src="lib/umplificatorplugins/org.eclipse.jdt.core_3.9.1.v20130905-0837.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+    <unjar src="lib/umplificatorplugins/org.eclipse.osgi_3.9.0.v20130529-1710.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+	  <unjar src="lib/umplificatorplugins/org.eclipse.cdt.core_5.5.0.201309180223.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+	  <unjar src="lib/umplificatorplugins/com.ibm.icu_50.1.1.v201304230130.jar" dest="cruise.umple.validator/bin/" overwrite="true"/>
+  </target>
+  
+  <!-- Generate UmpleParser code and move to cruise.umple -->
+  <target name="umpleParser">
+
+    <!-- On cruiseControl the jar built here IS the stable one -->
+    <condition property="umplejar.built.here" value="${umple.stable.jar}" else="${dist.dir}/${dist.umple.jar}">
+      <equals arg1="${myenv}" arg2="cc" />
+    </condition>  
+
+    <condition property="umplejar.touse" value="${umple.stable.jar}" else="${umplejar.built.here}">
+      <equals arg1="${first.build}" arg2="true" />
+    </condition>  
+  
+    <java jar="${umplejar.touse}" fork="true" failonerror="true">
+      <arg value="UmpleParser/src/Master.ump"/>
+    </java>
+    
+    <copy todir="cruise.umple/src-gen-umple/cruise/umple/parser" overwrite="true">
+      <fileset dir="UmpleParser/src-gen-umple/cruise/umple/parser" excludes=".git*" />
+    </copy>
+  </target>
+
+  <!-- Move the generated code from UmpleTo* to cruise.umple -->
+  <target name="codegen">
+  
+    <!-- On cruiseControl the jar built here IS the stable one -->
+    <condition property="umplejar.built.here" value="${umple.stable.jar}" else="${dist.dir}/${dist.umple.jar}">
+      <equals arg1="${myenv}" arg2="cc" />
+    </condition>  
+  
+    <condition property="umplejar.touse" value="${umple.stable.jar}" else="${umplejar.built.here}">
+      <equals arg1="${first.build}" arg2="true" />
+    </condition>
+
+    <!-- First compile the Umple templates -->
+    <parallel>
+      <java jar="${umplejar.touse}" fork="true" failonerror="true">
+        <arg value="UmpleToJava/UmpleTLTemplates/Master.ump"/>
+      </java>
+      <java jar="${umplejar.touse}" fork="true" failonerror="true">
+        <arg value="UmpleToRTCpp/UmpleTLTemplates/Master.ump"/>
+      </java>
+      <java jar="${umplejar.touse}" fork="true" failonerror="true">
+        <arg value="UmpleToPhp/UmpleTLTemplates/Master.ump"/>
+      </java>
+      <java jar="${umplejar.touse}" fork="true" failonerror="true">
+        <arg value="UmpleToRuby/UmpleTLTemplates/Master.ump"/>
+      </java>
+      <java jar="${umplejar.touse}" fork="true" failonerror="true">
+        <arg value="UmpleToSql/UmpleTLTemplates/Master.ump"/>
+      </java>
+      <java jar="${umplejar.touse}" fork="true" failonerror="true">
+        <arg value="UmpleToTest/UmpleTLTemplates/Master.ump"/>
+      </java>
+      
+    </parallel>
+
+    <copy todir="cruise.umple/src-gen-umpletl/cruise/umple/compiler/java" overwrite="true">
+      <fileset dir="UmpleToJava/src-gen-UmpleTL/cruise/umple/compiler/java" excludes=".git* UmpleToJava.java" />
+    </copy>
+    <copy todir="cruise.umple/src-gen-umpletl" overwrite="true">
+      <fileset dir="UmpleToRTCpp/src-gen-UmpleTL" excludes=".git*" />
+    </copy>  	
+    <copy todir="cruise.umple/src-gen-umpletl/cruise/umple/compiler/php" overwrite="true">
+      <fileset dir="UmpleToPhp/src-gen-UmpleTL/cruise/umple/compiler/php" excludes=".git* UmpleToPhp.java" />
+    </copy>
+    <copy todir="cruise.umple/src-gen-umpletl/cruise/umple/compiler/ruby" overwrite="true">
+      <fileset dir="UmpleToRuby/src-gen-UmpleTL/cruise/umple/compiler/ruby" excludes=".git* UmpleToRuby.java" />
+    </copy>
+    <copy todir="cruise.umple/src-gen-umpletl/cruise/umple/compiler/sql" overwrite="true">
+      <fileset dir="UmpleToSql/src-gen-UmpleTL/cruise/umple/compiler/sql" excludes=".git* UmpleToSql.java" />
+    </copy>
+    <copy todir="cruise.umple/src-gen-umpletl/cruise/umple/compiler/test" overwrite="true">
+      <fileset dir="UmpleToTest/src-gen-UmpleTL/cruise/umple/compiler/test" excludes=".git* UmpleToTest.java" />
+    </copy>
+  </target>
+
+  <!-- Move RTCpp cpde to cruise.umple -->
+  <target name="rtcpp">
+    <copy todir="cruise.umple/src-gen-umple" overwrite="true">
+      <fileset dir="cruise.umple.nebula/src" excludes=".git*" />
+    </copy>
+    <copy todir="cruise.umple/src-gen-umple" overwrite="true">
+      <fileset dir="UmpleToRTCpp/src" excludes=".git*" />
+    </copy>
+  </target>
+
+  <!-- ```````````````````````````
+    Compile the application
+  ``````````````````````````` -->
+
+  <target name="compile">
+    <echo message="${ant.project.name}: ${ant.file}"/>
+
+    <deps-load-path conf="core"   pathid="core.ivy.classpath" />
+    <deps-load-path conf="test"   pathid="test.ivy.classpath" />
+
+    <javac debug="true" includeantruntime="false" debuglevel="source,lines,vars" destdir="${bin.path}" source="1.8" target="1.8">
+	    <!--src path="${xtext.project.path}/src"/ -->
+      <!-- src path="${xtext.project.path}/src-gen"/ -->
+      <src path="${project.path}/src"/>
+      <src path="${project.path}/src-gen-umpletl"/>
+      <src path="${project.path}/src-gen-umple"/>
+      <src path="${project.path}/test"/>
+      <src path="${vendors.path}/jopt-simple/src"/>
+      <exclude name="**/.git"/>
+      <exclude name="**/*.ump" />
+      <exclude name="**/data" />
+      <exclude name="**/vml/**" />
+      <classpath refid="project.classpath"/>
+      <classpath refid="validator.project.classpath"/>
+      <classpath refid="core.ivy.classpath" />
+      <classpath refid="test.ivy.classpath" />
+	    <!-- Add compiler arguments here, see https://ant.apache.org/manual/using.html#arg for details, example below
+			  <compilerarg value="-Xlint:deprecation" />
+		-->
+    </javac>
+    
+    <copy todir="${bin.path}" overwrite="true">
+	    <fileset dir="${project.path}/src"><include name="**/*.grammar"/></fileset>
+	    <fileset dir="${project.path}/src"><include name="**/*.error"/></fileset>
+	    <fileset dir="${basedir}/umpleonline/umplibrary/reusable"><include name="**/*.ump"/></fileset>
+    </copy>
+    <delete file="cruise.umple/src/rules.grammar"/>
+    <delete file="cruise.umple/bin/rules.grammar"/>
+  </target>
+
+  <target name="compileValidator">
+    <echo message="${ant.project.name}: ${ant.file}"/>
+
+    <antcall target="deps-manual" />
+    <path id="umple.manual.classpath">
+      <fileset file="${umple.deps.manual.dir}/*.jar" />
+    </path>
+
+    <deps-load-path conf="validator"    pathid="validator.ivy.classpath" />
+    <deps-load-path conf="test"         pathid="test.ivy.classpath" />
+
+    <javac debug="true" includeantruntime="false" debuglevel="source,lines,vars" destdir="cruise.umple.validator/bin" source="1.8" target="1.8">
+      <src path="${project.path}/src"/>
+      <src path="${project.path}/src-gen-umpletl"/>
+      <src path="${project.path}/src-gen-umple"/>
+      <src path="${project.path}/test"/>
+      <src path="cruise.umple.validator/src-gen-umple"/>
+      <src path="cruise.umple.validator/test"/>
+      <exclude name="**/*.ump" />
+      <exclude name="**/vml/**"/>
+      <classpath refid="validator.ivy.classpath" />
+      <classpath refid="test.ivy.classpath" />
+      <classpath refid="umple.manual.classpath" />
+    </javac>
+
+    <copy todir="cruise.umple.validator/bin" overwrite="true">
+	    <fileset dir="${project.path}/src"><include name="**/*.grammar"/></fileset>
+	    <fileset dir="${project.path}/src"><include name="**/*.error"/></fileset>
+    </copy>
+
+    <delete file="cruise.umple/src/rules.grammar"/>
+    <delete file="cruise.umple/bin/rules.grammar"/>
+  </target>
+
+  <target name="compileUmplificator">
+    <echo message="${ant.project.name}: ${ant.file}"/>
+
+    <deps-load-path conf="umplificator" pathid="umplificator.ivy.classpath" />
+    <deps-load-path conf="test"         pathid="test.ivy.classpath" />
+
+    <javac  debug="true" 
+            includeantruntime="false" 
+            debuglevel="source,lines,vars" 
+            destdir="cruise.umplificator/bin" 
+            source="1.8" 
+            target="1.8">
+      <src path="${project.path}/src"/>
+      <src path="${project.path}/src-gen-umpletl"/>
+      <src path="${project.path}/src-gen-umple"/>
+      <src path="${project.path}/test"/>
+      <src path="cruise.umplificator/src-gen-umple"/>
+       <!-- <src path="cruise.umplificator/test"/>-->
+      <exclude name="**/*.ump" />
+      <exclude name= "**/vml/**"/>
+      <classpath refid="umplificator.ivy.classpath"/>
+      <classpath refid="test.ivy.classpath"/>
+    </javac>
+
+    <copy todir="cruise.umplificator/bin/" overwrite="true">
+	    <fileset dir="cruise.umplificator/"><include name="log4j2.xml"/></fileset>
+	    <fileset dir="cruise.umplificator/src/main/resources/"><include name="*.drl"/></fileset>
+    </copy>
+
+    <delete file="cruise.umple/src/rules.grammar"/>
+    <delete file="cruise.umple/bin/rules.grammar"/>
+  </target>
+
+  <!-- Minify all JS scripts -->
+  <target name="compressAllScripts">
+    <property name="scriptPath" value="${basedir}/umpleonline/scripts"/>
+    <property name="tmpScript" value="${scriptPath}/tmpAllUmple.js"/>
+    <concat destfile="${tmpScript}" fixlastline="yes">
+      <fileset file="${scriptPath}/prototype.js"/>
+      <fileset file="${scriptPath}/dom.js"/>
+      <fileset file="${scriptPath}/ajax.js"/>
+      <fileset file="${scriptPath}/helper.js"/>
+      <fileset file="${scriptPath}/json.js"/>
+      <fileset file="${scriptPath}/debugger.js"/>
+      <fileset file="${scriptPath}/shCore.js"/>
+      <fileset dir="${scriptPath}" includes="shBrush*.js"/>
+      <fileset file="${scriptPath}/inlineeditor.js"/>
+      <fileset file="${scriptPath}/CodeMirror/lib/codemirror.js"/>
+      <fileset file="${scriptPath}/CodeMirror/mode/clike/clike.js"/>
+      <fileset file="${scriptPath}/CodeMirror/lib/util/foldcode.js"/>
+      <fileset file="${scriptPath}/CodeMirror/lib/util/searchcursor.js"/>
+      <fileset dir="${scriptPath}/dropbox" includes="*.js"/>
+      <fileset dir="${scriptPath}" includes="umple_*.js"/>
+      <fileset file="${scriptPath}/structureDiagram.js"/>
+      <fileset file="${scriptPath}/statetable/state_table_colourer.js"/>
+    </concat>
+    <java jar="${dist.dir}/libs/build/yuicompressor.jar"
+          fork="true"
+          failonerror="true">
+      <arg value="${tmpScript}"/>
+      <redirector output ="${scriptPath}/allumple-min.js"/>
+    </java>
+    <delete>
+      <fileset file="${tmpScript}"/>
+    </delete>
+  </target>
+
+  <!-- ```````````````````````````
+    Package the application
+  ``````````````````````````` -->
+
+  <target name="packageDocs">
+    <java classname="cruise.umple.docs.DocumenterMain" 
+          fork="true" 
+          classpath="${dist.dir}/${dist.umple.docs.jar}">
+      <arg value="build/reference"/>
+      <arg value="${dist.path}/reference"/>
+      <jvmarg value="-Xmx500m"/>      
+    </java>
+    <copy todir="${dist.path}/reference/files">
+      <fileset dir="build/reference/files"/>
+    </copy>
+    <copy todir="${dist.path}/reference/">
+      <fileset file="umplewww/index.html"/>
+    </copy>
+    <copy todir="${dist.path}/reference/files">
+      <fileset file="umplewww/files/umple_logo.jpg"/>
+    </copy>
+    <copy todir="${dist.path}/reference/files">
+      <fileset file="umplewww/files/uottawa_ver_black.png"/>
+    </copy>
+    <copy todir="${dist.path}/reference/files">
+      <fileset file="umplewww/files/Octocat.jpg"/>
+    </copy>
+    <copy todir="${dist.path}/reference/files">
+      <fileset file="umplewww/files/umple_example_uml.jpg"/>
+    </copy>
+    <copy todir="${dist.path}/reference/syntaxhighlighter">
+      <fileset dir="umplewww/syntaxhighlighter"/>
+    </copy>
+    <copy todir="${dist.path}/reference/examples">
+      <fileset dir="umplewww/examples"/>
+    </copy>
+    <copy todir="${dist.path}/reference/">
+      <fileset file="umplewww/umple-core-classDiagram.shtml"/>
+    </copy>
+    <copy todir="${dist.path}/reference/">
+      <fileset file="umplewww/umple-compiler-classDiagram.shtml"/>
+    </copy>
+    <copy todir="${dist.path}/reference/">
+      <fileset file="umplewww/umple-state-classDiagram.shtml"/>
+    </copy>
+  </target>
+
+  <target name="travisCopyManual">
+    <copy todir="umpleonline/manual">
+      <fileset dir="${dist.path}/reference"/>
+    </copy>    
+    <copy todir="umpleonline/manual/files">
+      <fileset dir="build/reference/files"/>
+    </copy>
+    <copy todir="umpleonline/manual/examples">
+      <fileset dir="umplewww/examples"/>
+    </copy>
+    <copy todir="umpleonline/manual/syntaxhighlighter">
+      <fileset dir="umplewww/syntaxhighlighter"/>
+    </copy>
+  </target>
+
+  <target name="packageUmpleonline" if="${shouldPackageUmpleOnline}">
+    <copy file="${dist.dir}/${dist.umple.sync.jar}" tofile="umpleonline/scripts/umplesync.jar" overwrite="true" />
+    <copy file="${dist.dir}/${dist.umple.jar}" tofile="umpleonline/scripts/umple.jar" overwrite="true" />
+    <antcall target="compressAllScripts"/>
+  </target>
+
+  <target name="buildDockerImage">
+    <exec executable="docker" dir="umpleonline" searchpath="true" failonerror="true">
+      <arg value="build" />
+      <arg value="-t" />
+      <arg value="umple/umpleonline-base:local" />
+      <arg value="-f" />
+      <arg value="Dockerfile-base" />
+      <arg value="." />
+    </exec>
+
+    <exec executable="docker" dir="umpleonline" searchpath="true" failonerror="true">
+      <arg value="build" />
+      <arg value="-t" />
+      <arg value="umple/umpleonline:local" />
+      <arg value="--build-arg" />
+      <arg value="gitbranch=localtest" />
+      <arg value="." />
+    </exec>
+
+  </target>
+
+<!-- The Umplificator jar-->
+<target name="packageUmplificator">
+
+
+  <jar destfile="${dist.dir}/${dist.umple.umplificator.jar}" filesetmanifest="mergewithoutmain">
+    <manifest>
+     <attribute name="Built-By" value="Cruise - University of Ottawa"/>
+     <attribute name="Version" value="${umple.version}"/>
+     <attribute name="Main-Class" value="cruise.umplificator.UmplificatorMain"/>
+     <attribute name="Class-Path" value="."/>
+   </manifest>
+   <fileset dir="cruise.umplificator/bin"/>
+
+ </jar>
+</target>
+
+  <target name="packageValidator">
+    <antcall target="validatorJar"/>
+    <echo message="Package: Umplificator and Validator jar" />
+
+    <deps-get-path conf="validator" pathid="validator.ivy.classpath" />
+
+    <manifestclasspath property="umple.validator.jar.classpath" jarfile="${dist.dir}/umple.jar" >
+      <classpath refid="validator.ivy.classpath"/>
+    </manifestclasspath>
+
+    <!-- The validator jar-->
+    <echo message="Package: Umple validator jar used in Umple " />
+    <jar destfile="${dist.dir}/umplevalidator_${umple.version}.jar"
+         basedir="cruise.umple.validator/bin"
+         includes="cruise/umple/** cruise/umple/validator** org/eclipse/** en.error org/** *.grammar *.error templates/** org/apache/** joptsimple/** **/*.grammar" >
+      <manifest>
+        <attribute name="Built-By" value="Cruise - University of Ottawa"/>
+        <attribute name="Version" value="${umple.version}"/>
+        <attribute name="Main-Class" value="cruise.umple.CodeGenValidatorMainConsole"/>
+        <attribute name="Class-Path" value="${umple.validator.jar.classpath}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="packageMainJar">
+    <echo message="Package: Main command line jar" />
+
+    <deps-get-path conf="core" pathid="core.ivy.classpath" />
+
+    <manifestclasspath property="umple.jar.classpath" jarfile="${dist.dir}/${dist.umple.jar}" >
+      <classpath refid="core.ivy.classpath"/>
+    </manifestclasspath>
+
+    <jar destfile="${dist.dir}/${dist.umple.jar}"
+         basedir="${bin.path}"
+         includes="cruise/umple/** en.error *.grammar *.error templates/** org/apache/** joptsimple/** **/*.grammar *.ump"
+         excludes="**/*Test.class">
+      <manifest>
+        <attribute name="Built-By" value="Cruise - University of Ottawa"/>
+        <attribute name="Version" value="${umple.version}"/>
+        <attribute name="Main-Class" value="cruise.umple.UmpleConsoleMain"/>
+        <attribute name="Class-Path" value="${umple.jar.classpath}"/>
+      </manifest>
+
+    </jar>
+    <echo message="Making symbolic link so it can be run as umple.jar" />
+    <symlink link="${dist.dir}/umple.jar" resource="${dist.dir}/${dist.umple.jar}" overwrite="true" failonerror="false" />
+  </target>
+
+
+  <target name="packageSyncJar">
+    <echo message="Package: Umple sync jar used in UmpleOnline to compile and sync diagram - See PlaygroundMain" />
+
+    <deps-get-path conf="core" pathid="core.ivy.classpath" />
+    <manifestclasspath property="umple.jar.classpath" jarfile="${dist.dir}/${dist.umple.jar}" >
+      <classpath refid="core.ivy.classpath"/>
+    </manifestclasspath>
+
+    <jar  destfile="${dist.dir}/${dist.umple.sync.jar}" 
+          basedir="${bin.path}" 
+          includes="cruise/umple/** en.error org/apache/tools/ant/** *.grammar *.error templates/** org/apache/** joptsimple/** **/*.grammar *.ump">
+      <manifest>
+        <attribute name="Built-By" value="Cruise - University of Ottawa"/>
+        <attribute name="Version" value="${umple.version}"/>
+        <attribute name="Main-Class" value="cruise.umple.PlaygroundMain"/>
+        <attribute name="Class-Path" value="${umple.jar.classpath} ${umple.test.jar.classpath}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="packageDocJar">
+    <echo message="Package: Documenter jar used to generate user manual" />
+
+    <deps-get-path conf="core" pathid="core.ivy.classpath" />
+    <manifestclasspath property="umple.jar.classpath" jarfile="${dist.dir}/${dist.umple.jar}" >
+      <classpath refid="core.ivy.classpath"/>
+    </manifestclasspath>
+
+    <jar  destfile="${dist.dir}/${dist.umple.docs.jar}" 
+          basedir="${bin.path}" 
+          includes="cruise/umple/** en.error *.grammar *.error templates/** org/apache/** joptsimple/** **/*.grammar">
+      <manifest>
+        <attribute name="Built-By" value="Cruise - University of Ottawa"/>
+        <attribute name="Version" value="${umple.version}"/>
+        <attribute name="Main-Class" value="cruise.umple.docs.DocumenterMain"/>
+        <attribute name="Class-Path" value="${umple.jar.classpath} ${umple.test.jar.classpath}"/>
+      </manifest>
+    </jar>
+  </target>
+
+
+  <target name="packageJars">
+    <antcall target="packageMainJar" />
+    <antcall target="packageSyncJar" />
+    <antcall target="packageDocJar" />
+
+    <deps-get-path conf="core" pathid="core.ivy.classpath" />
+    <manifestclasspath property="umple.jar.classpath" jarfile="${dist.dir}/${dist.umple.jar}" >
+      <classpath refid="core.ivy.classpath"/>
+    </manifestclasspath>
+
+    <deps-get-path conf="test" pathid="test.ivy.classpath" />
+    <manifestclasspath property="umple.test.jar.classpath" jarfile="${dist.dir}/${dist.umple.jar}" >
+      <classpath refid="test.ivy.classpath"/>
+    </manifestclasspath>
+
+    <echo message="Package: Umple statistics jar" />
+    <jar  destfile="${dist.dir}/${dist.umple.stats.jar}" 
+          basedir="${bin.path}" 
+          includes="cruise/umple/** *.grammar *.error templates/** org/apache/** joptsimple/** **/*.grammar">
+      <manifest>
+        <attribute name="Built-By" value="Cruise - University of Ottawa"/>
+        <attribute name="Version" value="${umple.version}"/>
+        <attribute name="Main-Class" value="cruise.umple.stats.StatsMain"/>
+        <attribute name="Class-Path" value="${umple.jar.classpath} ${umple.test.jar.classpath}"/>
+      </manifest>
+    </jar>
+
+    <echo message="Package: Umplerun jar - tool for dynamically calling Umple API" />
+    <copy todir="${bin.path}">
+      <fileset dir="lib/umplerun"/>
+    </copy>
+
+    <jar  destfile="${dist.dir}/${dist.umple.run.jar}" 
+          basedir="${bin.path}" 
+          includes="cruise/umple/** en.error org/** *.grammar *.error templates/** org/apache/** joptsimple/** **/*.grammar">
+      <manifest>
+        <attribute name="Built-By"    value="Cruise - University of Ottawa"/>
+        <attribute name="Version"     value="${umple.version}"/>
+        <attribute name="Main-Class"  value="cruise.umple.UmpleRunMain"/>
+        <attribute name="Class-Path"  value="${umple.jar.classpath} ${umple.test.jar.classpath}"/>
+      </manifest>
+    </jar>
+
+
+	  <!-- TODO: UNCOMMENT ONCE XTEXT IN THE MIX -->
+    <!-- <copy todir="${dist.dir}/update">
+      <fileset dir="../cruise.umple.xtext/umpleUpdateSite"/>
+    </copy>
+    <copy todir="../umpleonline/update">
+      <fileset dir="../cruise.umple.xtext/umpleUpdateSite"/>
+    </copy> -->
+  </target>
+
+  <target name="package">
+    <echo message="Package Version: ${umple.version}" />
+	  <antcall target="packageJars" />
+	  <antcall target="packageUmpleonline" />
+	  <antcall target="packageDocs" />
+  </target>
+
+  <!-- ```````````````````````````
+    Deploy the application
+  ``````````````````````````` -->
+
+  <target name="deploy" if="${shouldDeploy}">
+    <echo message="Deploying Version: ${umple.version}" />
+    <antcall target="deployUmpleonlineJars" />
+    <antcall target="deployUpdatedLib" />
+  </target>
+
+  <target name="deployUmpleonlineJars" >
+    <copy file="${dist.dir}/${dist.umple.sync.jar}"   tofile="/h/ralph/sites/www/html/umpleonline/scripts/umplesync.jar" overwrite="true" />
+    <copy file="${dist.dir}/${dist.umple.jar}"        tofile="/h/ralph/sites/www/html/umpleonline/scripts/umple.jar"     overwrite="true" />
+  </target>
+
+  <target name="deployUpdatedLib">
+    <copy file="${dist.dir}/${dist.umple.sync.jar}"   tofile="lib/umplesync.jar"  overwrite="true" />
+    <copy file="${dist.dir}/${dist.umple.jar}"        tofile="lib/umple.jar"      overwrite="true" />
+  </target>
+
+  <target name="deployUmpleonline" >
+    <antcall target="deployUmpleonlineJars" />
+    <antcall target="deployUmpleDocs" />
+    <copy todir="/h/ralph/sites/www/html/umpleonline">
+      <fileset dir="umpleonline">
+        <exclude name=".git"/>
+        <exclude name="ump"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="deployUmpleDocs" >
+    <antcall target="packageDocs" />
+    <copy todir="/h/ralph/sites/www/html/umple">
+      <fileset dir="${dist.dir}/cruise.umple/reference">
+        <exclude name=".git"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- ```````````````````````````
+    Build the application
+  ``````````````````````````` -->
+  <!--
+    First Build
+    run this the very first time, it will package up your system
+    and generate a built JAR.
+
+    If changing this target, be sure to update .travis.yml
+  -->
+  <target name="first-build">
+    <property name="first.build" value="true" />
+    <check-connectivity />
+
+    <antcall target="deps-resolve-all" />
+
+    <antcall target="clean" />
+    <antcall target="init" />
+    <antcall target="codegen" />
+    <antcall target="umpleParser" />
+    <antcall target="rtcpp" />
+    <antcall target="template.setVersion" />
+    <antcall target="resetUmpleSelf" />
+    <antcall target="compile" />
+    <!--antcall target="compileValidator" -->
+    <!--antcall target="compileUmplificator" -->
+    <antcall target="package" />
+    <antcall target="template.resetVersion" />
+  </target>
+
+  <!--
+    Run this to simply create a new umple.jar for testing the packaging code
+  -->
+  <target name="package-build">
+    <property name="first.build" value="false" />
+    <check-connectivity />
+
+    <antcall target="deps-umple" />
+
+    <antcall target="clean" />
+    <antcall target="init" />
+    <antcall target="codegen" />
+    <antcall target="umpleParser" />
+    <antcall target="rtcpp" />
+    <antcall target="template.setVersion" />
+    <antcall target="umpleSelf" />
+    <antcall target="compile" />
+
+    <antcall target="packageJars" />
+    <antcall target="template.resetVersion" />
+  </target>
+
+  <!--
+    Build
+    run by the build machine, should work as-is on your machine, but be careful
+    as your code will be run against the "latest" Umpled Umple.
+
+    If changing this target, be sure to update .travis.yml
+   -->
+  <target name="build" >
+    <property name="first.build" value="false" />
+    <check-connectivity />
+
+    <antcall target="deps-umple" />
+
+    <antcall target="clean" />
+    <antcall target="init" />
+    <antcall target="codegen" />
+    <antcall target="umpleParser" />
+    <antcall target="rtcpp" />
+    <antcall target="template.setVersion" />
+    <antcall target="umpleSelf" />
+    <antcall target="compile" />
+    <!--antcall target="compileValidator" -->
+    <!--antcall target="compileUmplificator" -->
+    <antcall target="package" />
+    <antcall target="template.test" />
+    <antcall target="deploy" />
+    <antcall target="template.resetVersion" />
+  </target>
+
+  <target name="build-umplificator" >
+    <property name="first.build" value="false" />
+    <check-connectivity />
+
+    <antcall target="clean" />
+    <antcall target="init" />
+    <antcall target="codegen" />
+    <antcall target="umpleParser" />
+    <antcall target="rtcpp" />
+    <antcall target="template.setVersion" />
+    <antcall target="umpleSelf" />
+    <antcall target="compile" />
+    <antcall target="compileValidator" />
+    <antcall target="compileUmplificator" />
+    <antcall target="template.test" />
+    <antcall target="package" />
+    <antcall target="packageUmplificator" />
+    <antcall target="packageValidator" />
+    <antcall target="deploy" />
+    <antcall target="template.resetVersion" />
+  </target>
+
+
+  <!-- can be run locally as a quick(er) test to see if the build will pass on the server -->
+  <target name="pre_build" >
+    <antcall target="compile" />
+    <antcall target="template.test" />
+  </target>
+
+  <!-- Run This Command if you are working outside Eclipse and want to see if compilation works -->
+  <target name="local" >
+    <antcall target="umpleSelf" />
+    <antcall target="compile" />
+  </target>
+
+ <target name="documenter" >
+    <antcall target="umpleDocumenter" />
+    <antcall target="compile" />
+    <antcall target="packageDocJar" />    
+  </target>
+
+
+  <!-- Other projects that rely on UmpleCore can call this target to ensure the the application
+       Is compiled -->
+
+  <target name="precondition" >
+    <antcall target="clean" />
+    <antcall target="init" />
+    <antcall target="codegen" />
+    <antcall target="umpleParser" />
+    <antcall target="rtcpp" />
+    <antcall target="template.setVersion" />
+    <antcall target="compile" />
+  </target>
+
+  <target name="postcondition" >
+    <antcall target="template.resetVersion" />
+  </target>
+
+</project>
+

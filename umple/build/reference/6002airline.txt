@@ -1,0 +1,13 @@
+Airline System
+Examples
+noreferences
+
+@@description
+<p>A simple airline system that manages flight and passenger information</p>
+
+<img src="examples/airline.png" title="Airline System UML Model" width="90%" />
+
+
+@@example
+@@source AirlineExample.ump
+@@endexample

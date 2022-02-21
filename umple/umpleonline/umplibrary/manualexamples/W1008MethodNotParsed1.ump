@@ -1,0 +1,7 @@
+// This example generates the warning
+// because there is a missing return type
+class X {
+  m() {}
+}
+//$?[End_of_model]$?
+// @@@skipcompile - the resulting code cannot be compiled

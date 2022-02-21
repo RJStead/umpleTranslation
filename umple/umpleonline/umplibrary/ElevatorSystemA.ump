@@ -1,0 +1,71 @@
+/*
+  Elevator System A - UML class diagram written in Umple
+  Last updated: June 8, 2010
+*/
+//Namespace for core of the system.
+namespace Elevator.core;
+
+class Building{
+ name;
+ 1 -- 2..* Floor;
+ 1 -- 1..* Bank;
+}
+
+class Bank{
+ id;
+ 1 -- 1..* Elevator;
+}
+
+
+class Floor{
+ id;
+ doorToOpen;
+ 
+ 0..1 -- 0..1 Floor onSamelevelAs;
+ 1 -- * Elevator onFloor; 
+}
+
+class Elevator{
+ id;
+ direction;
+ movingOrStopped;
+ * -- * Floor hasAccess;
+}
+
+//Temporarely taken out because of lack of Association Class implementations in Umple 2.0
+//ordered
+/*association BankOnFloor{ 
+ Boolean upCall;
+ Boolean downCall;
+ 0..* Bank; 
+ 2..* Floor;
+}*/
+//$?[End_of_model]$?
+
+//Positioning
+
+class Building
+{
+  position 27 158 112 57;
+  position.association Building__Floor 112,57 0,0;
+  position.association Bank__Building 112,0 0,57;
+}
+
+class Floor
+{
+  position 205 291 157 75;
+  position.association Floor__Floor:onSamelevelAs 26,75 0,59;
+  position.association Elevator:onFloor__Floor 127,0 129,92;
+}
+
+class Elevator
+{
+  position 203 148 196 92;
+  position.association Elevator__Floor:hasAccess 47,92 45,0;
+}
+
+class Bank
+{
+  position 218 30 109 58;
+  position.association Bank__Elevator 66,58 81,0;
+}

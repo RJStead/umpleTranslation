@@ -1,0 +1,12 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi2;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+public interface IClientImpl extends java.rmi.Remote, ICCImpl
+{
+  public void setSelf(Client proxy) throws RemoteException;
+  public int getHashCode() throws RemoteException;
+  public void delete() throws RemoteException;
+}

@@ -1,0 +1,4 @@
+// This does not cause the warning
+interface Y {
+  const A=5;
+}

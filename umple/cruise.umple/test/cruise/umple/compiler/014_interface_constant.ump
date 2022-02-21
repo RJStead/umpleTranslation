@@ -1,0 +1,4 @@
+interface ISomething
+{
+  const String aVariable = aValue;
+}

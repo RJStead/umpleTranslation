@@ -1,0 +1,24 @@
+E013 Non Immutable Association
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error reported when an immutable class is defined as having an association to a non-immutable class.</h2>
+
+<p>By definition, an immutable class can't change state, so it can't have an association that can change state or an association to a class that can change state.
+
+</p>
+
+
+@@example
+@@source manualexamples/E013NonImmutableAssociation1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E013NonImmutableAssociation2.ump
+@@endexample
+
+@@example @@caption Another Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E013NonImmutableAssociation3.ump
+@@endexample

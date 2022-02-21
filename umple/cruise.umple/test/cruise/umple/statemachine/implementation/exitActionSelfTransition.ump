@@ -1,0 +1,14 @@
+class A{
+  boolean result = false;
+  sm{
+    created{
+      exit /{execute_exit_code();}
+      entry /{execute_entry_code();}
+      init [result==false] -> created;
+      init [result==true] -> initialized;
+    }
+    initialized{
+      getback ->created;
+    }
+  } 
+}

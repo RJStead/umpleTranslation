@@ -1,0 +1,116 @@
+namespace cruise.umplificator;
+
+class UmplificatorMain {
+
+	depend java.util.*;
+	depend cruise.umplificator.core.*;
+	depend cruise.umplificator.core.Umplificator.RefactoringLevel;
+	depend java.io.File;
+	depend java.util.Arrays;
+	depend java.io.IOException;
+	// jOPT Simple dependency
+	depend joptsimple.*;
+  
+	public static void main(String[] args) {
+		 // Configure Logger
+		 logger.debug("Configure Logger from log4j.properties");
+		 OptionParser optparser = initializeOptionParser();
+	     OptionSet optset = optParse(optparser, args);
+	     
+	     if (preModelOptionProcess(optparser, optset))
+    	 {
+      		return;
+   		 }
+		 List<String> nonOpt = optset.nonOptionArguments();
+		 
+		 if (nonOpt.isEmpty()){ 
+	      	System.out.println("Please specify <umple_file or java_file> to process");
+	      	printUsage(optparser);
+	     	return;	 
+		 }
+		 logger.debug("Umplification process started!");
+		 List<File> inputFiles = FileHelper.getListOfFilesFromPath(nonOpt.get(0), new ArrayList<File>());
+		 if (inputFiles.size() >= 0 ){
+			Umplificator umplificator = new Umplificator();
+			 int level = (optset.has("level"))?  (int)optset.valueOf("level"): -1;
+			 if (level != -1) { umplificator.setCurrentLevel(RefactoringLevel.values()[level]);}
+			 if (optset.has("path")) { umplificator.setOutputFolder((String)optset.valueOf("path")); }
+			umplificator.setNeedSubDirectories(optset.has("dir"));
+			umplificator.setSplitModel(optset.has("splitModel"));			
+
+			try {
+				String console = umplificator.umplify(inputFiles) ? "Success!":"Error" ;
+				logger.info(console);
+			} catch (Exception e)
+			{
+				logger.fatal("Fatal exception while umplifying input files!", e);
+				System.exit(1);
+			}
+		 }
+	}
+
+	private static  OptionParser initializeOptionParser(){
+    	OptionParser optparser = new OptionParser();
+	    optparser.acceptsAll(Arrays.asList("version", "v"), "Print out the current Umple version number");
+	    optparser.acceptsAll(Arrays.asList("help"), "Display the help message");
+	    optparser.accepts("dir", "If present, subdirectories based on namespaces will be generated");
+	    optparser.accepts("splitModel", "If present, two ouput files will be created for each input class. One for the model one for the rest");
+	    optparser.accepts("path", "The output folder path").withRequiredArg().ofType(String.class);
+        optparser.accepts("level","The level of Refactoring").withRequiredArg().ofType( Integer.class );
+   	    return optparser;
+    }
+    
+/**
+   * 
+   * optionProcess: process the option arguments which does not require UmpleModel
+   * Argument: optSet - set of the options and corresponding arguments
+   * Return: boolean - If application should terminate immediately after return
+   */
+   private static  boolean preModelOptionProcess(OptionParser optparser, OptionSet optSet){
+    if (optSet == null)
+    { }
+    else if (optSet.has("version"))
+    {
+      System.out.println("Version: " + Umplificator.VERSION_NUMBER);
+    }
+    else if (optSet.has("help"))
+    {
+      printUsage(optparser);
+    }
+    else
+    {
+      return false;
+    }
+    return true;
+  }
+
+   
+   private static  OptionSet optParse(OptionParser optparser, String [] args){
+	    OptionSet optSet = null;
+	    try
+	    {
+	      optSet = optparser.parse(args);
+	    } 
+	    catch (joptsimple.OptionException e)
+	    {
+	      System.out.println("Option:" + e.getMessage());
+	      printUsage(optparser);
+	    }
+	
+	    return optSet;
+   }
+	
+
+  private static  void printUsage(OptionParser optparser){
+    System.out.println("Usage:  java -jar umplificator.jar <file/folder> --path=output_path --level=0\nExample: java -jar umplificator.jar Student.java outputFolder");
+      try
+      {
+        optparser.printHelpOn(System.out);
+      } 
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+  }
+
+} 

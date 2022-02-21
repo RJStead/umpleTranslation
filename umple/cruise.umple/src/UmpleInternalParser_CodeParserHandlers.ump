@@ -1,0 +1,133 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+Handlers for the RuleBasedParser.
+
+*/
+ 
+namespace cruise.umple.compiler;
+
+external interface ParserAction{}
+external interface LinkedFileHandler{}
+external interface AnalyzerGeneratorHandler{}
+
+/* This is the ParserAction to handle 'use' tokens in Umple. 
+ *
+ * This is called any time a 'useStatement' token is read, in which it 
+ * dispatches a `RuleBasedParserThread` on the discovered token, which
+ * effectively reads the new file into the token location
+ */
+  
+class UseStatementParserAction{
+  depend java.io.File;
+  depend cruise.umple.parser.analysis.ParserAction;
+  depend cruise.umple.parser.analysis.ParserDataPackage;
+  depend cruise.umple.parser.analysis.RuleBasedParserThread;
+  depend cruise.umple.parser.Token;
+  
+  isA ParserAction;
+ 
+  public void onSuccess(Token token, ParserDataPackage data)
+  {  
+    String value = token.getValue("use");
+    // This is the case for the umple file, which ends with .ump
+    // Mixsets will be accepted (e.g use Mixset;) but not be proccessed in this method. 
+    if (value.endsWith(".ump"))  
+    {
+      String fileName="";
+	  String path = "";    
+	  int index =-1;
+	  if (data!=null && data.getFullFileAddress()!=null)    index = data.getFullFileAddress().lastIndexOf("/") ;
+	  if (index==-1) index = data.getFullFileAddress().lastIndexOf("\\");  
+	  if (index!=-1){
+	    path = data.getFullFileAddress().substring(0,index+1 );
+	  }
+	  synchronized(data.getHasParsed())
+	  {
+	    fileName = data.getAnalyzer().getFile().getAbsoluteFile().getParentFile().getAbsolutePath() + File.separator + value;
+	    //I used this technique because I noticed this function is used to several purposes.
+	    // The correct implementation is just to set fileName = path +value; and remove the above code.
+	    //TODO: this issue must be investigated more. Currently it is working with the following solution. 
+	    File f = new File(fileName);
+	    if (!f.exists()) fileName = path +value;
+	    if(!data.getHasParsed().contains(f.getAbsolutePath()))
+		{
+		  data.getHasParsed().add(f.getAbsolutePath());
+		  RuleBasedParserThread thread = new RuleBasedParserThread(
+		          data.getAnalyzer().getRules().get("$ROOT$"),
+		          token,
+		          fileName,
+		          data
+		        );
+		  data.getAnalyzer().addThread(thread);
+		  thread.start();
+		  }
+		}
+    }
+  }
+}
+
+/* This is the LinkedFileHandler for the Umple language. 
+ *
+ * This handler takes all linked files and appends a series of 'use' statements
+ * to the end of the current input of the main file. This is all done prior to 
+ * parsing so that the statements get interpreted properly.
+ */
+class UmpleLinkedFileHandler{ 
+  depend java.io.File;
+  depend java.util.Base64;
+  depend java.util.Base64.Decoder;
+  depend cruise.umple.parser.analysis.LinkedFileHandler;
+  
+  isA LinkedFileHandler;
+
+  public String onFileLink( String input, File[] linkedFiles ){
+    for( File file : linkedFiles ){
+      String theFileName = file.getPath();
+      if(theFileName.startsWith("__UMPLE")) {
+        byte[] decodedBytes = Base64.getDecoder().decode(theFileName.substring(7));
+        // This is a direct Umple statement
+        input += "\n"+(new String(decodedBytes));
+      }
+      else {
+        // It is something that should be a use statement (file or mixset)
+        input += "\nuse " + file.getPath() + ";";
+      }
+    }
+    return input;
+  }
+}
+
+/* This is the AnalyzerGeneratorHandler for the Umple language
+ * 
+ * This handler constructs Analyzers by name by using reflection
+ * in the `cruise.umple.analysis` namespace
+ */
+class UmpleAnalyzerGeneratorHandler{
+  depend cruise.umple.parser.analysis.AnalyzerGeneratorHandler;
+  depend cruise.umple.parser.analysis.Analyzer;
+  depend java.lang.reflect.*;
+  depend java.lang.IllegalStateException;
+
+  isA AnalyzerGeneratorHandler;
+  
+  public Analyzer generateFromName( String name ){
+    try{
+      String className = "cruise.umple.analysis."+name.substring(0,1).toUpperCase()+name.substring(1)+"Analyzer";
+      Class cls = Class.forName(className);
+      Analyzer a = (Analyzer) cls.newInstance();
+      a.setName(name);
+      return a;
+    }
+    catch(ClassNotFoundException e){
+      return null;
+    }
+    catch(InstantiationException | IllegalAccessException | IllegalArgumentException  e){
+      throw new IllegalStateException("Error instantiating class " + name + ": " + e.getMessage());
+    }
+  }
+}

@@ -1,0 +1,81 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi3;
+import java.io.Serializable;
+
+public class CC implements java.io.Serializable, ICCImpl
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public CC()
+  {}
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public void deleteImpl()
+  {}
+
+  // line 14 "../../Class_DistributableRMI3.ump"
+   public void someMethod1Impl(){
+    
+  }
+
+  public void setRealObject(ICCImpl aObject)
+  {
+    realObject=aObject;
+  }
+
+  transient ICCImpl realObject=this;
+  public void delete()
+  {
+    while(true)
+      try{
+        realObject.deleteImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+   public void someMethod1()
+  {
+    while(true)
+      try{
+        realObject.someMethod1Impl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+
+  protected  ICCImpl remoteObject;  
+  public void setRemoteObject(ICCImpl aRemoteObject)
+  {
+    remoteObject=aRemoteObject;
+  }
+  public ICCImpl getRemoteObject()
+  {
+    return (ICCImpl)remoteObject;
+  }
+  private void readObject(java.io.ObjectInputStream in) throws Exception
+  {
+    try
+    {
+      in.defaultReadObject();
+      realObject=(ICCImpl)remoteObject;
+    }
+    catch(Exception e)
+    {
+      throw e;
+    }
+    
+  }
+ 
+}

@@ -1,0 +1,30 @@
+  public boolean flip()
+  {
+    boolean wasEventProcessed = false;
+    
+    Status aStatus = status;
+    StatusOn aStatusOn = statusOn;
+    switch (aStatus)
+    {
+      case Off:
+    StringTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",TraceNestedStatesB.ump,22,Tracer,"+System.identityHashCode(this)+",sm_t,Off,flip,Idle" );
+        setStatusOn(StatusOn.Idle);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    switch (aStatusOn)
+    {
+      case Idle:
+    StringTracer.handle( System.currentTimeMillis()+","+Thread.currentThread().getId()+",TraceNestedStatesB.ump,22,Tracer,"+System.identityHashCode(this)+",sm_t,Idle,flip,Running" );
+        setStatusOn(StatusOn.Running);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }

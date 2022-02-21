@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="build" name="Umple" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <import file="_template.xml" />
+
+  <target name="build">
+    <deps-declare-taskdef />
+
+    <trycatch property="foo" reference="bar">
+      <try>
+        <antcall target="qaBuildingPage" />
+
+        <echo>Building Sandbox for Testing Infrastructure</echo>
+        <ant antfile="build/build.sandbox.xml" target="build" inheritAll="false" />
+
+        <echo>Building Umple</echo>
+        <ant antfile="build/build.umple.xml" target="build" inheritAll="false" />
+
+        <echo>Building Eclipse Plugin</echo>
+        <ant antfile="build/build.eclipseplugin.xml" target="build" inheritAll="false" />
+
+        <echo>Building Umplificator Eclipse Plugin</echo>
+        <ant antfile="build/build.umplificatorplugin.xml" target="build" inheritAll="false" />
+			
+	    <echo>Building Test Unit Generator And Parser</echo>
+	    <ant antfile="build/build.testgenerator.xml" target="build" inheritAll="false" />	
+
+        <!-- <echo>Building Eclipse Plugin with XText Code Editor</echo>
+        <ant antfile="build/build.eclipsextextplugin.xml" target="build" inheritAll="false" /> -->
+
+        <echo>Building Java Testbed (Testing that Umple Generated Code Works)</echo>
+        <ant antfile="build/build.testbed.xml" target="build" inheritAll="false" />
+
+       <echo>Testing UmpleOnline Examples and Manual Examples</echo>
+       <ant antfile="build/build.exampletests.xml" target="allUserManualAndExampleTests" inheritAll="false" />
+     </try>
+
+      <finally>
+        <antcall target="qaLandingPage" />
+      </finally>
+    </trycatch>
+
+  </target>
+
+  <target name="qaBuildingPage">
+    <echo>Starting Build</echo>
+    <copy file="build/qa_updating.php" tofile="${dist.dir}/qa/index.php" overwrite="true" />
+  </target>
+
+  <target name="qaLandingPage">
+    <echo>Creating a QA Landing Page</echo>
+    <copy file="build/qa_index.php" tofile="${dist.dir}/qa/index.php" overwrite="true" />
+  </target>
+
+
+  <!-- ###################################################### -->
+  <!--  EXPOSING INTERNAL build.*.xml TARGETS TO MAIN TARGET  -->
+  <!-- ###################################################### -->
+
+  <!-- ###################################################### -->
+  <!--  Available in build.deps.xml  -->
+  <!-- ###################################################### -->
+
+  <!-- Get all dependencies installed -->
+  <target name="bootstrap" >
+    <ant antfile="build/build.deps.xml" target="bootstrap" inheritAll="true" />
+  </target>
+
+  <!-- ###################################################### -->
+  <!--  Available in build.umple.xml  -->
+  <!-- ###################################################### -->
+
+  <!-- Perform a first build to get umple related stuff installed -->
+  <target name="first-build" >
+    <ant antfile="build/build.umple.xml" target="first-build" inheritAll="true" />
+  </target>
+
+  <!-- Turn *.ump code in the parser project into *.java -->  
+  <target name="umpleParser" >
+    <ant antfile="build/build.umple.xml" target="umpleParser" inheritAll="true" />
+  </target>
+
+  <!-- Turn *.ump code in the generators into *.java -->  
+  <target name="codegen" >
+    <ant antfile="build/build.umple.xml" target="codegen" inheritAll="true" />
+  </target>
+
+  <!-- Turn *.ump code from Umple into *.java -->
+  <target name="umpleSelf" >
+    <ant antfile="build/build.umple.xml" target="umpleSelf" inheritAll="true" />
+  </target>
+
+  <!-- Compile *.java into byte code -->
+  <target name="compileUmple" >
+    <ant antfile="build/build.umple.xml" target="compile" inheritAll="true" />
+  </target>
+
+  <!-- Compile the all testbed programs against the latest umple.jar -->
+  <target name="testUmple" >
+    <ant antfile="build/build.umple.xml" target="test" inheritAll="true" />
+  </target>
+
+  <!-- ###################################################### -->
+  <!--  Available in build.testbed.xml  -->
+  <!-- ###################################################### -->
+
+  <!-- Build (aka compile and test) all testbed programs against the latest umple.jar -->
+  <target name="buildTestbed" >
+    <ant antfile="build/build.testbed.xml" target="build" inheritAll="true" />
+  </target>
+
+  <!-- Compile all testbed programs against the latest umple.jar -->
+  <target name="compileTestbed" >
+    <ant antfile="build/build.testbed.xml" target="compile" inheritAll="true" />
+  </target>
+
+  <!-- Compile the Java testbed program against the latest umple.jar -->
+  <target name="compileJava" >
+    <ant antfile="build/build.testbed.xml" target="compileJava" inheritAll="true" />
+  </target>
+
+  <!-- Compile the PHP testbed program against the latest umple.jar -->
+  <target name="compilePhp" >
+    <ant antfile="build/build.testbed.xml" target="compilePhp" inheritAll="true" />
+  </target>
+
+  <!-- Compile the Ruby testbed program against the latest umple.jar -->
+  <target name="compileRuby" >
+    <ant antfile="build/build.testbed.xml" target="compileRuby" inheritAll="true" />
+  </target>
+
+  <!-- Test all testbed programs against the latest umple.jar -->
+  <target name="testTestbed" >
+    <ant antfile="build/build.testbed.xml" target="test" inheritAll="true" />
+  </target>
+
+  <!-- Test the Java testbed program against the latest umple.jar -->
+  <target name="testJava" >
+    <ant antfile="build/build.testbed.xml" target="testJava" inheritAll="true" />
+  </target>
+
+  <!-- Test the PHP testbed program against the latest umple.jar -->
+  <target name="testPhp" >
+    <ant antfile="build/build.testbed.xml" target="testPhp" inheritAll="true" />
+  </target>
+
+  <!-- Test the Ruby testbed program against the latest umple.jar -->
+  <target name="testRuby" >
+    <ant antfile="build/build.testbed.xml" target="testRuby" inheritAll="true" />
+  </target>
+
+  <target name="sandbox">
+    <deps-declare-taskdef />
+
+    <trycatch property="foo" reference="bar">
+      <try>
+        <antcall target="qaBuildingPage" />
+
+        <echo>Building ONLY Sandbox for Testing Infrastructure</echo>
+        <ant antfile="build/build.sandbox.xml" target="build" inheritAll="false" />
+     </try>
+
+      <finally>
+        <antcall target="qaLandingPage" />
+      </finally>
+    </trycatch>
+  </target>
+
+</project>
+

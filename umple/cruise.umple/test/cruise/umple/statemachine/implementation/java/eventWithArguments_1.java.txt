@@ -1,0 +1,149 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+
+
+public class LightFixture
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //LightFixture Attributes
+  private int brightness;
+
+  //LightFixture State Machines
+  public enum Bulb { Off, Dimmed, On }
+  private Bulb bulb;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public LightFixture()
+  {
+    brightness = 0;
+    setBulb(Bulb.Off);
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setBrightness(int aBrightness)
+  {
+    boolean wasSet = false;
+    brightness = aBrightness;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getBrightness()
+  {
+    return brightness;
+  }
+
+  public String getBulbFullName()
+  {
+    String answer = bulb.toString();
+    return answer;
+  }
+
+  public Bulb getBulb()
+  {
+    return bulb;
+  }
+
+  public boolean turnDimmer(Integer lightval,Double lightval_1)
+  {
+    boolean wasEventProcessed = false;
+    
+    Bulb aBulb = bulb;
+    switch (aBulb)
+    {
+      case Off:
+        setBrightness(lightval)
+        setBulb(Bulb.Off);
+        wasEventProcessed = true;
+        break;
+      case Dimmed:
+        setBrightness(lightval)
+        setBulb(Bulb.Dimmed);
+        wasEventProcessed = true;
+        break;
+      case On:
+        setBrightness(lightval)
+        setBulb(Bulb.Dimmed);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean flipSwitch()
+  {
+    boolean wasEventProcessed = false;
+    
+    Bulb aBulb = bulb;
+    switch (aBulb)
+    {
+      case Off:
+        setBulb(Bulb.Dimmed);
+        wasEventProcessed = true;
+        break;
+      case Dimmed:
+        setBulb(Bulb.Off);
+        wasEventProcessed = true;
+        break;
+      case On:
+        setBulb(Bulb.Off);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean entry()
+  {
+    boolean wasEventProcessed = false;
+    
+    Bulb aBulb = bulb;
+    switch (aBulb)
+    {
+      case Dimmed:
+        if (dimmer>99)
+        {
+          setBulb(Bulb.On);
+          wasEventProcessed = true;
+          break;
+        }
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private void setBulb(Bulb aBulb)
+  {
+    bulb = aBulb;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "brightness" + ":" + getBrightness()+ "]";
+  }
+}

@@ -1,0 +1,17 @@
+generate Java "../src-gen";
+
+
+strictness allow 31; // don't worry about namespaces not being used
+//namespace cruise.umple.testgenerator;
+
+use TestCaseTemplate_model.ump;
+use TestCaseTemplate_JUnitGenerator.ump;
+use TestCaseTemplate_PhpUnitGenerator.ump;
+use TestCaseTemplate_RubyUnitGenerator.ump;
+use TestCaseTemplate_Generator.ump;
+use TestGeneratorConsoleMain.ump ;
+use Utility.ump ;
+
+namespace cruise.umple.testparser;
+
+use mbt_parser_src.ump;

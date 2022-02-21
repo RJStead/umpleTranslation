@@ -1,0 +1,118 @@
+// Home Heating System state machine written in Umple
+// Source: Model Checking Template-Semantics Specifications (TR: CS-2004-20)
+// University of Waterloo, Waterloo, Ontario, N2L 3G1
+// Authors: Yun Lu, Joanne M. Atlee, Nancy A. Day, Jianwei Niu
+// Date: April 05, 2004
+
+class HeatControlSystem {
+
+	int furnaceStartUpTime;
+	const int FURNACETIMER = 5;
+	int setTemp;
+	int actualTemp;
+	int waitedForWarm;
+	const int WARMUPTIMER = 5;
+	int valvePos;
+	int waitedForCool;
+	const int COOLDOWNTIMER = 5;
+
+	//internally generated events
+	boolean furnaceRunning;
+	boolean activate;
+	boolean deactivate;
+	boolean requestHeat;
+	boolean furnaceReset;
+
+
+	sm {
+		heatingSystem {
+			house {
+				room {
+					noHeatReq {
+						idleNotHeat {
+							[(setTemp - actualTemp) > 2] / { 
+								setValvePos(valvePos + 1); 
+								setWaitedForWarm(0); } ->	waitForHeat;					
+						}
+						waitForHeat {
+							[waitedForWarm < WARMUPTIMER] /{ 
+								setWaitedForWarm(waitedForWarm + 1); 
+							} -> waitForHeat;
+							[(valvePos != 2) & (waitedForWarm == WARMUPTIMER)] /{ 
+								setValvePos(valvePos + 1); 
+								setWaitedForWarm(0); 
+							} -> waitForHeat;
+							[!((setTemp - actualTemp) > 2)] -> idleNotHeat;
+							[(waitedForWarm == WARMUPTIMER) & (valvePos == 2) & ((setTemp - actualTemp) > 2)] /{
+								setRequestHeat(true); 
+							} -> heatReq;
+						}
+					}
+					heatReq {
+						idleHeat {
+							[(actualTemp - setTemp) > 2]	/ { 
+								setValvePos(valvePos - 1); 
+								setWaitedForCool(0); 
+							} ->	waitForCool;		
+						}
+						waitForCool {
+							[(valvePos != 0) && (COOLDOWNTIMER == waitedForCool)] /{ 
+								setValvePos(valvePos - 1); 
+								setWaitedForCool(0); 
+							} -> waitForCool;	
+              [(valvePos == 0) & (COOLDOWNTIMER == waitedForCool) & ((actualTemp - setTemp) > 2)] /{ 
+              	setRequestHeat(false); 
+              } -> noHeatReq;
+							[waitedForCool < COOLDOWNTIMER] / { setWaitedForCool(waitedForCool + 1); } -> waitForCool;
+							[!((actualTemp - setTemp) > 2)] -> idleHeat;
+						}
+					}
+				}
+				||
+				controller {
+					off {
+						heatSwitchOn -> controllerOn;
+					}
+					controllerOn {
+						heatSwitchOff / { setDeactivate(true); } -> off;
+						furnaceFault -> error;
+						idle {
+							[requestHeat == true] / { setActivate(true); } -> heaterActive;
+						}
+						heaterActive {
+							[requestHeat == false] / { setDeactivate(true); } -> idle;
+							actHeater {
+								[furnaceRunning == true] -> heaterRun;
+							}
+							heaterRun { }
+						}
+					}
+					error {
+						userReset / { setFurnaceReset(true); } -> off;
+					}
+				}
+			}
+			||
+			furnace {
+				furnaceNormal {
+					furnaceFault -> furnaceErr;
+					furnaceOff {
+						[activate == true] / { setFurnaceStartUpTime(0); } -> furnaceAct;
+					}
+					furnaceAct {
+						[deactivate == true] -> furnaceOff;
+						[furnaceStartUpTime < FURNACETIMER] / { setFurnaceStartUpTime(furnaceStartUpTime + 1); } -> furnaceAct;
+						[furnaceStartUpTime == FURNACETIMER] / { setFurnaceRunning(true); } -> furnaceRun;
+					}
+					furnaceRun {
+						[deactivate == true] -> furnaceOff;
+					}
+				}
+				furnaceErr {
+					[furnaceReset == true] -> furnaceNormal;
+				}
+			}
+		}
+	}
+}
+// @@@skipcompile incomplete Java

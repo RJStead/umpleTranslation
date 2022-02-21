@@ -1,0 +1,78 @@
+// UML state machine diagram for a canal lock,
+// represented in UML 
+
+class Lock
+{
+  Boolean boatGoingDown = false;
+  Boolean boatGoingUp = false;
+  Boolean boatBlockingGate = false;
+  
+  lockState {
+    BothDoorsClosedLockFull {
+      // Waiting for boat
+      boatRequestsToEnterAndGoDown
+        -> OpeningUpperGate;
+      boatRequestsToEnterAndGoUp
+        -> LoweringWater;
+    }
+
+    OpeningUpperGate {
+      upperGateFullyOpen -> UpperGateOpen;
+    }
+
+    UpperGateOpen {
+      entry / {setBoatGoingUp(false);}
+      boatInLockRequestingToGoDown
+        -> / {setBoatGoingDown(true);}
+        ClosingUpperGate;
+      after(180000) [!boatBlockingGate]
+        -> ClosingUpperGate;
+    }
+
+    ClosingUpperGate {
+      upperGateFullyClosed [boatGoingDown]
+        -> LoweringWater;
+      upperGateFullyClosed [!boatGoingDown]
+        -> BothDoorsClosedLockFull;   
+    }
+    
+    LoweringWater {
+      waterLevelMatchesDownStream
+        -> OpeningLowerGate;
+    } 
+    
+    
+    BothDoorsClosedLockEmpty {
+      // Waiting for boat
+      boatRequestsToEnterAndGoUp
+        -> OpeningLowerGate;
+      boatRequestsToEnterAndGoDown
+        -> RaisingWater;
+    }
+
+    OpeningLowerGate {
+      lowerGateFullyOpen -> LowerGateOpen;
+    }
+
+    LowerGateOpen {
+      entry / {setBoatGoingDown(false);}
+      boatInLockRequestingToGoUp
+        -> / {setBoatGoingUp(true);}
+          ClosingLowerGate;
+      after(180000) [!boatBlockingGate]
+        -> ClosingLowerGate;
+    }
+
+    ClosingLowerGate {
+      lowerGateFullyClosed [boatGoingUp]
+        -> RaisingWater;
+      lowerGateFullyClosed [!boatGoingUp]
+        -> BothDoorsClosedLockEmpty;   
+    }
+    
+    RaisingWater {
+      waterLevelMatchesUpStream
+        -> OpeningUpperGate;
+    } 
+  }
+}

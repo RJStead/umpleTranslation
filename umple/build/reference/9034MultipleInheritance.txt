@@ -1,0 +1,24 @@
+E034 Multiple Inheritance
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error generated when multiple inheritance is encountered</h2>
+
+<p>Umple does not currently support multiple inheritance, in order to be consistent with code generated in Java, and also to make models simpler.</p>
+
+<p>
+</p>
+
+@@example
+@@source manualexamples/E034MultipleInheritance1.ump
+@@endexample
+
+@@example
+@@source manualexamples/E034MultipleInheritance2.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E034MultipleInheritance3.ump
+@@endexample

@@ -1,0 +1,32 @@
+Umple to SDL Notes
+
+  This subproject is incomplete and experimental only, so far.
+
+- Umple namespaces correspond to packages in SDL;
+
+- Umple models represent SDL specifications, each consisting of a set of packages and a system.
+
+- Umple classes represent SDL types, with the followinf stereotypes representing the different kinds
+of entity types in SDL. The members of an Umple Class represent different SDL type properties,
+depending on the stereotype:
+
+    - "system";
+    - "block";
+    - "process";
+    - "procedure";
+    - "interface";
+    - "object";
+    - "value";
+    - "state";
+    - "signal";
+    
+- Umple State Machines represent state machines of agents;
+
+- An Umple association represents the corresponding concept in SDL.
+
+- Generalization (isA construct) represents the corresponding specialisation in SDL;
+
+- The 'use' construct represents an SDL dependency indicating a package using another package
+
+
+

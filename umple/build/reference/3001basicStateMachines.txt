@@ -1,0 +1,57 @@
+Basic State Machines
+State Machines
+noreferences
+@@tooltip Overview of core elements of state machines, with an example
+
+@@description
+
+<p>      
+A state machine has a fixed set of of values (called states) The state machine transitions from state to state by the occurrence of events. State machines are very useful
+for quickly defining a program's behaviour.
+</p>
+
+<p>
+In Umple, a state machine is modeled as a special type of attribute. In any class, simply specify the state machine name, and follow the name by a block starting with '{' and ending with '}'. This indicates to Umple that you are defining a state machine, and not an ordinary attribute.
+</p>
+
+<p>
+Within the block, you list the names of the various states. Each state is followed by a block, again indicated using '{' to start and '} to end. This block defines the details of a state.
+<p/>
+
+<p>
+Details of each state can include:
+<ul>
+<li><b>Transitions</b>. A transition has an <b>event</b> name, the symbol '->', and then the name of a destination state. The event name will become the name of a generated method. To trigger the transition, you simply call the method. When the event occurs while the state machine is in the origin state, the state machine will change to the destination state.<br/> Transitions can also have:&nbsp;<br/>
+  <ul>
+  <li><b>transition actions</b>, specified as '/' followed by a block of code to execute.
+  <li><b>guards</b>, which are boolean expressions in square brackets. Even if the event occurs, the transition only takes place if the guard evaluates to true.
+  </ul>
+<li>Entry actions, exit actions and do activities. <a href="StateMachineActionsandDoActivities.html">See the separate manual page</a>.
+<li>Nested states. <a href="NestedStateMachines.html">See the separate manual page.</a> You can nest state machines to arbitrary levels of depth.
+<li>Final states. <a href="FinalStates.html">See the separate manual page</a>.
+</ul>
+</p>
+
+<p>Note that, in addition, you can specify code to be executed whenever an event is processed by using <a href="CodeInjectioninEventMethods.html">before or after directives.</a></p>
+
+<p>The following diagram shows a garage door state machine as a UML diagram. The Umple code for this is in the second example shown, and is further explained in the video below. <br/> &nbsp; <br/>
+
+<img  width=480 src="examples/GarageStateMachine.png" alt="state machne for garage door"/>
+
+&nbsp;<br/>
+
+@@videoURL https://www.youtube.com/embed/mFczzVkTZ9g
+
+@@syntax
+
+[[stateMachine]] [[enum]] [[inlineStateMachine]] [[state]] [[stateInternal]] [[stateEntity]] [[transition]] [[entryOrExitAction]] [[autoTransition]] [[autoTransitionBlock]] [[activity]] [[guard]] [[eventDefinition]] [[eventWithArgs]] [[action]] [[afterEveryEvent]] [[afterEvent]]
+
+
+@@example @@caption Basic Garage Door Example @@endcaption
+@@source manualexamples/BasicStateMachines1.ump &diagramtype=state
+@@endexample
+
+
+@@example @@caption Garage Door Example with Actions @@endcaption
+@@source manualexamples/BasicStateMachines2.ump &diagramtype=state
+@@endexample

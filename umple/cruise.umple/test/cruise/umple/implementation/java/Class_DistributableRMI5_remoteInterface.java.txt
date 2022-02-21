@@ -1,0 +1,25 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi5;
+import java.util.*;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+public interface IMicrowaveImpl extends java.rmi.Remote
+{
+  public int getHashCodeImpl() throws RemoteException;
+  public boolean setXImpl(int aX) throws RemoteException;
+  public boolean setFImpl(String aF) throws RemoteException;
+  public int getXImpl() throws RemoteException;
+  public String getFImpl() throws RemoteException;
+  public Client getClientImpl(int index) throws RemoteException;
+  public List<Client> getClientsImpl() throws RemoteException;
+  public int numberOfClientsImpl() throws RemoteException;
+  public boolean hasClientsImpl() throws RemoteException;
+  public int indexOfClientImpl(Client aClient) throws RemoteException;
+  public boolean addClientImpl(Client aClient) throws RemoteException;
+  public boolean removeClientImpl(Client aClient) throws RemoteException;
+  public boolean addClientAtImpl(Client aClient, int index) throws RemoteException;
+  public boolean addOrMoveClientAtImpl(Client aClient, int index) throws RemoteException;
+  public void deleteImpl() throws RemoteException;
+}

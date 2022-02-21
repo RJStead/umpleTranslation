@@ -1,0 +1,8 @@
+// The following shows how to solve the above problem
+class X {
+  Date d = "2013-07-08";
+  Integer i = 7;
+  String s = "123";
+  Boolean b = true;
+  Time t = "12:00:00";
+}

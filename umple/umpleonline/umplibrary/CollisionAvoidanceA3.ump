@@ -1,0 +1,108 @@
+class CollisionAvoidanceA3 {
+
+	Integer warningRadius = 100;
+	Boolean driveSelected;	
+	Boolean lock;
+  Boolean emergencyDetected = (getSmObjectDetectorObjectDetector() == SmObjectDetectorObjectDetector.Emergency);
+
+	sm { 
+		CollisionAvoidance {
+			ObjectDetector {
+				Normal { objectDiscovered[warningRadius == 10] -> Warning; }	 
+				Warning { [warningRadius <= 3] -> Emergency; }
+				Emergency { -> Normal; }
+			}
+			||
+			Brake {
+				Released { 
+					applyBrake -> AntiLockBraking; 
+					[emergencyDetected] -> BrakeApplied;
+				} 
+				AntiLockBraking {
+					
+					release -> Released;
+					Inactive {
+						wheelNormal -> BrakeApplied;
+						wheelLocked[ lock == true ] -> ResolveLock;
+            [emergencyDetected] -> BrakeApplied;
+					}
+					ResolveLock {
+						wheelNormal -> Inactive;
+						wheelLocked -> MonitorDeclaration;
+						decreasePressure[ lock == true ] -> PressureReduction;
+						applyBrake[ lock == false ] -> BrakeApplied;
+            [emergencyDetected] -> BrakeApplied;
+					}
+					MonitorDeclaration {
+						rapidDeclaration -> ResolveLock;
+						wheelNormal -> MonitorDeclaration;
+            [emergencyDetected] -> BrakeApplied;
+					}
+					PressureReduction {
+						decreasePressure[ lock == false ] -> ResolveLock;
+						decreasePressure[ lock == true ] -> PressureReduction;
+            [emergencyDetected] -> BrakeApplied;
+					}
+					BrakeApplied {
+						wheelLocked[ lock == true ] -> ResolveLock;
+						applyBrake -> BrakeApplied;
+            [emergencyDetected] -> BrakeApplied;
+					} 
+				} 
+			}
+			||
+			Transmission {
+				ParkAndNeutral {
+					
+					selectReverse -> Reverse;
+					selectDrive/{setDriveSelected(true); } -> Drive; 
+					Park { 
+            selectNeutral -> Neutral;
+          }
+					Neutral { 
+            selectPark/{setDriveSelected(false);} -> Park; 
+            [emergencyDetected] -> Park;
+          } 
+				}
+				Reverse { 
+					selectPark -> Park; 
+					[emergencyDetected] -> Park;
+				} 
+				Drive { 
+					selectNeutral -> Neutral; 
+					selectFirst -> First;
+					selectSecond -> Second;
+					
+					First { 
+						reachSecondSpeed[ driveSelected ] -> Second; 
+            [emergencyDetected] -> Park;
+					}
+					Second { 
+						reachThirdSpeed[ driveSelected ] -> Third;
+            [emergencyDetected] -> Park;
+					}
+					Third { 
+						dropBelowThirdSpeed -> Second; 
+            [emergencyDetected] -> Park;
+					}
+				} 
+			}
+			||
+			Engine {
+				Off { 
+					turnOn -> Idle;
+				}
+				Idle { 
+					accelerate -> Driving; 
+					[emergencyDetected] -> Off;
+				}
+				Driving { 
+					release -> Idle;
+					applyBrake -> Idle; 
+					[emergencyDetected] -> Off;
+				} 
+			} 
+		} 
+	}	 
+}
+// @@@skipcompile incomplete Java

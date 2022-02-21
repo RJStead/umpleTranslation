@@ -1,0 +1,12 @@
+distributable 1 on;
+namespace distributed.rmi2;
+class Client
+{
+   isA CC;
+   distributable RMI;
+}
+class CC
+{
+  public void someMethod1()
+  {}
+}

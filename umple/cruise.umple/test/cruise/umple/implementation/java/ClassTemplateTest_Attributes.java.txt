@@ -1,0 +1,411 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package example;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.*;
+
+// line 5 "../../../../ump/tmp12056/model.ump"
+public class Mentor
+{
+
+  //------------------------
+  // STATIC VARIABLES
+  //------------------------
+
+  public static final int MAX = 100;
+  public static final int MIN = -99;
+  public static final String HELLO = "Hello";
+  private static int nextX = 1;
+  private static Map<String, Mentor> mentorsById = new HashMap<String, Mentor>();
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Mentor Attributes
+  private String str;
+  private String str2;
+  private String someName;
+  private double lDoub;
+  private boolean lBool;
+  private String name;
+  private Date d;
+  private Time t;
+  private int i;
+  private String id;
+  private String p;
+  private String q;
+  private String r;
+  private String s;
+  private Date tt;
+  private Time u;
+  private Date v;
+  private Time w;
+
+  //Autounique Attributes
+  private int x;
+
+  //Helper Variables
+  private boolean canSetStr2;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Mentor(String aStr, Date aD, int aI, String aId)
+  {
+    str = aStr;
+    canSetStr2 = true;
+    someName = null;
+    lDoub = 0;
+    lBool = false;
+    name = "Johannes";
+    d = aD;
+    t = new Time();
+    i = aI;
+    resetP();
+    q = "chicken";
+    resetR();
+    s = "123";
+    tt = Date.valueOf("1978-12-25");
+    u = Time.valueOf("12:13:14");
+    resetV();
+    resetW();
+    x = nextX++;
+    if (!setId(aId))
+    {
+      throw new RuntimeException("Cannot create due to duplicate id. See http://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+  /* Code from template attribute_SetImmutable */
+  public boolean setStr2(String aStr2)
+  {
+    boolean wasSet = false;
+    if (!canSetStr2) { return false; }
+    canSetStr2 = false;
+    str2 = aStr2;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setSomeName(String aSomeName)
+  {
+    boolean wasSet = false;
+    someName = aSomeName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setLDoub(double aLDoub)
+  {
+    boolean wasSet = false;
+    lDoub = aLDoub;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setLBool(boolean aLBool)
+  {
+    boolean wasSet = false;
+    lBool = aLBool;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setD(Date aD)
+  {
+    boolean wasSet = false;
+    d = aD;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setI(int aI)
+  {
+    boolean wasSet = false;
+    i = aI;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setId(String aId)
+  {
+    boolean wasSet = false;
+    String anOldId = getId();
+    if (anOldId != null && anOldId.equals(aId)) {
+      return true;
+    }
+    if (hasWithId(aId)) {
+      return wasSet;
+    }
+    id = aId;
+    wasSet = true;
+    if (anOldId != null) {
+      mentorsById.remove(anOldId);
+    }
+    mentorsById.put(aId, this);
+    return wasSet;
+  }
+  /* Code from template attribute_SetDefaulted */
+  public boolean setP(String aP)
+  {
+    boolean wasSet = false;
+    p = aP;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean resetP()
+  {
+    boolean wasReset = false;
+    p = getDefaultP();
+    wasReset = true;
+    return wasReset;
+  }
+
+  public boolean setQ(String aQ)
+  {
+    boolean wasSet = false;
+    q = aQ;
+    wasSet = true;
+    return wasSet;
+  }
+  /* Code from template attribute_SetDefaulted */
+  public boolean setR(String aR)
+  {
+    boolean wasSet = false;
+    r = aR;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean resetR()
+  {
+    boolean wasReset = false;
+    r = getDefaultR();
+    wasReset = true;
+    return wasReset;
+  }
+
+  public boolean setTt(Date aTt)
+  {
+    boolean wasSet = false;
+    tt = aTt;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setU(Time aU)
+  {
+    boolean wasSet = false;
+    u = aU;
+    wasSet = true;
+    return wasSet;
+  }
+  /* Code from template attribute_SetDefaulted */
+  public boolean setV(Date aV)
+  {
+    boolean wasSet = false;
+    v = aV;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean resetV()
+  {
+    boolean wasReset = false;
+    v = getDefaultV();
+    wasReset = true;
+    return wasReset;
+  }
+  /* Code from template attribute_SetDefaulted */
+  public boolean setW(Time aW)
+  {
+    boolean wasSet = false;
+    w = aW;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean resetW()
+  {
+    boolean wasReset = false;
+    w = getDefaultW();
+    wasReset = true;
+    return wasReset;
+  }
+
+  public String getStr()
+  {
+    return str;
+  }
+
+  public String getStr2()
+  {
+    return str2;
+  }
+
+  public String getSomeName()
+  {
+    return someName;
+  }
+
+  public double getLDoub()
+  {
+    return lDoub;
+  }
+
+  public boolean getLBool()
+  {
+    return lBool;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public Date getD()
+  {
+    return d;
+  }
+
+  public int getI()
+  {
+    return i;
+  }
+
+  public int getDerivedTwiceI()
+  {
+    return i*2;
+  }
+
+  public String getId()
+  {
+    return id;
+  }
+  /* Code from template attribute_GetUnique */
+  public static Mentor getWithId(String aId)
+  {
+    return mentorsById.get(aId);
+  }
+  /* Code from template attribute_HasUnique */
+  public static boolean hasWithId(String aId)
+  {
+    return getWithId(aId) != null;
+  }
+
+  public String getP()
+  {
+    return p;
+  }
+  /* Code from template attribute_GetDefaulted */
+  public String getDefaultP()
+  {
+    return "robot";
+  }
+
+  public String getQ()
+  {
+    return q;
+  }
+
+  public String getR()
+  {
+    return r;
+  }
+  /* Code from template attribute_GetDefaulted */
+  public String getDefaultR()
+  {
+    return "";
+  }
+
+  public String getS()
+  {
+    return s;
+  }
+
+  public Date getTt()
+  {
+    return tt;
+  }
+
+  public Time getU()
+  {
+    return u;
+  }
+
+  public Date getV()
+  {
+    return v;
+  }
+  /* Code from template attribute_GetDefaulted */
+  public Date getDefaultV()
+  {
+    return Date.valueOf("1978-12-26");
+  }
+
+  public Time getW()
+  {
+    return w;
+  }
+  /* Code from template attribute_GetDefaulted */
+  public Time getDefaultW()
+  {
+    return Time.valueOf("12:59:59");
+  }
+
+  public int getX()
+  {
+    return x;
+  }
+  /* Code from template attribute_IsBoolean */
+  public boolean isLBool()
+  {
+    return lBool;
+  }
+
+  public void delete()
+  {
+    mentorsById.remove(getId());
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "x" + ":" + getX()+ "," +
+            "str" + ":" + getStr()+ "," +
+            "str2" + ":" + getStr2()+ "," +
+            "someName" + ":" + getSomeName()+ "," +
+            "lDoub" + ":" + getLDoub()+ "," +
+            "lBool" + ":" + getLBool()+ "," +
+            "name" + ":" + getName()+ "," +
+            "i" + ":" + getI()+ "," +
+            "derivedTwiceI" + ":" + getDerivedTwiceI()+ "," +
+            "id" + ":" + getId()+ "," +
+            "p" + ":" + getP()+ "," +
+            "q" + ":" + getQ()+ "," +
+            "r" + ":" + getR()+ "," +
+            "s" + ":" + getS()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "d" + "=" + (getD() != null ? !getD().equals(this)  ? getD().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "tt" + "=" + (getTt() != null ? !getTt().equals(this)  ? getTt().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "u" + "=" + (getU() != null ? !getU().equals(this)  ? getU().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "v" + "=" + (getV() != null ? !getV().equals(this)  ? getV().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "w" + "=" + (getW() != null ? !getW().equals(this)  ? getW().toString().replaceAll("  ","    ") : "this" : "null");
+  }
+}

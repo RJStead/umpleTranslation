@@ -1,0 +1,80 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+
+
+/**
+ * attributes on both sides of the constraint's boolean expression
+ */
+public class Client
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Client Attributes
+  private int minAge;
+  private int age;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Client(int aMinAge, int aAge)
+  {
+    minAge = aMinAge;
+    age = aAge;
+    if (aAge<=aMinAge)
+    {
+      throw new RuntimeException("Please provide a valid age and minAge [age>minAge]");
+    }
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setMinAge(int aMinAge)
+  {
+    boolean wasSet = false;
+    if (getAge()>aMinAge)
+    {
+    minAge = aMinAge;
+    wasSet = true;
+    }
+    return wasSet;
+  }
+
+  public boolean setAge(int aAge)
+  {
+    boolean wasSet = false;
+    if (aAge>getMinAge())
+    {
+    age = aAge;
+    wasSet = true;
+    }
+    return wasSet;
+  }
+
+  public int getMinAge()
+  {
+    return minAge;
+  }
+
+  public int getAge()
+  {
+    return age;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "minAge" + ":" + getMinAge()+ "," +
+            "age" + ":" + getAge()+ "]";
+  }
+}

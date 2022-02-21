@@ -1,0 +1,57 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi4;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.io.Serializable;
+
+// line 13 "../../Class_DistributableRMI4.ump"
+public class MicrowaveImpl extends CC implements java.io.Serializable , IMicrowaveImpl
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public MicrowaveImpl()
+  {
+    super();
+  }
+  //------------------------
+  // Reference to the proxy
+  //------------------------
+  Microwave self;
+  
+  public void setSelf(Microwave proxy)
+  {
+    self=proxy;
+  }
+
+  //------------------------
+  // Returning the Hashcode
+  //------------------------
+  public int getHashCode()
+  {
+    return hashCode();
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public void delete()
+  {
+    super.delete();
+  }
+
+  // line 18 "../../Class_DistributableRMI4.ump"
+   public int method1(int f){
+    return f*2;
+  }
+
+}

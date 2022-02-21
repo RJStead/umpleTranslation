@@ -1,0 +1,36 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from AssociationWithNumericBounds.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class Man
+sig Man {
+  children : some Child
+}
+
+-- Defines a signature for class Child
+sig Child {
+  father : lone Man
+}
+
+
+-- Defines constraints on association between Child and Man
+fact AssociationFact {
+  Child <: father in (Child) some -> some (Man)
+}
+
+-- Defines bidirectionality rule between class Man and class Child
+fact BidirectionalityRule {
+  all man_1 : Man, child_1 : Child |
+    man_1 in father[child_1] <=> child_1 in children[man_1]
+}
+
+-- Defines numeric bound rule for class Man
+fact NumericBoundFact {
+  no man_1 : Man |
+    #man_1.children != 5
+}

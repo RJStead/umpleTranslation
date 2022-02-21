@@ -1,0 +1,27 @@
+
+class UmpleTToRubyUnit {
+ members_AllAssertions <<!<</*members_AllAssertions*/>> <<#
+
+		if(as.getType().equals("assertTrue"))
+		{#>>		 
+		 			 assert(<<=as.getAssertCode()>>)<<#}
+		
+		if(as.getType().equals("assertFalse"))
+		{#>>
+		 			 assert(!<<=as.getAssertCode()>>)<<#}
+		
+		if(as.getType().equals("assertEqual"))
+		{#>>
+		 			 assert_equal (<<=as.getAssertCode()>>)<<#}
+		
+		if(as.getType().equals("assertNull"))
+		{#>>
+		 			 assert_nil(<<=as.getAssertCode()>>)<<#}
+		
+		if(as.getType().equals("assertMethod"))
+		{#>>
+		 			 assert_method (<<=as.getAssertCode()>>)<<#}
+#>>
+!>>
+
+}

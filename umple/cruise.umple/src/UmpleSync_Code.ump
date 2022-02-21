@@ -1,0 +1,15 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+Code for methods mixed into the UmpleSync.ump model
+
+*/
+
+namespace cruise.umple.sync;
+
+// Everything that was here has been moved into sync/
+// This file left for versioning history.

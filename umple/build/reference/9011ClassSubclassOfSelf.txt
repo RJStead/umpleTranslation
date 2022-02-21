@@ -1,0 +1,22 @@
+E011 Class is Subclass Of Self
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic error reported when a class is designated as a subclass of itself.</h2>
+
+<p>The inheritance hierarchy cannot have cycles. It must be a strict tree. It is therefore not allowed to make a class into a subclass of itself.
+
+</p>
+
+
+@@example
+@@source manualexamples/E011ClassisSubclassOfSelf1.ump
+@@endexample
+
+@@example @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/E011ClassisSubclassOfSelf2.ump
+@@endexample
+
+

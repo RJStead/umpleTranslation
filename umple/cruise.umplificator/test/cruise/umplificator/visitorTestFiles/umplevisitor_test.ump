@@ -1,0 +1,12 @@
+strictness allow 1007;
+
+class A {
+
+depend java.util.*;
+depend java.io.*;
+
+public int a;
+public boolean b;
+public short s;
+
+}

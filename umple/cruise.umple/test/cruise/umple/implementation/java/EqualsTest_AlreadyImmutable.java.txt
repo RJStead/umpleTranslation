@@ -1,0 +1,147 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package example;
+
+public class Student
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Student Attributes
+  private int intId;
+  private double doubleId;
+  private boolean booleanId;
+  private String stringId;
+
+  //Helper Variables
+  private int cachedHashCode;
+  private boolean canSetIntId;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Student(double aDoubleId, boolean aBooleanId, String aStringId)
+  {
+    cachedHashCode = -1;
+    canSetIntId = true;
+    doubleId = aDoubleId;
+    booleanId = aBooleanId;
+    stringId = aStringId;
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setIntId(int aIntId)
+  {
+    boolean wasSet = false;
+    if (!canSetIntId) { return false; }
+    canSetIntId = false;
+    intId = aIntId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getIntId()
+  {
+    return intId;
+  }
+
+  public double getDoubleId()
+  {
+    return doubleId;
+  }
+
+  public boolean getBooleanId()
+  {
+    return booleanId;
+  }
+
+  public String getStringId()
+  {
+    return stringId;
+  }
+
+  public boolean isBooleanId()
+  {
+    return booleanId;
+  }
+
+  public boolean equals(Object obj)
+  {
+    if (obj == null) { return false; }
+    if (!getClass().equals(obj.getClass())) { return false; }
+
+    Student compareTo = (Student)obj;
+  
+    if (getIntId() != compareTo.getIntId())
+    {
+      return false;
+    }
+
+    if (getDoubleId() != compareTo.getDoubleId())
+    {
+      return false;
+    }
+
+    if (getBooleanId() != compareTo.getBooleanId())
+    {
+      return false;
+    }
+
+    if (getStringId() == null && compareTo.getStringId() != null)
+    {
+      return false;
+    }
+    else if (getStringId() != null && !getStringId().equals(compareTo.getStringId()))
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  public int hashCode()
+  {
+    if (cachedHashCode != -1)
+    {
+      return cachedHashCode;
+    }
+    cachedHashCode = 17;
+    cachedHashCode = cachedHashCode * 23 + getIntId();
+
+    cachedHashCode = cachedHashCode * 23 + (Double.valueOf(getDoubleId())).hashCode();
+
+    cachedHashCode = cachedHashCode * 23 + (getBooleanId() ? 1 : 0);
+
+    if (getStringId() != null)
+    {
+      cachedHashCode = cachedHashCode * 23 + getStringId().hashCode();
+    }
+    else
+    {
+      cachedHashCode = cachedHashCode * 23;
+    }
+
+    canSetIntId = false;
+    return cachedHashCode;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "stringId" + ":" + getStringId()+ "," +
+            "booleanId" + ":" + getBooleanId()+ "," +
+            "doubleId" + ":" + getDoubleId()+ "," +
+            "intId" + ":" + getIntId()+ "]";
+  }
+}

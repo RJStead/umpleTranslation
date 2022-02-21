@@ -1,0 +1,29 @@
+W141 Value Type Mismatch
+Errors and Warnings 100-999
+noreferences
+
+@@description
+
+<h2>Umple syntactic warning reported when an attempt is made to initiate an attribute
+with a value that does not match the type of the attribute</h2>
+
+<p>Numbers must be initialized with numbers, strings with strings in double quotes, and Booleans with true or false. For Dates the value format is a string "yyyy-mm-dd"; for Times the format is "hh:mm:ss".
+</p>
+
+<p>
+Note that for an initialization value with no type specified will result in the attribute having its type inferred from the value. This is demonstrated in the third example.
+</p>
+
+
+@@example
+@@source manualexamples/W141ValueTypeMismatch1.ump
+@@endexample
+
+@@example  @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W141ValueTypeMismatch2.ump
+@@endexample
+
+@@example  @@caption Solution to The Above So the Message No Longer Appears @@endcaption
+@@source manualexamples/W141ValueTypeMismatch3.ump
+@@endexample
+

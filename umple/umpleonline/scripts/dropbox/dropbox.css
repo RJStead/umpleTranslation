@@ -1,0 +1,17 @@
+.dropbox-option {
+  text-align: center;
+}
+
+.dropbox-option li {
+  display: inline-block;
+}
+
+.dropbox-add-chooser .dropbox-dropin-btn:link {
+  /* Manual sizing workaround to fix issues with overflow. */
+  height: 2em;
+  width: 100px;
+}
+
+.dropbox-chooser {
+  visibility: hidden; /* The chooser is initially hidden and will be displayed once Dropbox has loaded. */
+}

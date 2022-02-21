@@ -1,0 +1,110 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package distributed.rmi3;
+import java.io.Serializable;
+
+// line 5 "../../Class_DistributableRMI3.ump"
+public class Client extends CC implements ClientI ,java.io.Serializable, IClientImpl
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Client(UmpleRuntime.UmpleComponent umpleComponent)
+  {
+    super();
+    if(umpleComponent.getNode().getId()!=UmpleRuntime.getThisNodeId())
+    {
+      if(this.getClass()== Client.class)
+        UmpleRuntime.getInstance().newClient( umpleComponent, this);
+
+      return;
+    }
+    else
+    {
+      UmpleRuntime.getInstance().newClient(this);
+    }
+
+  }
+  //------------------------
+  // Returning the Hashcode
+  //------------------------
+  public int getHashCodeImpl()
+  {
+    return hashCode();
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public void deleteImpl()
+  {
+    super.delete();
+  }
+
+  public void setRealObject(IClientImpl aObject)
+  {
+  super.setRealObject(aObject);
+    realObject=aObject;
+  }
+
+  transient IClientImpl realObject=this;
+  public Client()
+  {
+
+this(UmpleRuntime.getComponent("Client"));
+  }
+  public int getHashCode()
+  {
+    while(true)
+      try{
+        return realObject.getHashCodeImpl();
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+  public void delete()
+  {
+    while(true)
+      try{
+        realObject.deleteImpl();
+        break;
+        }
+    catch(Exception e) {System.err.println(e.toString());}
+  }
+
+  protected  IClientImpl remoteObject;  
+  public void setRemoteObject(IClientImpl aRemoteObject)
+  {
+    remoteObject=aRemoteObject;
+  }
+  public IClientImpl getRemoteObject()
+  {
+    return (IClientImpl)remoteObject;
+  }
+  private void readObject(java.io.ObjectInputStream in) throws Exception
+  {
+    try
+    {
+      in.defaultReadObject();
+      realObject=(IClientImpl)remoteObject;
+    }
+    catch(Exception e)
+    {
+      throw e;
+    }
+    
+  }
+ 
+  public boolean equals(Object obj)
+  {    if(obj.getClass()!=this.getClass())
+      return false;
+    return (getHashCode()==((Client)obj).getHashCode());
+  }
+}

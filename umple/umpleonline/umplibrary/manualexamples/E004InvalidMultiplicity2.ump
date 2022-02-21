@@ -1,0 +1,7 @@
+// The following shows how to avoid the error
+class X {
+  1 -- 0..2 Y;
+}
+
+class Y {
+}

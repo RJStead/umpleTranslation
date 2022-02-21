@@ -1,0 +1,10 @@
+// If all but one of the parents is
+// declared as an Interface, the problem is solved
+
+interface P1 {}
+class P2 {}
+
+class Sub {
+  isA P1;
+  isA P2;
+}

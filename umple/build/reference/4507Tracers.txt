@@ -1,0 +1,52 @@
+Tracers
+Tracing
+noreferences
+
+@@description
+<p align="justify">
+MOTL sets the Console to be its default tracer. However, it provides a set of potential tracers that will have an impact on how tracing is injected and how its collected. Modellers can control the model tracer using a tracer directive.
+</p>
+
+<p align="justify">
+MOTL tracers can be classified into two main categories: Built in tracers and third party tracers. The main difference between these two categories is that the first category of tracers doesn’t require any additional jars imported into your model generated code, while  the later requires jars specific to each tracer.
+</p>
+
+<p align="justify">
+<ol>
+<li>(Built in tracers)</li>
+  <ul>
+  <li><b>Console</b>: trace output will be directed to system error.</li>
+  <li><b>File</b>: trace output will be directed to trace log file.</li>
+  <li><b>Java Native Logging</b>: Java provides a logging API implemented in its platform. MOTL provides the capability of injecting trace code using Java native logging API.</li>
+  </ul>
+&nbsp;<br />
+<li>(Third party tracers)</li>
+   <ul>
+   <li><b>log4j</b>: a well known java tracer. In MOTL, if log4j is selected as a tracer, log4j trace points will be in injected. In addition, an xml file (log4j2.xml) configuration file will be generated. </li>
+   <li><b>Linux Trace Toolkit Next Generation (LTTNG)</b>: Lttng is a well known tracer that allows kernel and userspace tracing. It targets C/C++ programs, however, tracing of Java programs using Lttng is possible through Java Native Interface (JNI). To execute Java programs instrumented with lttng trace points, (liblttng-ust-java.jar) is required.</li>
+   </ul>
+</ol>
+</p>
+
+@@syntax
+[[traceType]] [[log4jConfig]]
+
+@@example @@caption File tracer @@endcaption
+@@source manualexamples/Tracers1.ump
+@@endexample
+
+@@example @@caption Java native logging API @@endcaption
+@@source manualexamples/Tracers2.ump
+@@endexample
+
+@@example @@caption Lttng tracer @@endcaption
+@@source manualexamples/Tracers5.ump
+@@endexample
+
+@@example @@caption log4j tracer with default log4j xml configuration file @@endcaption
+@@source manualexamples/Tracers3.ump
+@@endexample
+
+@@example @@caption log4j tracer with customized log4j xml configuration file @@endcaption
+@@source manualexamples/Tracers4.ump
+@@endexample

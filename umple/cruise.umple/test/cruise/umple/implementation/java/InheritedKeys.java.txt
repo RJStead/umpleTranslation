@@ -1,0 +1,36 @@
+  public boolean equals(Object obj)
+  {
+    if (obj == null) { return false; }
+    if (!getClass().equals(obj.getClass())) { return false; }
+
+    Bar compareTo = (Bar)obj;
+  
+    if (getA() != compareTo.getA())
+    {
+      return false;
+    }
+
+    if (getB() != compareTo.getB())
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  public int hashCode()
+  {
+    if (cachedHashCode != -1)
+    {
+      return cachedHashCode;
+    }
+    cachedHashCode = 17;
+    cachedHashCode = cachedHashCode * 23 + getA();
+
+    cachedHashCode = cachedHashCode * 23 + getB();
+
+    canSetA = false;
+    canSetB = false;
+    return cachedHashCode;
+  }
+

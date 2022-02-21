@@ -1,0 +1,89 @@
+# PLEASE DO NOT EDIT THIS CODE
+# This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!
+# NOTE: Ruby generator is experimental and is missing some features available in
+# in other Umple generated languages like Java or PHP
+
+module Example
+
+class MyDriver
+
+
+  #------------------------
+  # MEMBER VARIABLES
+  #------------------------
+
+  #MyDriver Attributes - for documentation purposes
+  #attr_reader :name
+
+  #MyDriver Associations - for documentation purposes
+  #attr_reader :mySubordinate
+
+  #------------------------
+  # CONSTRUCTOR
+  #------------------------
+
+  def initialize(a_name)
+    @initialized = false
+    @deleted = false
+    @name = a_name
+    @mySubordinate = nil
+    @initialized = true
+  end
+
+  #------------------------
+  # INTERFACE
+  #------------------------
+
+  def set_name(a_name)
+    was_set = false
+    @name = a_name
+    was_set = true
+    was_set
+  end
+
+  def get_name
+    @name
+  end
+
+  def get_mySubordinate
+    @mySubordinate
+  end
+
+  def has_mySubordinate
+    has = !@mySubordinate.nil?
+    has
+  end
+
+  def set_mySubordinate(a_new_mySubordinate)
+    was_set = false
+    if !@mySubordinate.nil? and !@mySubordinate.eql?(a_new_mySubordinate) and self.eql?(@mySubordinate.get_myDriver)
+      #Unable to set_mySubordinate, as existing @mySubordinate would become an orphan
+      return was_set
+    end
+
+    @mySubordinate = a_new_mySubordinate
+    an_old_myDriver = !a_new_mySubordinate.nil? ? a_new_mySubordinate.get_myDriver : nil
+
+    unless self.eql?(an_old_myDriver)
+      unless an_old_myDriver.nil?
+        an_old_myDriver.instance_variable_set("@mySubordinate",nil)
+      end
+      unless @mySubordinate.nil?
+        @mySubordinate.set_myDriver(self)
+      end
+    end
+    was_set = true
+    was_set
+  end
+
+  def delete
+    @deleted = true
+    existing_mySubordinate = @mySubordinate
+    @mySubordinate = nil
+    unless existing_mySubordinate.nil?
+      existing_mySubordinate.delete
+    end
+  end
+
+end
+end

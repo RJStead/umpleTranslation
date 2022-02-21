@@ -1,0 +1,15 @@
+W054 Duplicate Events
+Errors and Warnings 51-99
+noreferences
+
+@@description
+
+<h2>Umple warning generated when there is a duplicate unguarded event that will never be reached</h2>
+
+<p>
+In the example below, the second transition e from s1 can never be triggered because when e occurs the first transition is taken.
+</p>
+
+@@example
+@@source manualexamples/W054DuplicateEvents1.ump &diagramtype=state
+@@endexample

@@ -1,0 +1,228 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package example;
+import java.util.*;
+import java.lang.Thread;
+
+public class GarageDoor implements Runnable
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //GarageDoor State Machines
+  public enum Status { Open, Closing, Closed, Opening, HalfOpen }
+  private Status status;
+  
+  //enumeration type of messages accepted by GarageDoor
+  protected enum MessageType { buttonOrObstacle_M, reachBottom_M, reachTop_M }
+  
+  MessageQueue queue;
+  Thread removal;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public GarageDoor()
+  {
+    setStatus(Status.Open);
+    queue = new MessageQueue();
+    removal=new Thread(this);
+    //start the thread of GarageDoor
+    removal.start();
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public String getStatusFullName()
+  {
+    String answer = status.toString();
+    return answer;
+  }
+
+  public Status getStatus()
+  {
+    return status;
+  }
+
+  public boolean _buttonOrObstacle()
+  {
+    boolean wasEventProcessed = false;
+    
+    Status aStatus = status;
+    switch (aStatus)
+    {
+      case Open:
+        setStatus(Status.Closing);
+        wasEventProcessed = true;
+        break;
+      case Closing:
+        setStatus(Status.Opening);
+        wasEventProcessed = true;
+        break;
+      case Closed:
+        setStatus(Status.Opening);
+        wasEventProcessed = true;
+        break;
+      case Opening:
+        setStatus(Status.HalfOpen);
+        wasEventProcessed = true;
+        break;
+      case HalfOpen:
+        setStatus(Status.Opening);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean _reachBottom()
+  {
+    boolean wasEventProcessed = false;
+    
+    Status aStatus = status;
+    switch (aStatus)
+    {
+      case Closing:
+        setStatus(Status.Closed);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean _reachTop()
+  {
+    boolean wasEventProcessed = false;
+    
+    Status aStatus = status;
+    switch (aStatus)
+    {
+      case Opening:
+        setStatus(Status.Open);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private void setStatus(Status aStatus)
+  {
+    status = aStatus;
+  }
+
+  public void delete()
+  {
+    removal.interrupt();
+  }
+
+  protected class Message
+  {
+    MessageType type;
+    
+    //Message parameters
+    Vector<Object> param;
+    
+    public Message(MessageType t, Vector<Object> p)
+    {
+      type = t; 
+      param = p;
+    }
+
+    @Override
+    public String toString()
+    {
+      return type + "," + param;
+    }
+  }
+  
+  protected class MessageQueue {
+    Queue<Message> messages = new LinkedList<Message>();
+    
+    public synchronized void put(Message m)
+    {
+      messages.add(m); 
+      notify();
+    }
+
+    public synchronized Message getNext()
+    {
+      try {
+        while (messages.isEmpty()) 
+        {
+          wait();
+        }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return null;
+      }
+
+      //The element to be removed
+      Message m = messages.remove(); 
+      return (m);
+    }
+  }
+
+  //------------------------------
+  //messages accepted 
+  //------------------------------
+
+  public void buttonOrObstacle ()
+  {
+    queue.put(new Message(MessageType.buttonOrObstacle_M, null));
+  }
+
+  public void reachBottom ()
+  {
+    queue.put(new Message(MessageType.reachBottom_M, null));
+  }
+
+  public void reachTop ()
+  {
+    queue.put(new Message(MessageType.reachTop_M, null));
+  }
+
+  
+  @Override
+  public void run ()
+  {
+    boolean status=false;
+    while (true) 
+    {
+      Message m = queue.getNext();
+      if(m == null)  return;
+      
+      switch (m.type)
+      {
+        case buttonOrObstacle_M:
+          status = _buttonOrObstacle();
+          break;
+        case reachBottom_M:
+          status = _reachBottom();
+          break;
+        case reachTop_M:
+          status = _reachTop();
+          break; 
+        default:
+      }
+      if(!status)
+      {
+        // Error message is written or  exception is raised
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+Tracing Constraints
+Tracing
+noreferences
+
+@@description
+<p align="justify">
+Constraints can be imposed upon the traced UML entity to limit the scope of tracing to when a certain condition is true. MOTL provides a set of constraints that can be classified into a prefix and postfix constraints. 
+<br>
+
+<ul>
+<li>
+<b> Condition </b> <br>
+Conditions consist of a left hand side, Boolean operator and a right hand side. Either side can refer to a UML attribute, role name, state, state value or constant. PreConditions are evaluated prior to the operation being traced, while PostConditions are the opposite. <br>
+</li>
+<li>
+<b> Number of Occurrences </b> <br>
+Trace will be recorded for a specific number of appearances, then tracing stops. <br>
+</li>
+<li>
+<b> Record clause </b> <br>
+Record clause postfix gives the flexibility to record another model element or a specific string. <br>
+</li>
+<li>
+<b> Life Timeline </b> <br>
+There are two cases. (1) trace the UML construct from its creation and stop when the trace condition is satisfied. (2) Tracing will begin only after the trace condition is satisfied and will then continue nonstop.  <br>
+</li>
+</ul>
+</p>
+
+@@syntax
+[[PreOrPostCondition]] [[traceWhere]] [[traceGiving]] [[traceCondition]] [[traceFor]] [[traceUntil]] [[traceAfter]] [[constraint]]
+
+@@example @@caption Conditions and Number of Occurences @@endcaption
+@@source manualexamples/TracingConstraints1.ump
+@@endexample
+
+@@example @@caption Record Clause @@endcaption
+@@source manualexamples/TracingConstraints2.ump
+@@endexample
+
+@@example @@caption Life Timeline @@endcaption
+@@source manualexamples/TracingConstraints3.ump
+@@endexample

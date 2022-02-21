@@ -1,0 +1,11 @@
+// Example of the declaration of an association to be immutable
+// Note that this can be set only the first time
+class X {
+  Integer id;
+  immutable * -> 0..1 Y;
+}
+
+class Y {
+  immutable;
+  someInfo;
+}  

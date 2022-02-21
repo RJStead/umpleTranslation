@@ -1,0 +1,18 @@
+W015 Immutable Class State Machine
+Errors and Warnings 1-50
+noreferences
+
+@@description
+
+<h2>Umple semantic warning reported when an immutable class is defined as having a state machine.</h2>
+
+<p>By definition, an immutable class can't change state, so it can't have a state machine. Any state machine defined is ignored.
+
+</p>
+
+
+@@example
+@@source manualexamples/W015ImmutableClassStateMachine1.ump
+@@endexample
+
+

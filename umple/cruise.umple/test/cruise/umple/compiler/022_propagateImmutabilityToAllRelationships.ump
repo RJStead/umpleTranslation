@@ -1,0 +1,43 @@
+class URLMS
+{
+  class Staff
+  {
+    Role role;
+  }
+
+  class WeeklyProgressUpdate
+  {
+  }
+
+  class FundingAccount
+  {
+    * -- * Report report;
+    * -- * LabExpense labExpense;
+  }
+
+  class Report
+  {
+  }
+
+  class LabExpense
+  {
+  }
+
+  enum Role 
+  {
+    researchAssociate, researchAssistant
+  }
+
+  class Equipment
+  {
+    int quantity;
+      
+    String type;
+
+    class Supply
+    {
+    String supplyType;
+    }
+  }
+
+}

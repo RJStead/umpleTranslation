@@ -1,0 +1,107 @@
+/*
+  Hotel - sample UML class diagram in Umple 
+  Last updated: May 26, 2008
+*/
+//Namespace for core of the system.
+namespace hotel.core;
+
+class HotelCompany {
+ name;
+ 1 -- * Hotel owns;
+}
+
+class Hotel {
+ name;
+ address;
+ 1 -- * RentableSpace;
+}
+
+class ItemOnBill { description; charge; }
+
+class Booking {
+ startDate; endDate; startTime;
+ endTime; bedroomsRequired; creditCardToBill;
+ 1 -- * ItemOnBill;
+ 0..1 -- * Booking subsidiaryBooking;
+}
+
+class RentableSpace {
+ costPerDay;
+ floorArea;
+ * -- * Booking;
+}
+
+class HotelBedroom { isA RentableSpace; roomNumber; qualityLevel; isSmoking; }
+
+class MeetingRoom { isA RentableSpace; name; maxSeatingCapacity; }
+
+class Suite{
+ 1 -- * RentableSpace;
+}
+
+class Event{ description; isA Booking; }
+
+class Person {
+ name; address;
+ 1 -- * Booking;
+}
+//$?[End_of_model]$?
+//Positioning
+class MeetingRoom
+{
+  position 358 444 211 76;
+}
+
+class Event
+{
+  position 136 471 149 62;
+}
+
+
+class HotelBedroom
+{
+  position 600 431 158 93;
+}
+
+class Suite
+{
+  position 586 167 109 45;
+  position.association RentableSpace__Suite 20,45 129,0;
+}
+
+class RentableSpace
+{
+  position 477 286 152 79;
+  position.association Booking__RentableSpace 0,15 201,46;
+}
+
+
+class Hotel
+{
+  position 391 148 128 79;
+  position.association Hotel__RentableSpace 100,79 14,0;
+}
+
+class HotelCompany
+{
+  position 393 28 112 58;
+  position.association Hotel:owns__HotelCompany 50,62 52,0;
+}
+
+class ItemOnBill
+{
+  position 55 133 148 75;
+}
+
+class Person
+{
+  position 235 133 127 75;
+  position.association Booking__Person 11,75 136,0;
+}
+
+class Booking
+{
+  position 110 255 201 143;
+  position.association Booking__Booking:subsidiaryBooking 20,143 0,118;
+  position.association Booking__ItemOnBill 30,0 85,75;
+}

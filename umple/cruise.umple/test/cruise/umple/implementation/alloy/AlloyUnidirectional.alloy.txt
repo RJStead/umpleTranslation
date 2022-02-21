@@ -1,0 +1,32 @@
+
+
+------------------------------------------------------------------------------------------------------------------
+
+-- This Alloy file is generated using Umple from Alloy_Unidirectional.ump
+
+------------------------------------------------------------------------------------------------------------------
+
+
+-- Defines a signature for class A
+sig A {
+  bs : set B
+}
+
+-- Defines a signature for class B
+sig B { }
+
+-- Defines a signature for class C
+sig C {
+  b : one B
+}
+
+
+-- Defines constraints on association between A and B
+fact AssociationFact {
+  A <: bs in (A) one -> set (B)
+}
+
+-- Defines constraints on association between C and B
+fact AssociationFact {
+  C <: b in (C) set -> set (B)
+}

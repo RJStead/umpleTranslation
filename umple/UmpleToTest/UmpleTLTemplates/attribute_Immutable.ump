@@ -1,0 +1,13 @@
+class UmpleToTest{
+
+attribute_Immutable <<!<</*attribute_Immutable*/>>
+
+		<<=gen.dependencyInjection(uClass)>>
+        <<=uClass.getName()>> <<=gen.initiateClass(uClass)>>;
+		//assertMethod(set<<=attrName>>());
+		assertTrue( a<<=uClass.getName()>>.get<<=attrName>>() == <<=at.getValue()>>);
+
+!>>
+
+
+}

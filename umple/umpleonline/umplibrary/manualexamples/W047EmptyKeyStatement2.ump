@@ -1,0 +1,5 @@
+// The following shows how to avoid the message.
+class A {
+  id;
+  key { id }
+}

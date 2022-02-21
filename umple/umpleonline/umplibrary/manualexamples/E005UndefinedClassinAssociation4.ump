@@ -1,0 +1,7 @@
+// The following will also generate the error message
+class X {}
+class Y {}
+
+association {
+  1 X -- * Z;
+}

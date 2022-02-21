@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="build" name="UmpleCodegen" >
+	
+  <!-- Move the generic Jet templates into each project -->
+  <!-- THIS IS NO LONGER BEING DONE AS JET IS NOW DEPRECATED AND WILL BE DELETED -->
+  <target name="prepare">	
+    <echo>THIS ANT TARGET IS NO LONGER ACTIVE as jet is deprecated</echo>
+    <!--
+    <copy todir="UmpleToJava/templates" overwrite="true">
+      <fileset dir="UmpleToTemplate/templates" excludes="*.svn" />
+    </copy>
+    <copy todir="UmpleToPhp/templates" overwrite="true">
+      <fileset dir="UmpleToTemplate/templates" excludes="*.svn" />
+    </copy>
+    <copy todir="UmpleToRuby/templates" overwrite="true">
+      <fileset dir="UmpleToTemplate/templates" excludes="*.svn" />
+    </copy>
+    -->
+  </target>
+  
+  <!-- Translate the *.jet and *.jumpjet files into Java source code -->
+  <!-- DEPRECATED - TO DELETE - JET CANNOT EASILY BE COMPILED FROM COMMAND LINE -->
+  <target name="generate">
+  </target>
+
+  <target name="build" >
+    <antcall target="prepare" />
+    <antcall target="generate" />
+  </target>
+
+</project>
+

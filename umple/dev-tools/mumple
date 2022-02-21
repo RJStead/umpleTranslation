@@ -1,0 +1,15 @@
+#!/bin/csh -fb
+if ! $?UMPLEROOT then
+  setenv UMPLEROOT ~/umple
+endif
+echo Building Umple User manual at $UMPLEROOT
+cd $UMPLEROOT/build
+ant -Dmyenv=local -f build.umple.xml packageDocs
+cd $UMPLEROOT/dist/cruise.umple/reference
+if (! -e ~/umple/umplewww/examples/airline.png) then
+ echo need to restore examples in $UMPLEROOT
+ echo They are sometimes deleted for an unknown reason
+ echo Do git checkout umplewww
+ echo Then rerun mumple
+endif
+echo To open user manual open $UMPLEROOT/dist/cruise.umple/reference/ClassDefinition.html

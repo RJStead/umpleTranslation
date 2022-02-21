@@ -1,0 +1,451 @@
+
+namespace cruise.statemachine.test;
+
+class CourseB
+{
+  log = "initial value";
+  
+  status {
+    Open {
+      entry / { log = "entry called"; }
+      exit / { log = "exit called"; }
+      anEvent -> Closed;
+    }
+    Closed {
+      anEvent -> Open;
+    }
+  }
+}
+
+class CourseC
+{
+  String[] logs;
+  
+  status {
+    Open {
+      entry / { addLog("Open Entry"); }
+      flip -> Closed;
+    }
+    Closed {
+      entry / { addLog("Closed Entry"); }
+      flip -> Open;
+      do 
+      {  
+        Thread.sleep(400);
+        addLog("Do Activity On Closed");
+      }
+    }
+  }
+}
+
+class CourseE
+{
+
+  String[] logs;
+  
+  status
+  {
+    Off
+    {
+      entry / { addLog("Enter Off"); }
+      exit / { addLog("Exit Off"); }
+      turnOn -> On;
+      turnSleep -> Sleep;
+    }
+    Sleep
+    {
+      entry / { addLog("Enter Sleep"); }
+      exit / { addLog("Exit Sleep"); }
+      wake -> Pause;
+    }
+    On
+    {
+      entry / { addLog("Enter On"); }
+      exit / { addLog("Exit On"); }
+      
+      turnOff -> Off;
+      Play 
+      { 
+        entry / { addLog("Enter Play"); }
+        exit / { addLog("Exit Play"); }
+        push -> Pause;
+      }
+      Pause
+      {
+        entry / { addLog("Enter Pause"); }
+        exit / { addLog("Exit Pause"); }
+        push -> Play;      
+        standby -> Sleep;
+      }      
+      
+    }
+  }
+ 
+}
+
+class CourseK
+{
+  String[] logs;
+  
+  status
+  {
+    On { flip -> Final; }
+  }
+
+  after delete {  addLog("deleted"); }
+  
+}
+
+class CourseL
+{
+  String[] logs;
+  
+  status
+  {
+    On
+    {
+      MotorIdle
+      {
+        flip -> Final; 
+      }
+      
+      ||
+      
+      FanIdle
+      {
+        flop -> Final;  
+      }
+      
+    }
+
+  }
+
+  after delete {  addLog("deleted"); }
+  
+}
+
+class CourseR
+{
+  String[] logs;
+  one
+  {
+    Off {
+     entry / { addLog("Enter Off"); }
+     exit / { addLog("Exit Off"); }
+     -> On;
+    }
+    On { 
+      entry / { addLog("Enter On"); }
+      exit / { addLog("Exit On"); }
+    }  
+  }
+}
+
+class CourseS
+{
+  String[] logs;
+  one
+  {
+    Off {
+     entry / { addLog("Enter Off 1"); }
+     entry / { addLog("Enter Off 2"); }
+     exit / { addLog("Exit Off 1"); }
+     exit / { addLog("Exit Off 2"); }
+     flip -> On;
+    }
+    On { 
+    }  
+  }
+
+}
+
+class CourseT
+{
+  Integer count;
+  one
+  {
+    Off {
+     [count > 10] -> On;
+     [count <= 10] -> Wait;
+    }
+    On { 
+    }  
+    Wait { 
+    }  
+  }
+}
+
+class CourseU {
+
+  Integer count;
+
+  status {
+    Off {
+      flip -> On;
+      do {incr();}
+    }
+    On { }
+  }
+
+  public void incr() 
+  { 
+    count += 1;
+  }
+
+}
+
+class CourseV {
+
+  Integer count = 0;
+
+  status {
+    Off {
+      do {doX();} -> On;
+    }
+    On { }
+  }
+
+  public void doX() { 
+    count += 1;
+  } 
+
+}
+
+class CourseW {
+  String[] logs;
+  
+  status {
+    Open {
+      statusOpen {
+        do {
+          addLog("DoActivity in nested state");
+        }
+      }  
+    }
+  }
+}
+
+class MultiLogCourse
+{
+  String[] logs;
+  
+  status {
+    Open {
+      entry / { addLog("Open Entry"); }
+      flip -> Closed;
+    }
+    Closed {
+      entry / { addLog("Closed Entry"); }
+      flip -> Open;
+      do 
+      {  
+        Thread.sleep(400);
+        addLog("Do Activity On Closed Thread1");
+      }
+      do 
+      {  
+        Thread.sleep(500);
+        addLog("Do Activity On Closed Thread2");
+      }
+    }
+  }
+}
+
+class CourseVMultiDo {
+
+  Integer count = 0;
+
+  status {
+    Off {
+      do {doX();} 
+      do {doX();}
+      -> On;
+    }
+    On { }
+  }
+
+  public void doX() { 
+    count += 1;
+  } 
+
+}
+
+class TransitionActivitySync{
+  String list = "";
+
+  status{
+    Off {
+      do
+      { 
+        Thread.sleep(500);
+        list += "2, ";
+      }
+      do { list += "[1, "; } -> On;
+    }
+    On{
+      do { list += "3]"; }
+    }
+  }
+}
+
+class CourseWMultiDo {
+  String[] logs;
+  
+  status {
+    Open {
+      statusOpen {
+        do {
+          addLog("DoActivity in nested state Thread1");
+        }
+        do {
+          Thread.sleep(500);
+          addLog("DoActivity in nested state Thread2");
+        }
+      }  
+    }
+  }
+}
+
+external Observable {}
+class ObservableCourse
+{
+  depend java.util.Observable;
+  isA Observable;
+  log = "initial value";
+  status {
+    Open {
+      anEvent -> Closed;
+    }
+    Closed {
+      anEvent -> Open;
+    }
+  }
+  before anEvent {
+    log = "before";
+    setChanged();
+    notifyObservers(status);
+  }
+  after anEvent {
+    log = "after";
+    setChanged();
+    notifyObservers(status);
+  }
+}
+
+
+class HistoryCourse
+{
+  Sm{
+    S1 {
+      Ss1 {
+        toss2 -> Ss2;
+        tos2 -> S2;
+      }
+      Ss2 {
+        toss1 -> Ss1;
+        tos2 -> S2;
+      }
+    }
+    S2 {
+      toHistory -> S1.H;
+    }
+  }
+}
+
+class DeepHistoryCourse
+{
+  Sm {
+    S1 {
+      toS2HStar -> S2.HStar;
+      Ss1 {
+        Sss1{
+          toSs2Sss2 -> Ss2.Sss2;
+          toS2 -> S2;
+        }
+        Sss2{
+          toS2 -> S2;
+        }
+      }
+      Ss2 {
+        Sss1{
+          toSss2 -> S1.Ss1.Sss2;
+          toS2 -> S2;
+        }
+        Sss2{
+          Ssss1{
+            toSsss2 -> Ssss2;
+            toS2Ss2 -> S2.Ss2;
+          }
+          Ssss2{
+            toS2 -> S2;
+            toSsss1 -> Ssss1;
+          }
+        }
+      }
+    }
+    S2 {
+      toDeepHistory -> S1.HStar;
+      toS1Ss2 -> S1.Ss2;
+      Ss1{
+        toS1 -> S1;
+      }
+      Ss2{
+        -> S1.HStar;
+      }
+    }
+  }
+}
+
+class StateMachineWithNegativeNumberGuard{
+  Status{
+    On{
+      turnOff (Integer pn) [pn > -1] -> Off;
+    }
+    Off{
+      turnOn -> On;
+    }
+  }
+}
+
+class StateMachineWithStringComparisonGuard{
+  String cmdString = "";
+  Boolean isCommandValid(String cmdString)
+  {
+    return cmdString=="valid";
+  }
+
+  CommandControl{
+    IDLE{
+	  execute -> CHECK_AVAILABILITY;
+    }
+    CHECK_AVAILABILITY{
+      execute [cmdString!=""]-> COMMAND_VALIDITY;
+    }
+    COMMAND_VALIDITY{
+      execute [isCommandValid(cmdString)] -> EXECUTION;
+    }
+    EXECUTION{
+    }
+  }
+}
+
+class ExitActionSelfTransition{
+  boolean b = false;
+  boolean exitCodeCalled = false;
+  
+  void execute_exit_code()
+  {
+    setExitCodeCalled(true);
+  }
+  
+  sm{
+    created{
+      exit /{execute_exit_code();}
+      init [b==false] -> created;
+      init [b==true] -> initialized;
+    }
+    initialized{
+      getback ->created;
+    }
+  } 
+}

@@ -1,0 +1,4 @@
+// The following shows how to avoid the error
+class X {
+  defaulted Integer a = 5;
+}

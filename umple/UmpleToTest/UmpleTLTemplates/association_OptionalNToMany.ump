@@ -1,0 +1,46 @@
+
+class UmpleToTest {
+    association_NNToMany <<!<</*association_NNToMany*/>><<#
+/*
+This file creates the necessary for Optional One To Many Association 
+*/
+
+  				  String buffName = "some" +uClass.getName();#>>
+        		  /////// Association: -- <<=theirEnd.getMultiplicity().getRange()>> <<=av.getRelatedAssociation().getUmpleClass().getName()>> /////// 
+        		  //create ... without ...
+        		  Test Create<<=uClass.getName()>>Without<<=av.getRelatedAssociation().getUmpleClass().getName()>> {
+        		  
+        		  AssertF (some<<=av.getRelatedAssociation().getUmpleClass().getName()>>.get<<=theirEnd.getRoleName().toUpperCase()>>()!= null);
+        		  }
+        		  //replace
+        		  <<#buffName = "some"+av.getRelatedAssociation().getUmpleClass().getName();#>>
+        		  Test Replace<<=av.getRelatedAssociation().getUmpleClass().getName()>>In<<=uClass.getName()>> { 
+        		  
+        		  <<=av.getRelatedAssociation().getUmpleClass().getName()>> <<=buffName>> = new <<=av.getRelatedAssociation().getUmpleClass().getName()>>(); 
+        		  <<=av.getRelatedAssociation().getUmpleClass().getName()>> <<=buffName>>2 = new <<=av.getRelatedAssociation().getUmpleClass().getName()>>();
+        		  <<=buffName>>.add<<=av.getRelatedAssociation().getUmpleClass().getName()>>(some<<=av.getUmpleClass().getName()>>);
+        		  AssertEqual (1, <<=buffName>>.getNumberOf<<=av.getUmpleClass().getName()>>s());
+        		  AssertEqual (1, <<=buffName>>.getNumberOf<<=av.getUmpleClass().getName()>>s());
+        		  some<<=av.getUmpleClass().getName()>>.set<<=av.getRelatedAssociation().getUmpleClass().getName()>>(<<=buffName>>2);
+        		  AssertEqual (some<<=av.getUmpleClass().getName()>>, <<=buffName>>2.get<<=av.getUmpleClass().getName()>>(0));
+        		  }
+        		  //delete
+        		  Test Delete<<=av.getRelatedAssociation().getUmpleClass().getName()>> {
+        		  // delete <<=av.getRelatedAssociation().getUmpleClass().getName()>> in <<=uClass.getName()>>
+        		  <<=buffName>>2.delete(); 
+        		  AssertEqual (null, <<=buffName>>2.get<<=av.getUmpleClass().getName()>>(0));
+        		  }
+        		  //boundary test
+        		  
+        		  Test BoundaryTest {
+        		  private int size = <<=av.getRelatedAssociation().getUmpleClass().getName()>>.getNumberOf<<=uClass.getName()>>s(); 
+        		  AssertTrue ( size > <<=myEnd.getMultiplicity().getLowerBound()>> &&  size < <<=myEnd.getMultiplicity().getUpperBound()>>) 
+        		  
+        		  }
+        		  
+        		  
+        		  }<<#
+  
+  
+#>>!>>
+}

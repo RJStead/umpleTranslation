@@ -1,0 +1,4 @@
+// The following shows how to avoid the error
+class Person {
+  * -- 0..2 Person parents;
+}

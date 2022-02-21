@@ -1,0 +1,90 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE ${last.version} modeling language!*/
+
+package example;
+
+public class Mentor
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //Mentor Attributes
+  private String capacity;
+  private int id;
+  private String name;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public Mentor(String aCapacity, int aId, String aName)
+  {
+    capacity = aCapacity;
+    id = aId;
+    name = aName;
+  }
+
+  public Mentor()
+  {
+    capacity = "31";
+    name = "Umple";
+  }
+
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setCapacity(String aCapacity)
+  {
+    boolean wasSet = false;
+    capacity = aCapacity;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setId(int aId)
+  {
+    boolean wasSet = false;
+    id = aId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getCapacity()
+  {
+    return capacity;
+  }
+
+  public int getId()
+  {
+    return id;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "capacity" + ":" + getCapacity()+ "," +
+            "id" + ":" + getId()+ "," +
+            "name" + ":" + getName()+ "]";
+  }
+}

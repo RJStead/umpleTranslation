@@ -1,0 +1,9 @@
+// In this example, there is an error
+// because trait T has two template
+// parameters with the same name.
+trait T<TP,TP>{  
+  TP name;
+}
+class C1{ 
+  isA T;
+}

@@ -1,0 +1,183 @@
+package cruise.umplificator.rules
+
+import org.eclipse.jdt.core.dom.*;
+import cruise.umple.compiler.*;
+import cruise.umplificator.parser.*;
+import java.util.*;
+
+import function cruise.umplificator.rules.TopLevelAnalyzerHelper.getImportName
+import function cruise.umplificator.rules.TopLevelAnalyzerHelper.getDeclarationContainerName
+import function cruise.umplificator.rules.TopLevelAnalyzerHelper.getImplementedInterfaces
+import function cruise.umplificator.rules.TopLevelAnalyzerHelper.getSuperClassName
+
+rule "addClass_toUmpleModel"
+	agenda-group "LEVEL1" 
+	when
+		typeDeclaration: TypeDeclaration(interface == false)
+		// Add class only once
+		umpleModel: UmpleModel(getUmpleClass(typeDeclaration.getName().getFullyQualifiedName())==null)
+	then
+		String typeName = typeDeclaration.getName().getFullyQualifiedName();
+		UmpleClass uClass = new UmpleClass(typeName);
+	    umpleModel.addUmpleClass(uClass);
+	    System.out.println("ADDING CLASS TO MODEL: "+uClass.getName());
+	    insert(uClass);
+end
+
+rule "addInterface_toUmpleModel"
+	agenda-group "LEVEL1" 
+	when
+		typeDeclaration: TypeDeclaration(interface == true)
+		// Add class only once
+		umpleModel: UmpleModel(getUmpleClass(typeDeclaration.getName().getFullyQualifiedName())==null)
+	then
+		String typeName = typeDeclaration.getName().getFullyQualifiedName();
+		UmpleInterface umpleInterface = new UmpleInterface(typeName);
+		umpleModel.addUmpleInterface(umpleInterface);
+		System.out.println("ADDING INTERFACE TO MODEL: "+umpleInterface.getName());
+		insert(umpleInterface);
+end
+
+rule "addTopConstruct_toUmpleModel"
+	agenda-group "LEVEL1" 
+	when
+		enumDeclaration: EnumDeclaration()
+		umpleModel: UmpleModel()
+	then
+		String enumName = enumDeclaration.getName().getFullyQualifiedName();
+		// Create Top Level Construct
+	    CodeBlock languageSpecificCode = new CodeBlock();
+	    languageSpecificCode.setName(enumName);
+	    languageSpecificCode.setCode(enumDeclaration.toString());
+		System.out.println("ADDING TOP LEVEL CONSTRUCT TO MODEL: "+enumName);
+		umpleModel.addExtraCode(languageSpecificCode);
+end
+
+rule "transform_ImportDeclaration"
+	agenda-group "LEVEL1" 
+	when
+		importDeclaration: ImportDeclaration()
+		uClass: UmpleClass()
+		eval(uClass.getName().equals(getDeclarationContainerName(importDeclaration)))		
+	then
+		//System.out.println("ADDING DEPEND TO CLASS: "+uClass.getName());
+		Depend depend = new Depend(getImportName(importDeclaration));
+		uClass.addDepend(depend);
+end
+
+rule "transform_ImportDeclaration_UInterface"
+	agenda-group "LEVEL1" 
+	when
+		importDeclaration: ImportDeclaration()
+		uInterface: UmpleInterface()
+		eval(uInterface.getName().equals(getDeclarationContainerName(importDeclaration)))	
+	then
+		Depend depend = new Depend(getImportName(importDeclaration));
+		uInterface.addDepend(depend);
+end
+
+rule "transform_InheritanceDeclaration_Interfaces"
+	agenda-group "LEVEL1" 
+	when
+		typeDeclaration : TypeDeclaration(typeDeclaration.superInterfaceTypes().size() > 0)
+		uClass: UmpleClass(typeDeclaration.getName().getIdentifier().equals(uClass.getName()))
+	then
+		List<String> parentInterfaces = getImplementedInterfaces(typeDeclaration);
+	 	for (String interfaceName : parentInterfaces)
+		{
+			UmpleInterface aInterface = new UmpleInterface(interfaceName);
+		    System.out.println(interfaceName);
+			uClass.addParentInterface(aInterface);
+		}
+end
+
+rule "transform_InheritanceDeclaration_Interfaces_UInterface"
+	agenda-group "LEVEL1" 
+	when
+		typeDeclaration : TypeDeclaration(typeDeclaration.superInterfaceTypes().size() > 0)
+		uInterface: UmpleInterface(typeDeclaration.getName().getIdentifier().equals(uInterface.getName()))
+	then
+		List<String> parentInterfaces = getImplementedInterfaces(typeDeclaration);
+	 	for (String interfaceName : parentInterfaces)
+		{
+			UmpleInterface aInterface = new UmpleInterface(interfaceName);
+		    System.out.println(interfaceName);
+			uInterface.addExtendsInterface(aInterface);
+		}
+end
+
+rule "transform_InheritanceDeclaration_SuperClasses"
+	agenda-group "LEVEL1" 
+	when
+		typeDeclaration : TypeDeclaration(typeDeclaration.getSuperclassType() != null)
+		uClass: UmpleClass(typeDeclaration.getName().getIdentifier().equals(uClass.getName()))
+	then
+		UmpleClass superClass = new UmpleClass(getSuperClassName(typeDeclaration));
+		uClass.setExtendsClass(superClass);
+end
+
+rule "transform_Namespace"
+	agenda-group "LEVEL1" 
+	when
+		packageDeclaration: PackageDeclaration()
+		uClass: UmpleClass()
+		eval(uClass.getName().equals(getDeclarationContainerName(packageDeclaration)))	
+	then
+		uClass.addNamespace(packageDeclaration.getName().getFullyQualifiedName());
+end
+
+
+rule "transform_Namespace_UInterface"
+	agenda-group "LEVEL1" 
+	when
+		packageDeclaration: PackageDeclaration()
+		uInterface: UmpleInterface()
+		eval(uInterface.getName().equals(getDeclarationContainerName(packageDeclaration)))	
+	then
+		uInterface.addNamespace(packageDeclaration.getName().getFullyQualifiedName());
+end
+
+rule "append_FieldDeclaration"
+	agenda-group "LEVEL1" 
+	when
+		fieldDeclaration: FieldDeclaration()
+		uClass: UmpleClass()
+		eval(uClass.getName().equals(getDeclarationContainerName(fieldDeclaration)))
+		eval(!uClass.getExtraCode().contains(fieldDeclaration.toString()))
+	then
+		uClass.appendExtraCode(fieldDeclaration.toString());
+end
+
+rule "append_FieldDeclaration_interfaces"
+	ruleflow-group "LEVEL1" 
+	when
+		fieldDeclaration: FieldDeclaration()
+		uInterface: UmpleInterface()
+		eval(uInterface.getName().equals(getDeclarationContainerName(fieldDeclaration)))
+		eval(!uInterface.getExtraCode().contains(fieldDeclaration.toString()))
+	then
+		uInterface.appendExtraCode(fieldDeclaration.toString());
+end
+
+rule "append_MethodDeclaration"
+	agenda-group "LEVEL1" 
+	when
+		method: MethodDeclaration()
+		uClass: UmpleClass()
+		eval(uClass.getName().equals(getDeclarationContainerName(method)))
+		eval(!uClass.getExtraCode().contains(method.toString()))
+	then
+		uClass.appendExtraCode(method.toString());
+end
+
+rule "append_MethodDeclaration_interfaces"
+	agenda-group "LEVEL1" 
+	when
+		method: MethodDeclaration()
+		uInterface: UmpleInterface()
+		eval(uInterface.getName().equals(getDeclarationContainerName(method)))
+		eval(!uInterface.getExtraCode().contains(method.toString()))
+	then
+		uInterface.appendExtraCode(method.toString());
+end
+

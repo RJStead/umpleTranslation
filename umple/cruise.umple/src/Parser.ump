@@ -1,0 +1,126 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+Parser for the grammar that can be used to define any grammar
+UmpleParser.ump is the key example
+
+ */
+namespace cruise.umple.compiler;
+
+external ErrorType{}
+external ErrorMessage{}
+external ErrorTypeSingleton{}
+external TextParser{}
+
+/* 
+ * An open-close pair, such as open curly brackets and close curly brackets
+ * Used to identify block start and end while parsing
+ */
+class Couple
+{
+  open;
+  close;
+  0..1 -- 0..* Couple ignores;
+}
+
+/*
+ * Represents a grammar rule, which has a name and contains definitions that describe it.
+ * 
+ * Examples of this are a class definition.
+ */
+class Rule
+{
+  // The name of the rule.
+  name;
+
+  Boolean shouldHide = false;
+
+  // The definitions associated with the rule.
+  String[] definitions;
+}
+
+class RulePartValue
+{
+  depend cruise.umple.parser.Position;
+  String name = null;
+  String value = null;
+  * -> 0..1 Position;
+}
+
+/* 
+ * Part of a grammar rule
+ */
+class RulePart
+{
+  depend cruise.umple.parser.TextParser;
+  depend cruise.umple.parser.Position;
+
+  // The name of the rule part.
+  name;
+
+  multiplicity;
+  String[] nextIdentifiers;
+  Integer maximumPartsFound = -1;
+
+  // A rule part is either static, variable or rule.
+  type { Static, Variable, Rule }
+
+  before addNextIdentifier { if (aNextIdentifier == null) { return false; } }
+  before getMultiplicity { if (multiplicity == null) { return "1"; } }
+}
+
+/*
+ * Parses an Umple file (.ump) based on grammar rules.
+ * 
+ * As parsing is going on "tokens" will be created and linked together in a hierarchy fashion based on what was parsed.
+ */
+class Parser
+{
+  depend java.io.*;
+  depend java.lang.IllegalStateException;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Position;
+  depend cruise.umple.parser.Token; 
+  depend cruise.umple.parser.TextParser; 
+  depend cruise.umple.parser.ErrorMessage;
+
+  // The Umple file (.ump) that will be parsed.
+  String filename = null;
+
+  String name; // default 'program'
+  String[] grammarRules;
+
+  // A parser can have many "rules", likewise each rule can be part of many "parsers"; hence many-to-many.
+  * -> * Rule;
+
+  * -> * Couple;
+
+  // The results of the parsing, and any errors/warning messages will be stored here.
+  ParseResult parseResult = new ParseResult(true);
+
+  internal Position _curParsePos = null;
+
+  // Every parser makes use of "tokens" that are built up based on what is parsed.  In the end it looks almost like a "tree".
+  // This is the starting token for which everything will be built off of (sub-tokens).
+  Token rootToken = reset();
+}
+
+/*
+ * Data captured during parsing when a certain rule matches
+ */
+class RuleInstance
+{
+  depend cruise.umple.parser.TextParser;
+
+  String[] stopAts;
+  internal Integer updateIndex = -1;
+  internal Integer rulePartsIndex = 0;
+  * -> * RulePart;
+  * -> 1 Parser;
+}
+
+use Parser_Code.ump;

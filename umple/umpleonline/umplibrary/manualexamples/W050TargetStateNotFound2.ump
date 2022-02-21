@@ -1,0 +1,9 @@
+// This example solves the problem
+class X {
+  sm {
+    s1 {
+      e1 -> s2;
+    }
+    s2 {}
+  }
+}

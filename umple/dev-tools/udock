@@ -1,0 +1,69 @@
+#!/bin/csh -fb
+echo Command to run UmpleOnline in docker
+echo 'syntax: udock {image} {-d storagedirectory} {-p port}'
+echo '  image defaults to latest, but can be any umpleonline in DockerHub'
+echo '  storagedirectory will be used for the ump directory'
+echo '    a temporary directory will be used otherwise'
+echo '  port defaults to 8000 (as used internally) if not specified'
+set dir="umpleonline-tmp$$"
+set port=8000
+set volcommand=""
+set modelarg=""
+set image=""
+if("$1" != "") then
+  if("$1" == "-d") then 
+    set dir=$2
+    if("$3" == "-p") then 
+      set port=$4    
+    endif
+  else 
+    if("$1" == "-p") then
+      set port=$2
+    else
+      set image=$1
+      if("$2" == "-d") then 
+        set dir=$3
+        if("$4" == "-p") then 
+          set port=$5    
+        endif      
+      endif
+      if("$2" == "-p") then 
+        set port=$3
+      endif
+    endif
+  endif
+endif
+
+if($dir != "") then
+  if(! -d $dir) then
+    if ($dir != "umpleonline-tmp$$") then
+      echo "Directory $dir to be mounted does not exist"
+    endif
+    if($dir == $dir:t) then
+      set dir = /tmp/$dir
+      if (-d $dir) then
+        echo "Will use" $dir
+      else
+        echo "Will create" $dir
+        mkdir $dir
+      endif
+    else
+      exit -1
+    endif
+  endif
+  echo Will mount $dir as storage.
+  set volcommand=" -v $dir"':'/var/www/ump
+endif
+
+if($image != "") set image=":"$image
+
+docker pull umple/umpleonline$image
+echo "Open in web browser as: http://localhost:$port/umple.php"
+echo "For log: open http://localhost:$port/scripts/log.php"
+if (`uname` == "Darwin") then
+  ( sleep 3 ; open "http://localhost:$port/umple.php" ) &
+endif
+echo running docker run --rm -ti -p "$port":8000 $volcommand umple/umpleonline$image
+echo  ... use control-c to cancel
+docker run --rm -ti -p "$port":8000 $volcommand umple/umpleonline$image >/dev/null
+echo Docker image quit

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="build" name="UmpleCore" >
+  
+  <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+  <!-- ```````````````````````````
+    Environment Variables
+  ``````````````````````````` -->
+  <import file="_template.xml" />
+
+  <property name="project.path" value="testbed"/>
+  <property name="bin.path" value="${project.path}/bin"/>
+  <property name="dist.path" value="${dist.dir}/${project.path}/java"/>
+  <property name="test.output.path" value="${dist.dir}/qa/testbed_java"/>
+  <property name="test.output.path.java" value="${dist.dir}/qa/testbed_java"/>
+  <property name="test.output.path.php" value="${dist.dir}/qa/testbed_php"/>
+  <property name="test.output.path.ruby" value="${dist.dir}/qa/testbed_ruby"/>
+
+  <property name="examplepattern" value="*" />
+  <property name="manualumpfiles.path" value="umpleonline/umplibrary/manualexamples"/>
+  <property name="manualumpfiles.bin.path" value="${manualumpfiles.path}/bin"/>
+  <property name="exampleumpfiles.path" value="umpleonline/umplibrary"/>
+  <property name="exampleumpfiles.bin.path" value="${exampleumpfiles.path}/bin"/>
+
+  <!-- Options for allUserManualExampleTests target-->
+  <property name="logfile" value="UserManualAndExampleTests_output.txt" />
+  <property name="examplepattern" value="*" />
+  <property name="failfast" value="true" />
+  <property name="threadcount" value="4"/>
+  <property name="cleanonfinish" value="true" />
+
+  <property name="php.simpletest.version" value="1.2" />
+  <property name="php.simpletest.url" 
+            value="https://github.com/simpletest/simpletest/archive/v${php.simpletest.version}.0.tar.gz" />
+  <property name="php.libs.dir" value="${dist.dir}/libs/php" />
+
+  <path id="project.classpath">
+    <pathelement location="${bin.path}"/>
+  </path>
+
+  <path id="manualumpfiles.classpath">
+    <pathelement location="${manualumpfiles.bin.path}"/>
+    <pathelement location="${exampleumpfiles.bin.path}"/>
+  </path>
+
+
+  <!-- ```````````````````````````
+    Clean up and initialize any potential byproduct
+  ``````````````````````````` -->
+  <target name="clean">
+	  <delete dir="${project.path}/src-gen-umple" failonerror="false"/>
+    <delete dir="${project.path}/test/cruise/compiler/src-gen-umple" failonerror="false"/>
+  </target>
+
+
+  <target name="init">
+    <antcall target="template.init" />
+    <mkdir dir="${test.output.path.java}"/>
+    <mkdir dir="${test.output.path.php}"/>
+    <mkdir dir="${test.output.path.ruby}"/>
+  </target>
+
+
+  <!-- ```````````````````````````
+    Compile the testbed tests
+  ``````````````````````````` -->
+
+  <target name="compile">
+    <antcall target="compileJava" />
+    <antcall target="compilePhp" />
+    <antcall target="compileRuby" />
+  </target>
+
+  <target name="compileJava">
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+    <deps-load-path conf="test" pathid="test.ivy.classpath" />
+
+    <echo>Compiling Java testbed umple code to Java, then compiling Java using Java version: ${java.version}</echo>
+    <java jar="${dist.dir}/${dist.umple.jar}" fork="true" failonerror="true">
+      <arg value="testbed/src/TestHarness.ump"/>
+    </java>
+
+    <apply executable="java" failonerror="true">
+      <arg value="-jar" />
+      <arg value="${dist.dir}/${dist.umple.jar}" />
+      <fileset dir="testbed/src/runtime">
+        <include name="*.ump" />
+      </fileset>
+    </apply>
+
+    <javac debug="true" includeantruntime="false" debuglevel="source,lines,vars" destdir="${bin.path}" source="11" target="11">
+      <src path="${project.path}/src"/>
+      <src path="${project.path}/src-gen-umple"/>
+      <src path="${project.path}/test"/>
+      <exclude name="**/.git"/>
+      <exclude name="**/*.ump" />
+      <exclude name="**/data" />
+      <classpath refid="project.classpath"/>
+      <classpath refid="core.ivy.classpath"/>
+      <classpath refid="test.ivy.classpath"/>
+    </javac>
+
+  </target>
+
+  <target name="compilePhp">
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+
+    <java jar="${dist.dir}/${dist.umple.jar}" fork="true" failonerror="true">
+      <arg value="testbed_php/src/TestHarnessPhp.ump"/>
+    </java>
+
+    <property name="php.simpletest.archive"
+              value="${php.libs.dir}/simpletest.${php.simpletest.version}.tar.gz" />
+    <property name="php.simpletest.dir"
+              value="${php.libs.dir}/simpletest" />
+
+    <mkdir dir="${php.libs.dir}"/>
+    
+    <if>
+      <not>
+        <resourceexists>
+          <file file="${php.simpletest.archive}" />
+        </resourceexists>
+      </not>
+      <then>
+        <get src="${php.simpletest.url}"
+             dest="${php.simpletest.archive}"
+             usetimestamp="true" />
+
+        <gunzip src="${php.simpletest.archive}"
+                dest="${php.simpletest.dir}.tar" />
+
+        <untar  src="${php.simpletest.dir}.tar"
+                dest="${php.libs.dir}/" />
+        <delete file="${php.simpletest.dir}.tar" />
+        <move todir="${php.simpletest.dir}">
+          <fileset dir="${php.simpletest.dir}-${php.simpletest.version}.0"/>
+        </move>        
+      </then>
+    </if>
+
+  </target>
+
+  <target name="compileRuby">
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+
+    <java jar="${dist.dir}/${dist.umple.jar}" fork="true" failonerror="true">
+      <arg value="testbed_ruby/src/TestHarnessRuby.ump"/>
+    </java>
+  </target>
+
+  <!-- ```````````````````````````
+    Run the testbed tests for all supported languages
+  ``````````````````````````` -->
+
+  <target name="test">
+    <antcall target="testJava" />
+    <antcall target="testPhp" />
+    <antcall target="testRuby" />
+    <!--
+    <antcall target="allUserManualAndExampleTests" />
+    -->
+  </target>
+
+  <target name="testJava">
+    <echo message="Running JAVA tests via junit"/>
+
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+    <deps-load-path conf="test" pathid="test.ivy.classpath" />
+
+    <junit fork="yes" forkmode="perBatch" haltonfailure="${haltonfailure}" showoutput="${showJunitOutput}" printsummary="${showJunitSummary}">
+      <formatter type="xml"/>
+      <batchtest fork="yes" todir="${test.output.path.java}">
+        <fileset dir="${project.path}/test">
+          <include name="**/*Test*.java"/>
+          <exclude name="**/AllTests.java"/>
+          <exclude name="**/*ErrorOutputTests.java" if="excludeCompilerErrorOutput"/>
+        </fileset>
+      </batchtest>
+      <classpath refid="project.classpath"/>
+      <classpath refid="test.ivy.classpath"/>
+      <classpath refid="core.ivy.classpath"/>
+    </junit>
+
+    <junitreport todir="${test.output.path.java}">
+      <fileset dir="${test.output.path.java}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${test.output.path.java}"/>
+    </junitreport>
+    <echo message="Java tests completed!"/>
+  </target>
+
+  <target name="testPhp">
+    <echo message="Running PHP tests from command line"/>
+    <exec executable="php" dir="testbed_php/test/" output="${test.output.path.php}/index.xml">
+      <arg value="AllXmlTests.php"/>
+    </exec>
+    <exec executable="php" dir="testbed_php/test/" output="${test.output.path.php}/index.html" outputproperty="test.output.php">
+      <arg value="AllTests.php"/>
+    </exec>
+
+    <!-- check for error -->
+    <fail message="PHP tests failed ('Fail' found)\n${test.output.php}">
+      <condition>
+        <not>
+          <contains string="${test.output.php}" substring="&lt;strong&gt;0&lt;/strong&gt; fails" casesensitive="true"/>
+        </not>
+      </condition>
+    </fail>
+    <fail message="PHP tests failed ('PHP Fatal error' found)">
+      <condition>
+        <contains string="${test.output.php}" substring="PHP Fatal error" casesensitive="true"/>
+      </condition>
+    </fail>
+    <fail message="PHP tests failed ('Fatal error' found)">
+      <condition>
+        <contains string="${test.output.php}" substring="Fatal error" casesensitive="true"/>
+      </condition>
+    </fail>
+    <echo message="PHP tests completed!"/>
+  </target>
+
+  <target name="testRuby">
+    <echo message="Running RUBY tests via rake task ${rake_cmd} output ${test.output.path.ruby}/index.html to ${test.output.ruby}"/>
+    <exec executable="${rake_cmd}" dir="testbed_ruby/" output="${test.output.path.ruby}/index.html" outputproperty="test.output.ruby" />
+
+    <!-- check for error string 'rake aborted', and fail build if itis found -->
+    <fail message="Ruby tests failed ('rake aborted' found)">
+      <condition>
+        <contains string="${test.output.ruby}" substring="rake aborted" casesensitive="false"/>
+      </condition>
+    </fail>
+
+    <echo message="RUBY tests completed!"/>
+  </target>
+
+  <!-- ``````````````````````````````````````````````
+    User manual example and umpleonline example tests
+  ``````````````````````````````````````````````` -->
+  <target name="allUserManualAndExampleTests">
+    <ant antfile="build/build.exampletests.xml" target="allUserManualAndExampleTests" >
+      <property name="logfile" value="UserManualAndExampleTests_output.txt" />
+      <property name="examplepattern" value="${examplepattern}" />
+      <property name="failfast" value="${failfast}" />
+      <property name="threadcount" value="${threadcount}"/>
+      <property name="cleanonfinish" value="${cleanonfinish}" />
+    </ant>
+  </target>
+
+  <!-- ```````````````````````````
+       Build the application
+       ``````````````````````````` -->
+
+  <!--
+    Build
+    run by the build machine, should work as-is on your machine, but be careful
+    as your code will be run against the "latest" Umpled Umple.
+   -->
+  <target name="build" >
+    <echo>Running testbed tests in build.testbed.xml to verify generated code works</echo>
+    <antcall target="clean" />
+    <antcall target="template.clean" />
+    <antcall target="init" />
+    <antcall target="compile" />
+    <antcall target="test" />
+    <antcall target="template.resetVersion" />
+  </target>
+
+  <!-- can be run locally as a quick(er) test to see if the build will pass on the server -->
+  <target name="pre_build" >
+    <antcall target="compile" />
+    <antcall target="test" />
+  </target>
+</project>
+

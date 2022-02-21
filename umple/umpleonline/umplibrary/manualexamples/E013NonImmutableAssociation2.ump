@@ -1,0 +1,25 @@
+// One way to solve this is to make
+// the association point to
+// another immutable class
+// But note that this only works for
+// one-way associations
+class X {
+   Integer x;
+   immutable;
+}
+
+class Y {
+  immutable;
+  String s;
+  0..1 -> 0..1 X;
+}//$?[End_of_model]$?
+
+class Y
+{
+  position 50 132 109 60;
+}
+
+class X
+{
+  position 50 26 109 60;
+}

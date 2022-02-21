@@ -1,0 +1,568 @@
+/*
+
+Copyright: All contributers to the Umple Project
+
+This file is made available subject to the open source license found at:
+http://umple.org/license
+
+This file contains the implementation details for our internal Umple parser.
+
+This class parses an Umple file into an abstract syntax tree of tokens, which are then
+analyzed into an instance of of Umple meta model.  This meta model instance can then
+be passed to our code generator to generate target implementations such as Java, PHP
+and Ruby.  It is configured to mostly delegate to helper methods for the following components
+
+ + Core (most things outside of the elements below)
+ + Umple Classes
+ + State Machinesx
+ + Composite Structure
+ + Traces
+ + Layouts
+ + Template
+
+The grammar is parsed from the *.grammar files in the /src directory.  Please refer to the
+addRulesInFile() methods to see which files comprise the current grammar.
+
+This file also contains helper methods for delegating the analysis of token, so that
+we properly populate the Umple instance of the Umple meta-model.
+
+Please refer to UmpleInternalParser.ump for more details.
+
+*/
+
+namespace cruise.umple.compiler;
+
+class UmpleInternalParser
+{
+
+  internal String[] unparsedUmpleFiles;
+  internal String[] parsedUmpleFiles;
+  internal Boolean shouldProcessAgain = false;
+  internal Boolean shouldProcessClassAgain = false;
+
+  after constructor { init(); }
+
+  public UmpleInternalParser()
+  {
+    this("UmpleInternalParser", new UmpleModel(null), new RuleBasedParser());
+  }
+
+  public UmpleInternalParser(UmpleModel aModel)
+  {
+    this("UmpleInternalParser", aModel, new RuleBasedParser());
+  }
+
+  private void init()
+  {
+    if(model.getUmpleFile() != null)
+    {
+      setFilename(model.getUmpleFile().getFileName());
+      setRootToken(reset()); // Makes sure the root token position has the filename
+    }
+
+    Couple quotes = new Couple("\"","\"");
+    Couple braces = new Couple("{","}");
+
+    addCouple(quotes);
+
+    braces.addIgnore(quotes);
+    braces.addIgnore(new Couple("//","\n"));
+
+    addCouple(braces);
+    
+    // Set up needed parser actions
+    parser.addParserAction("useStatement", new UseStatementParserAction() );
+        
+    parser.setLinkedFileHandler( new UmpleLinkedFileHandler() );
+    parser.setAnalyzerGenerator( new UmpleAnalyzerGeneratorHandler() );
+    
+    parser.addGrammarFile("/umple_core.grammar");
+    parser.addGrammarFile("/umple_patterns.grammar");
+    mixset Constraint {
+      parser.addGrammarFile("/constraint/umple_constraints.grammar");  // TODO Under development
+    }
+    parser.addGrammarFile("/umple_exceptions.grammar");
+    parser.addGrammarFile("/use.grammar");
+  }
+
+  public ParseResult parse(String ruleName, String input){
+    setParseResult(parser.parse(ruleName,input));
+    setRootToken(parser.getRootToken());
+    SampleFileWriter.destroy("temp.ump");
+    return getParseResult();
+  }
+  
+    public ParseResult parse(String ruleName, String input, String fileName, Position position, int lineNumber, int offset){
+	setParseResult(parser.parse(ruleName,input,fileName, position,lineNumber,offset));
+    setRootToken(parser.getRootToken());
+    return getParseResult();
+  }
+
+  public ParseResult analyze(boolean shouldGenerate)
+  {
+    try {
+      setParseResult(parser.getParseResult());
+      setRootToken(parser.getRootToken());
+      analyzeAllTokens(getRootToken());    
+      postTokenAnalysis();
+      mixset StateMachine {
+        secondPostTokenAnalysis();
+      }
+      //add analysis here!!! xx.validateStateMachineGuardConstraints(model);
+      mixset Attribute {
+        mixset Method {
+          checkDefaultedNameConflict();
+        }
+      }
+      mixset FeatureModel {
+        analyzeFeatureModel(); // lastly to analyze the feature model after all mixsets are added to umple model. 
+      }
+    
+    }
+    catch (Exception ex)
+    {
+      setFailedPosition(new Position("",0,0,0),9100,
+        "Could not analyze Umple model. Please report an issue with this entire message and your input code to Umple developers.\nStack Trace Follows.\n"+
+        cruise.umple.util.ExceptionDumper.dumpCompilerError(ex));
+    }
+
+    if (shouldGenerate && getParseResult().getWasSuccess())
+    {
+      String generatorError = model.generate();
+      if(generatorError != null) {
+        setFailedPosition(new Position("",0,0,0),9200,generatorError);
+      }
+    }
+    return getParseResult();
+  }
+
+  //------------------------
+  // PRIVATE METHODS
+  //------------------------
+
+  // When an error occurs, set the failed position and mark the compile as NOT successful
+  public void setFailedPosition(Position position, int errorCode, String... messages)
+  {
+    //getParseResult().setWasSuccess(false);
+
+    // Handle the special case of multiple unrecognized lines in a class; ensures that the
+    // 1007 warning message is recorded and displayed no more than once
+    if (errorCode == 1007) {
+      List<ErrorMessage> errorMessages = getParseResult().getErrorMessages();
+      for (ErrorMessage error : errorMessages) {
+        if (error.getErrorType().getErrorCode() == 1007) {
+          return; // we have already recorded this error, lets ignore and return
+        }
+      }
+    }
+
+    getParseResult().setPosition(position);
+    getParseResult().addErrorMessage(new ErrorMessage(errorCode,position,messages));
+  }
+
+  // Analyze all child tokens of the "root" token.  This delegates to a individual
+  // Each token is analyzed as long as "shouldProcessAgain" is set to true during the analysis
+  // analyzeToken and quits early if a problem arises
+  private void analyzeAllTokens(Token rootToken)
+  {
+    int analysisStep = 0;
+    shouldProcessAgain = true;
+    do
+    {
+      analysisStep += 1;
+      shouldProcessAgain = false;
+      for(Token t : rootToken.getSubTokens())
+      {
+        analyzeToken(t,analysisStep);
+        if (!getParseResult().getWasSuccess())
+        {
+          return;
+        }
+      }
+    }
+    while (shouldProcessAgain);
+    shouldProcessAgain = true;
+
+    fixImportFromDefaultPackage();
+    checkUnusedNamespaces();
+  }
+
+  // Delegate function to analyze a token within the context of a class
+  // Each token is analyzed as long as "shouldProcessClassAgain" is set to true during the analysis
+  // "1" is for the first round of analysis and "2" for the second.  The "2" is used for chicken-and-egg initialization problems, otherwise
+  // put everything under the "1"
+  private void analyzeAllTokens(Token rootToken, UmpleClass aClass)
+  {
+    int analysisStep = 0;
+    shouldProcessClassAgain = true;
+    do
+    {
+      analysisStep += 1;
+      shouldProcessClassAgain = false;
+      for(Token token : rootToken.getSubTokens())
+      {
+        analyzeToken(token,aClass,analysisStep);
+        if (!getParseResult().getWasSuccess())
+        {
+          return;
+        }
+      }
+    }
+    while (shouldProcessClassAgain);
+   
+  }
+
+  // Delegate function to analyze a token and send it to the write
+  private void analyzeToken(Token t, int analysisStep)
+  {
+    // See #460 - types are now nested
+    t.flattenNameRecursive("type");
+    mixset Mixset {
+      analyzeMixsetUseStatement(t, analysisStep);
+    }
+    analyzeUSE(t, analysisStep);
+    analyzeCoreToken(t,analysisStep);
+    analyzeEnumerationToken(t, analysisStep);
+    mixset Class {
+      analyzeClassToken(t,analysisStep);
+    }
+    mixset Trait {
+      analyzeTraitToken(t,analysisStep);
+    }
+    mixset Template {
+      analyzeTemplateToken(t,analysisStep);
+    }
+    mixset StateMachine {
+      analyzeStateMachineToken(t,analysisStep);
+    }
+    mixset Structure {
+      analyzeComponentToken(t,analysisStep);
+    }
+    mixset Trace {
+      analyzeTraceToken(t,analysisStep);
+    }
+    mixset Filter {
+      analyzeFilterToken(t,analysisStep);
+    }
+    mixset Layout {
+      analyzeLayoutToken(t,analysisStep);
+    }
+    mixset FIXML {
+      analyzeFIXML(t, analysisStep);
+    }
+    mixset Mixset {
+      analyzeMixsetToken(t, analysisStep);
+    }
+    mixset FeatureModel {
+      analyzeRequireStatement(t, analysisStep);
+    }
+    mixset AspectInjection {
+      analyzeInjectionToken(t, analysisStep);
+    }
+  }
+
+  // Analyze an individual token, delegates to the various components in Umple
+  private void analyzeToken(Token t, UmpleClass aClass, int analysisStep)
+  {
+    // See #460 - types are now nested
+    t.flattenNameRecursive("type");
+    analyzeCoreToken(t,aClass,analysisStep);
+    mixset Class {
+      analyzeClassToken(t,aClass,analysisStep);
+    }
+    mixset StateMachine {
+      analyzeStateMachineToken(t,aClass,analysisStep);
+    }
+    analyzeDependentTokens(t,aClass,analysisStep);
+  }
+
+
+  //The analysis methods in this function can depend on prior analysis (ex: constraints/keys on attributes defined later in the code)
+  //Therefore it is necessary to force a second pass of the analysis for these cases
+  private void analyzeDependentTokens(Token t, UmpleClass aClass, int analysisStep)
+  {
+    // Methods after this point will occur on analysisStep > 1
+    if (analysisStep <=2 && t.is("invariant"))
+    {
+      shouldProcessAgain = true;
+    }
+    if(analysisStep <= 2 || shouldProcessClassAgain)
+    {
+      shouldProcessClassAgain = true;
+      return;
+    }
+    mixset Constraint {
+      if (t.is("modelConstraintBody"))
+      {
+        analyzeModelConstraint(t,aClass);
+      }
+    }
+    mixset AspectInjection {
+      else if (t.is("beforeCode") || t.is("afterCode"))
+      {
+        analyzeInjectionCode(t,aClass);
+      }
+    }
+    else if (t.is("key") || t.is("defaultKey"))
+    {
+      addKey(t, aClass, unlinkedKeysTokens);
+    }
+    mixset Trace {
+      analyzeTraceToken(t,aClass);
+    }
+    mixset Layout {
+      analyzeLayoutToken(t,aClass,analysisStep);
+    }
+  }
+
+  // Once you have analyze all tokens, you allowed a second 'pass' to apply any additional checks
+  // Each step in the process might "fail", so we check the status before calling each delegate
+  // token post token analysis method
+  private void postTokenAnalysis()
+  {
+    analyzeParseResult();
+    if (getParseResult().getWasSuccess())
+    {
+      postTokenCoreAnalysis();
+    }
+    if (getParseResult().getWasSuccess())
+    {
+      postTokenInterfaceAnalysis();
+    }
+    mixset Class {
+      if (getParseResult().getWasSuccess())
+      {
+        postTokenClassAnalysis();
+      }
+    }
+    mixset Trace { 
+      if (getParseResult().getWasSuccess())
+      {
+        postTokenTraceAnalysis();
+      }
+    }
+    mixset Trait {
+      if (getParseResult().getWasSuccess())
+      {
+        postTokenTraitAnalysis();
+      }  
+      if (getParseResult().getWasSuccess())
+      {
+        applyTraits();
+        //Issue 686
+        checkCodeInjections();
+      } 
+     }
+    mixset Layout {
+      if (getParseResult().getWasSuccess())
+      {
+        postTokenLayoutAnalysis();
+      }
+    }
+    mixset Template {
+      if (getParseResult().getWasSuccess()) {
+        postTokenTemplateAnalysis();
+      }
+    }
+    mixset Structure {
+      if (getParseResult().getWasSuccess()) {
+        postTokenComponentAnalysis();
+      }
+    }
+    mixset Constraint {
+      if (getParseResult().getWasSuccess())
+      {
+        postTokenModelConstraintAnalysis();
+      }
+    }
+    if (getParseResult().getWasSuccess())
+    {
+      postTokenEnumerationAnalysis();
+    }
+    
+    if (getParseResult().getWasSuccess())
+    {
+      postTokenInterfaceTestAnalysis();
+    }
+    
+    if (getParseResult().getWasSuccess())
+    {
+      postTokenAbstractTestAnalysis();
+    }
+    
+    if (getParseResult().getWasSuccess())
+    {
+      postTokenTestSequeceAnalysis();
+    }
+    mixset Mixset
+    {
+      if (getParseResult().getWasSuccess())
+      {
+        checkMixsetsNotUsed();
+      } 
+    }
+    // We have to look at the error messages again to see if
+    // any need to be removed
+    analyzeParseResult();
+  }
+
+  // Locate all 'use *.ump' references and add those files if not already parsed
+  private void addNecessaryFiles()
+  {
+  }
+
+  // Loop through all unparsed files, parse them, and add any missing references
+  private void parseAllFiles()
+  {
+    addNecessaryFiles();
+    while (!unparsedUmpleFiles.isEmpty() && getParseResult().getWasSuccess())
+    {
+      String nextFile = unparsedUmpleFiles.get(0);
+      unparsedUmpleFiles.remove(0);
+      parsedUmpleFiles.add(nextFile);
+      String input = SampleFileWriter.readContent(new File(nextFile));
+      //TODO: parse() should probably be responsible for
+      // reading file data, if we refactor it to be as such,
+      // then we can get rid of this ugly bit of code
+      setFilename(nextFile);
+      parse("program", input);
+      addNecessaryFiles();
+    }
+  }
+
+  public void analyzeParseResult()
+  {
+    int numberOfErrors = 0;
+    int numberOfWarnings = 0;
+    for(int i = 0; i<getParseResult().numberOfErrorMessages(); i++)
+    {
+      ErrorMessage error = getParseResult().getErrorMessage(i);
+      if(error.getErrorType().getSeverity() <= 2)
+      {
+        numberOfErrors++;
+      }
+      else
+      {
+        numberOfWarnings++;
+      }
+      if(allowedMessages.contains(error.getErrorType().getErrorCode()))
+      {
+        if(error.getErrorType().getSeverity() <= 2)
+        {
+          numberOfErrors--;
+        }
+        else
+        {
+          numberOfWarnings--;
+        }
+        getParseResult().removeErrorMessage(error);
+        i--;
+        continue;
+      }
+      if(ignoredMessages.contains(error.getErrorType().getErrorCode()))
+      {
+        if(error.getErrorType().getSeverity() <= 2)
+        {
+          numberOfErrors--;
+        }
+        else
+        {
+          numberOfWarnings--;
+        }
+        getParseResult().removeErrorMessage(error);
+        i--;
+        continue;
+      }
+      if(expectedMessages.contains(error.getErrorType().getErrorCode()))
+      {
+        if(error.getErrorType().getSeverity() <= 2)
+        {
+          numberOfErrors--;
+        }
+        else
+        {
+          numberOfWarnings--;
+        }
+      }
+    }
+    for(Integer id: expectedMessages)
+    {
+      boolean hasMessage = false;
+      for(int i = 0; i<getParseResult().numberOfErrorMessages(); i++)
+      {
+        ErrorMessage error = getParseResult().getErrorMessage(i);
+        if(error.getErrorType().getErrorCode() == id)
+        {
+          getParseResult().removeErrorMessage(error);
+          hasMessage = true;
+          break;
+        }
+      }
+      if(!hasMessage)
+      {
+        // setFailedPosition
+      }
+    }
+    if(numberOfErrors == 0)
+    {
+      getParseResult().setWasSuccess(true);
+    }
+    if(numberOfWarnings == 0)
+    {
+      getParseResult().setHasWarnings(false);
+    }
+  }
+  
+  mixset Template_Strcture {
+    // This MIXSET contains common code used by Template & Strcture.
+    public boolean reAnalyze() {
+      return shouldProcessAgain;
+    }
+    public void reAnalyze(boolean re) {
+  	shouldProcessAgain = re;
+    }
+  }
+}
+use UmpleInternalParser_CodeCore.ump;
+mixset Class {
+  use class/UmpleInternalParser_CodeClass.ump;
+}
+mixset Trait{
+  use trait/UmpleInternalParser_CodeTrait.ump;
+}
+mixset Constraint {
+  use constraint/UmpleInternalParser_CodeConstraints.ump;
+}
+mixset Structure {
+  use strcture/UmpleInternalParser_CodeStructure.ump;
+  use Template_Strcture;
+}
+mixset Template {
+  use template/UmpleInternalParser_CodeTemplate.ump;
+  use Template_Strcture;
+}
+mixset StateMachine {
+  use stateMachine/UmpleInternalParser_CodeStateMachine.ump;
+}
+mixset Trace {
+  use trace/UmpleInternalParser_CodeTrace.ump;
+}
+mixset Layout {
+  use layout/UmpleInternalParser_CodeLayout.ump;
+}
+use UmpleInternalParser_CodeUSE.ump;
+mixset Filter {
+  use filter/UmpleInternalParser_CodeFilter.ump;
+}
+use UmpleInternalParser_CodeParserHandlers.ump;
+use UmpleInternalParser_CodeEnumeration.ump;
+mixset Mixset{
+  use mixset/UmpleInternalParser_CodeMixset.ump;
+}
+mixset FeatureModel {
+  use UmpleInternalParser_CodeRequireStatement.ump;
+}
+use UmpleInternalParser_CodeTest.ump;
+mixset AspectInjection {
+  use class/UmpleInternalPraser_CodeInjection.ump;
+}

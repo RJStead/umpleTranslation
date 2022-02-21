@@ -1,0 +1,6 @@
+// It is also possible to designate that
+// the class Y is external in the following manner
+class X {
+  1 -- * Y;
+}
+external Y {}

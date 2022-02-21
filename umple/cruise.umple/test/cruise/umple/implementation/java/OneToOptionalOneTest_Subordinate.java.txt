@@ -1,0 +1,100 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE @UMPLE_VERSION@ modeling language!*/
+
+package example;
+
+public class MySubordinate
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //MySubordinate Attributes
+  private String number;
+
+  //MySubordinate Associations
+  private MyDriver myDriver;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public MySubordinate(String aNumber, MyDriver aMyDriver)
+  {
+    number = aNumber;
+    boolean didAddMyDriver = setMyDriver(aMyDriver);
+    if (!didAddMyDriver)
+    {
+      throw new RuntimeException("Unable to create mySubordinate due to myDriver. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setNumber(String aNumber)
+  {
+    boolean wasSet = false;
+    number = aNumber;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getNumber()
+  {
+    return number;
+  }
+
+  public MyDriver getMyDriver()
+  {
+    return myDriver;
+  }
+
+  public boolean setMyDriver(MyDriver aNewMyDriver)
+  {
+    boolean wasSet = false;
+    if (aNewMyDriver == null)
+    {
+      //Unable to setMyDriver to null, as mySubordinate must always be associated to a myDriver
+      return wasSet;
+    }
+    
+    MySubordinate existingMySubordinate = aNewMyDriver.getMySubordinate();
+    if (existingMySubordinate != null && !equals(existingMySubordinate))
+    {
+      //Unable to setMyDriver, the current myDriver already has a mySubordinate, which would be orphaned if it were re-assigned
+      return wasSet;
+    }
+    
+    MyDriver anOldMyDriver = myDriver;
+    myDriver = aNewMyDriver;
+    myDriver.setMySubordinate(this);
+
+    if (anOldMyDriver != null)
+    {
+      anOldMyDriver.setMySubordinate(null);
+    }
+    wasSet = true;
+    return wasSet;
+  }
+
+  public void delete()
+  {
+    MyDriver existingMyDriver = myDriver;
+    myDriver = null;
+    if (existingMyDriver != null)
+    {
+      existingMyDriver.setMySubordinate(null);
+    }
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "number" + ":" + getNumber()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "myDriver = "+(getMyDriver()!=null?Integer.toHexString(System.identityHashCode(getMyDriver())):"null");
+  }
+}

@@ -1,0 +1,423 @@
+namespace cruise.umple.alloy;
+
+class Statement {
+  protected String name;
+  protected String getName(){ return name; }
+  public String print(){ return name; }
+}
+
+class OpenStatement 
+{
+ isA Statement;
+ packageName;
+ className;
+ after constructor
+ {
+   name = "open";
+ }
+ 
+ public String print()
+ {
+   return name+" util/"+packageName+"["+className+"]\n"; 
+ }
+}
+
+class AlloyModel {
+  depend cruise.umple.compiler.*; 
+  isA AlloyObject;
+  
+  1 -> * Signature;
+  1 -> * Fact;
+  1 -> * Statement;
+  
+  name;
+  modelNamespace;
+  
+  public AlloyModel(UmpleModel model)
+  {
+    signatures = new ArrayList<Signature>();
+    facts = new ArrayList<Fact>(); 
+    statements = new ArrayList<Statement>();
+    
+    //OpenStatement st = new OpenStatement("ordering","UmpleObject");
+    //statements.add(st);
+    
+    //Signature umpleObject = new Signature("UmpleObject","",false,true,false);
+    //signatures.add(umpleObject);
+    
+    /*if(hasStringAttribute(model))
+    {
+      Signature tempObject = new Signature("TempObject","",false,true,false);
+      UmpleClass uClass = new UmpleClass("TempObject");
+      Attribute abute = new Attribute("tempName","","","",false,uClass);
+      uClass.addAttribute(abute);
+    
+      Fact viz = new Fact(uClass);
+      facts.add(viz);
+      Function tempFun = new Function(abute);
+      tempObject.addFunction(tempFun);
+      signatures.add(tempObject);
+    }*/
+    genAssociationFact(model);
+    genSignatures(model);
+    genOtherConstraints(model);
+    
+    name = model.getUmpleFile().getFileName(); 
+    if(model.getDefaultNamespace() != null)
+      if(namespace(model.getDefaultNamespace()) != "")
+        modelNamespace = "module "+namespace(model.getDefaultNamespace());
+      else  modelNamespace = "module "+model.getDefaultNamespace();  
+    else 
+      modelNamespace = "";
+  }
+  
+  private void genAssociationFact(UmpleModel model)
+  {
+    //String temp = "";
+    for(Association assoc : model.getAssociations())
+    {
+      if(!assoc.getEnd(0).getClassName().equals(assoc.getEnd(1).getClassName()))
+      {
+      	AssociationFact aFact = new AssociationFact(assoc);
+       	facts.add(aFact);
+      }
+    }
+    
+  }
+  
+  private boolean hasStringAttribute(UmpleModel model)
+  {
+    for(UmpleClass uClass : model.getUmpleClasses())
+    {
+      for(Attribute attr : uClass.getAttributes())
+        if(attr.getType().equals("String") || attr.getType().equals(""))
+       return true;
+    }
+    return false;
+  }
+  
+  private String namespace(String addr)
+  {
+    int i = 0, size = addr.length();
+    String temp = "";
+	while(i < size)
+	{
+	  if(addr.charAt(i) == '.')
+	  { 
+	    for(int k = 0;k < i;k++)
+	      temp += addr.charAt(k); 
+	    addr = namespace(temp + "/"+addr.substring(i+1,addr.length())); 
+	  } 
+	  i++;
+	}
+	return addr;
+  }
+  
+  
+  //For general hierachy pattern
+  private Association checkAssocitaionBtw(String n1, String n2, UmpleModel model)
+  {
+    String endName1, endName2;
+    for(Association assoc : model.getAssociations())
+    {
+      endName1 = assoc.getEnd(0).getClassName();
+      endName2 = assoc.getEnd(1).getClassName();
+      if(n1.equals(endName1) && n2.equals(endName2))
+        
+          return assoc;
+      if(n1.equals(endName2) && n2.equals(endName1))
+        
+          return assoc;
+    }
+    return null;
+  }
+  
+  //For general hierarchy pattern
+  private Association analyzeClassForH(UmpleModel model,UmpleClass uClass)
+  {
+    String name1, name2;
+  	name1 = uClass.getName();
+  	
+  	if(uClass.hasExtendsClass())
+  	{
+  	  Multiplicity mult = new Multiplicity();
+	  if(mult.setBound("1") == true) ;
+  	  AssociationEnd lEnd = new AssociationEnd(null,null,null,null,mult);
+  	  AssociationEnd rEnd = new AssociationEnd(null,null,null,null,mult);
+  	  name2 = uClass.getExtendsClass().getName();
+  	  if(checkAssocitaionBtw(name1,name2,model) != null)
+  	  {
+  	    Association assoc = checkAssocitaionBtw(name1,name2,model);
+  	    if(assoc.getEnd(0).getClassName().equals(name1))
+  	    {
+  	      lEnd = assoc.getEnd(0);
+  	      rEnd = assoc.getEnd(1);
+  	    }
+  	    else 
+  	    {
+  	      lEnd = assoc.getEnd(1);
+  	      rEnd = assoc.getEnd(0);
+  	    }
+  	    return convertEndsToAssociation(lEnd,rEnd);
+  	  }
+  	}
+  	return null;
+  }
+  
+  private void genSignatures(UmpleModel model)
+  {
+    for (UmpleClass uClass : model.getUmpleClasses())
+    {       
+      Signature sig = new Signature(uClass);      
+      signatures.add(sig);
+      
+      genReflexiveRelations(uClass);
+    }
+  }
+  
+  private void genReflexiveRelations(UmpleClass uClass)
+  {
+    for(Association assoc : uClass.getAssociations())
+    {
+      //Case of SymmetricReflexive Association
+      if(analyzeAssociation(assoc) == 3)
+      {              
+        NonReflexiveFact nrf = new NonReflexiveFact(assoc);
+        facts.add(nrf);
+          
+        //Symmetric relations
+        SymmetricFact sf = new SymmetricFact(assoc);          
+        facts.add(sf);
+      }
+    }
+  }
+  
+  public List<Statement> getImportStatements(){
+    List<Statement> stmt = new ArrayList<Statement>(); 
+    for(Statement st : statements )
+    {
+      if(st.getName().equals("open"))
+        stmt.add(st);
+    }
+    return stmt;
+  }
+  
+  public String printImportStatements()
+  { 
+    String temp = "";
+    
+    for(Statement st : getImportStatements())
+      temp+= st.print()+"\n";
+      
+    return temp;
+  }
+  
+  private void genOtherConstraints(UmpleModel model)
+  {
+    for(Association assoc : model.getAssociations())
+    { 
+    
+           
+      //Case of Asymmetric association
+      if(analyzeAssociation(assoc) == 1)
+      {
+    	NoExtendedFact nExt = new NoExtendedFact(assoc);
+    	NoSelfRelationFact nsr = new NoSelfRelationFact(assoc);    	
+    	facts.add(nsr);
+    	facts.add(nExt);
+      }
+        
+      //Case of bidirectional association
+      if(analyzeAssociation(assoc) == 2)
+      {
+        if(assoc.isIsLeftNavigable() && assoc.isIsRightNavigable())
+        { 
+    	  BidirectionFact bidirect = new BidirectionFact(assoc);
+    	  facts.add(bidirect);
+    	}
+      }
+      
+      AssociationEnd lEnd = assoc.getEnd(0), rEnd = assoc.getEnd(1);
+     if(assoc.isIsLeftNavigable())
+      if(lEnd.getMultiplicity().isValid())
+      {
+        NumericBoundFact nbf = new NumericBoundFact(assoc,0);
+        facts.add(nbf);
+      }
+     if(assoc.isIsRightNavigable())
+      if(rEnd.getMultiplicity().isValid())
+      {
+        NumericBoundFact nbf = new NumericBoundFact(assoc,1);
+        facts.add(nbf);
+      }
+    }
+    
+    for(UmpleClass uClass : model.getUmpleClasses())
+    {
+      if(analyzeClassForH(model,uClass) != null)
+      {
+        GenHierarchyFact ghf = new GenHierarchyFact(analyzeClassForH(model,uClass));
+        facts.add(ghf);
+      }
+    }
+  }
+  
+  private Integer analyzeAssociation(Association assoc)
+  {
+  	String rEndName = assoc.getEnd(1).getClassName(),
+  		lEndName = assoc.getEnd(0).getClassName();
+  	  if(lEndName.equals(rEndName))
+  	  {
+  	    if(compareRoleNames(assoc) == true)
+  	      return 3;
+  	    return 1;
+  	  }
+  	  return 2;
+  }
+  
+  private boolean compareRoleNames(Association assoc)
+  {
+    if(assoc.getEnd(0).getDisplayRoleName().equals("")) return true;
+    return false;
+  }
+  
+  public String comment(){
+    return addStartDottedLine()+
+  		"-- This Alloy file is generated using Umple from "+name+addStartDottedLine();
+  }
+}
+
+class Signature 
+{
+  depend cruise.umple.compiler.*;
+  isA AlloyObject;	
+  name;
+  extendsName;
+  boolean isBounded;
+  boolean isAbstract;
+  boolean isSingleton;
+  
+  //1 -> 1 Utility utility;
+  1 -> * Function function;
+	
+  public Signature(UmpleClass uClass)
+  { 
+	instantiateDataMembers(uClass);
+	Set<Association> processedAssociations = new HashSet<Association>();
+	for(Association assoc : uClass.getAssociations())
+	{
+	  if(processedAssociations.contains(assoc)) continue;
+	  processedAssociations.add(assoc);	
+	   
+	  Association uAssoc = reComposeAssociation(assoc,uClass);
+	    
+	  Function funct = new Function(uAssoc);
+	  AssociationEnd beginEnd = uAssoc.getEnd(0), endToOutput = uAssoc.getEnd(1); 
+			
+	  //Reflexive association case 
+      if(endToOutput.getClassName().equals(beginEnd.getClassName()))
+        funct = new Function(uAssoc,endToOutput.getClassName());	
+        
+      if(!assoc.isIsRightNavigable()) 
+        if(name.equals(assoc.getEnd(0).getClassName())) continue;
+
+      if(!assoc.isIsLeftNavigable())
+        if(name.equals(assoc.getEnd(1).getClassName())) continue;
+	  isBounded = addFunction(funct);	
+	}
+	
+	//This handles attributes of integer types
+	for(Attribute attr : uClass.getAttributes())
+	{
+	  Function funct = new Function(attr);
+	  isBounded = addFunction(funct);
+	}
+	
+  }
+  
+  private String getExtendsClass(UmpleClass uClass)
+  {
+    if(uClass.hasExtendsClass()) 
+      return uClass.getExtendsClass().getName();
+    return "";
+  }
+	
+  private void instantiateDataMembers(UmpleClass uClass){
+	//utility = new Utility();
+	/*if(getExtendsClass(uClass).equals(""))
+	{
+	  extendsName = "";
+	}*/
+	
+	extendsName = getExtendsClass(uClass);
+	function = new ArrayList<Function>();
+	name = uClass.getName();
+    isAbstract = uClass.getIsAbstract();
+    isSingleton = uClass.getIsSingleton();
+  }
+	
+  private Association reComposeAssociation(Association assoc, UmpleClass uClass){
+	  
+	Multiplicity mult = new Multiplicity();
+	isBounded = mult.setBound("1");
+	AssociationEnd endToOutput = new AssociationEnd(null,null,null,null,mult);
+	AssociationEnd beginEnd = new AssociationEnd(null,null,null,null,mult);
+			
+	//Case of reflexive association
+	if(assoc.getEnd(1).getClassName().equals(uClass.getName())) 
+	{
+      endToOutput = assoc.getEnd(0);
+      beginEnd = assoc.getEnd(1);
+    }
+    else 
+    {
+      endToOutput = assoc.getEnd(1);  
+      beginEnd = assoc.getEnd(0); 
+    }
+    return convertEndsToAssociation(beginEnd,endToOutput); 
+  }
+	
+  private String comment()
+  {
+  	return 
+  	  "\n-- Defines a signature for class "+name+"\n";
+  }
+  
+  private String addExtension()
+  {
+    if(extendsName.equals(""))
+      return "";
+    return " extends "+ extendsName;
+  }
+  	
+  private String funPart()
+  {
+    if(isAbstract && isSingleton)
+      return "abstract one sig "+name+addExtension()+" {";
+    if(isAbstract)
+      return "abstract sig "+name+addExtension()+" {";
+    if(isSingleton)
+      return "one sig "+name+addExtension()+" {";
+      
+    return "sig "+name+addExtension()+" {";
+  }
+	
+  public String printSignature()
+  { 
+	return comment()+print();
+  }
+
+  private String compute(int size)
+  {
+  	if(size == 0) return "";
+  	if(size == 1) return function.get(0).printFunction();
+  	return compute(size-1)+",\n"+function.get(size-1).printFunction(); 
+  }
+
+  private String print()
+  {
+    if(function.size() != 0)
+		return funPart()+"\n"+compute(function.size())+"\n}\n";
+	return funPart()+compute(function.size())+" }\n";
+  }
+}

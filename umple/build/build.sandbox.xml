@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="build" name="UmpleSandbox" >
+
+  <!-- ```````````````````````````
+    Environment Variables
+  ``````````````````````````` -->
+  <import file="_template.xml" />
+
+  <property name="project.path" value="sandbox"/>
+  <property name="bin.path" value="${project.path}/bin"/>
+  <property name="dist.path" value="${dist.dir}/sandbox"/>
+  <property name="test.output.path" value="${dist.dir}/qa/sandbox"/>
+  <property name="haltonfailure" value="true"/>
+
+  <path id="project.classpath">
+    <pathelement location="${bin.path}"/>
+  </path>
+
+  <!-- ```````````````````````````
+    Clean up and initialize any potential byproduct
+  ``````````````````````````` -->
+
+  <target name="umpleSandbox">
+    <if>
+      <not>
+        <resourceexists>
+          <file file="${umple.stable.jar}" />
+        </resourceexists>
+      </not>
+      <then>
+        <echo message="New release detected. Copying old release to dist and lib boostrap compile" />
+        <copy tofile="${umple.stable.jar}"
+          file="${dist.dir}/umple.jar" />
+        <copy todir="dist"
+          file="${umple.stable.jar}" />
+      </then>
+    </if>
+
+    <java jar="${umple.stable.jar}" fork="true" failonerror="true">
+      <arg value="sandbox/src/sandbox.ump"/>
+    </java>
+  </target>
+
+  <!-- ```````````````````````````
+    Compile the application
+  ``````````````````````````` -->
+
+  <target name="compile">
+    <echo message="${ant.project.name}: ${ant.file}"/>
+
+    <deps-load-path conf="core" pathid="core.ivy.classpath" />
+    <deps-load-path conf="test" pathid="test.ivy.classpath" />
+
+    <javac debug="true" includeantruntime="false" debuglevel="source,lines,vars" destdir="${bin.path}" source="1.8" target="1.8">
+      <src path="${project.path}/src"/>
+      <src path="${project.path}/src-gen-umple"/>
+      <src path="${project.path}/test"/>
+      <exclude name="**/.svn"/>
+      <exclude name="**/*.ump" />
+      <classpath refid="project.classpath"/>
+      <classpath refid="core.ivy.classpath"/>
+      <classpath refid="test.ivy.classpath"/>
+    </javac>
+  </target>
+
+  <!-- ```````````````````````````
+    Build the application
+  ``````````````````````````` -->
+  
+  <target name="build" >
+    <echo>A sample build file for the Sandbox</echo>
+    <antcall target="template.clean" />
+    <antcall target="template.init" />
+    <antcall target="umpleSandbox" />
+    <antcall target="compile" />
+    <antcall target="template.test" />
+  </target>
+  
+  
+</project>
+

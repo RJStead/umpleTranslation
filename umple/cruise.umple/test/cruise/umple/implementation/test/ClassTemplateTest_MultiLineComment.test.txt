@@ -1,0 +1,34 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE ${last.version} modeling language!*/
+
+
+/*
+This is a student
+Multiple comments
+on several lines
+*/
+
+////---- Tests for  ClassTemplateTest_MultiLineComment ----/////
+
+test Student {
+
+ generate JUnit ;
+ 
+ depend  Student ; 
+
+
+
+ 
+ GIVEN:
+ ClassTemplateTest_MultiLineComment.ump;
+ 
+ 
+ 
+ THEN:
+ 
+
+  
+ 
+   
+
+}
