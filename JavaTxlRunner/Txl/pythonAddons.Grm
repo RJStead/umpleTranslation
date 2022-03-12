@@ -1,0 +1,351 @@
+% yava2python project
+% Java grammar mixins with Python grammar definitions
+% Mykhaylo Sorochan, January 2009
+% msorc@bigmir.net, macroexpand.org
+
+% Java grammar used: v3.1, Copyright 2001-2008 James R. Cordy, Xinping Guo and Thomas R. Dean
+% Python grammar used: v1.3 Copyright 2008 Mykhaylo Sorochan and James R. Cordy, 
+%        after the standard Python 2.5 reference grammar, 
+%        Copyright 1990-2008 Python Software Foundation
+
+
+% Copyright 2009 Mykhaylo Sorochan
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are met:
+%
+%    Redistributions of source code must retain the above copyright notice,
+%    this list of conditions and the following disclaimer.
+%    Redistributions in binary form must reproduce the above copyright notice,
+%    this list of conditions and the following disclaimer in the documentation
+%    and/or other materials provided with the distribution.
+%
+%    THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+%    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+%    AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+%    AUTHORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+%    OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+%    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+%    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+%    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+%    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+%    POSSIBILITY OF SUCH DAMAGE.
+
+
+%% Python tokens
+tokens
+    % Python string forms - shortstrings are already captured by [stringlit] and [charlit]
+    % All may be preceded by a stringprefix, see [stringliteral] below
+    longstringlit	"\"\"\"#[(\"\"\")]*\"\"\""
+    longcharlit		"'''#[(''')]*'''"
+%    % Python number forms - decimal integers and floating point forms are already captured by [number]
+    hexinteger   "0[Xx][\dABCDEFabcdef]+" 
+    octinteger   "0[01234567]+" 
+    pointfloat     "\d*.\d+"		% other forms covered by [floatnumber]
+                 | "\d+.\d*"
+end tokens
+
+
+
+% Compound operators
+compounds 
+    '== '+= '-= '*= '/= '%= '&= '|=  '^= '<<= '>>= '**= '//= '** '>> 
+end compounds 
+
+% Python comments are # to end-of-line
+comments 
+    '# 
+    '\
+end comments
+
+
+
+define class_body_declaration_wo_field
+        [empty_declaration]
+    |   [member_declaration]
+    |   [instance_initializer]
+    |   [static_initializer]
+end define
+
+redefine class_body_declaration
+	[field_declaration]
+    |   [class_body_declaration_wo_field]
+end redefine
+
+redefine unary_expression
+        [pre_inc_dec] [unary_expression]
+    |   [unary_op] [SPOFF] [unary_expression] [SPON]
+    |   [postfix_expression]
+    |   [cast_expression]
+end redefine
+
+redefine postfix_expression
+	[primary] [repeat pre_inc_dec]
+end redefine
+
+redefine boolean_literal
+        'true
+    |   'false
+    |   'True
+    |   'False
+end define
+
+redefine null_literal
+	'null
+    |   'None
+end define
+
+
+
+redefine class_declaration
+	...
+    |   'class [id] [SPOFF] ': [SPON] [NL][IN] [repeat class_body_declaration] [EX][NL]
+    |   'class [id] [SPOFF] '( [SPON] [type_name] ') [SPOFF] ': [SPON] [NL][IN] [repeat class_body_declaration] [EX][NL]
+end define
+
+redefine expression_statement
+    [expression] [attr ';]        [NL]
+end define
+
+redefine variable_declaration
+    [repeat modifier] [type_specifier] [variable_declarators] [attr ';] [NL]
+end define
+
+redefine field_declaration
+	...
+    |   [assignment_expression] [NL] [attr ';]
+end redefine
+
+redefine statement
+        [label_statement]        
+    |   [expression_statement]
+    |   [if_statement]
+    |   [switch_statement]
+    |   [while_statement]
+    |   [do_statement]
+    |   [for_statement]
+    |   [for_in_statement]		% T.D. Oct 2007
+    |   [break_statement]
+    |   [continue_statement]
+    |   [return_statement]
+    |   [throw_statement]
+    |   [synchronized_statement]
+    |   [try_statement]
+    |   [assert_statement]		% T.D. Oct 2007
+    |   [block]
+
+    |   [if_stmt]
+    |   [while_stmt]
+    |   [for_stmt]
+
+    |   [import_stmt]
+    |   [print_stmt]
+
+    |   [repeat declaration_or_statement]
+
+    |   [empty_statement]
+end define
+
+redefine empty_declaration
+    [attr ';] [NL]
+end define
+
+redefine empty_statement
+    [attr ';] [NL]
+end define
+
+redefine method_declaration
+	...
+    |   [NL] [repeat decorator] 'def [method_name] [SPOFF] '( [SPON] [list variable_name] ') [SPOFF] ': 
+	     [SPON] [NL][IN] [repeat declaration_or_statement] [EX][NL]
+end define
+
+define decorator
+	'@ [SPOFF] [id] [SPON] [NL]
+end define
+
+redefine package_declaration
+	...
+	[opt if_stmt]
+end redefine
+
+redefine method_argument	
+	[SPOFF] '( [SPON] [list argument] ')   
+    |   [SPOFF] '( [SPON] [list variable_name] ')   
+end define
+
+
+redefine reference
+	[id] [repeat component]
+    |	[primitive_type] [repeat component]
+end define
+
+redefine component
+     [dot_id]
+   | [method_argument]
+   | [dimension] 
+   | [generic_argument]	
+end define
+
+redefine dimension
+    [SPOFF] '[ [SPON] [opt expression] ']
+end define
+
+define print_stmt 
+        'print [list argument] [opt ',] [NL]
+end define 
+
+redefine array_initializer
+	...
+    |   '[ [list variable_initializer] ']
+end redefine
+
+redefine assignment_expression
+	...
+    |   [unary_expression] '= [array_initializer]
+end redefine
+
+
+define if_stmt 
+    'if [expression] [SPOFF] ': [SPON]
+	[NL][IN] [repeat declaration_or_statement] [EX]
+    [repeat elif_clause] 
+    [repeat py_else_clause] 
+    [NL]	
+end define 
+
+define elif_clause 
+	'elif [expression] [SPOFF] ': [SPON] [NL][IN] [repeat declaration_or_statement] [EX]
+end define 
+
+define py_else_clause 
+	'else [SPOFF] ': [SPON] [NL][IN] [repeat declaration_or_statement] [EX][NL]
+end define 
+
+
+redefine while_stmt
+	'while [expression] [SPOFF] ': [SPON] [NL][IN] [repeat declaration_or_statement] [EX]
+end redefine
+
+define or_conditional_and_expression
+	...
+    |   'or [conditional_and_expression]
+end define
+
+define and_inclusive_or_expression
+	...
+    |   'and [inclusive_or_expression]
+end define
+
+define unary_op
+	... | 'not [SP]
+end define
+
+
+
+
+
+
+define import_stmt 
+        [import_name] 
+    |   [import_from] 
+end define 
+
+define import_name 
+    'import [dotted_as_names] 
+end define 
+
+define import_from 
+    'from [repeat '.] [opt dotted_name] [repeat endofline] 'import [import_items] 
+end define
+
+define import_items
+        '* 
+    |   [repeat endofline] [SPOFF] '( [SPON] [import_as_names] [repeat endofline] ') 
+    |   [repeat endofline] [import_as_names] 
+end define 
+
+define import_as_name 
+        [id] [opt as_name] 
+end define
+
+define as_name
+       'as [id] 
+end define 
+
+define dotted_as_name 
+    [dotted_name] [opt as_id]
+end define
+
+define as_id
+    'as [id] 
+end define 
+
+define import_as_names 
+    [list import_as_name+] [opt ',] 
+end define 
+
+define dotted_as_names 
+    [list dotted_as_name+] 
+end define 
+
+define dotted_name 
+    [id] [opt dot_dotted_name] 
+end define
+
+define dot_dotted_name
+    [repeat endofline] '. [repeat endofline] [dotted_name] 
+end define 
+
+define py_finally_clause 
+    'finally [SPOFF] ': [SPON] [NL][IN] [repeat declaration_or_statement] [EX]
+end define 
+
+define except_clause_suite 
+    [except_clause] [SPOFF] ': [SPON] [NL][IN] [repeat declaration_or_statement] [EX]
+end define 
+
+define except_clause 
+    'except [opt except_test]
+end define
+
+define except_test
+    [type_specifier] [opt as_or_comma_test]
+end define
+
+define as_or_comma_test
+        ', [variable_name] 
+end define 
+
+
+redefine try_statement
+	...
+    |   'try [SPOFF] ': [SPON] [NL][IN] [repeat declaration_or_statement] [EX]
+	[repeat catch_clause] [opt finally_clause]    [NL]
+end redefine
+
+redefine catch_clause
+	...
+    |   [except_clause_suite]
+end redefine
+
+redefine finally_clause
+	...
+    |   [py_finally_clause]
+end redefine
+
+redefine throw_statement
+	...
+    |   'raise [expression] ';           [NL]
+end redefine
+
+define for_stmt 
+    'for [id] 'in [expression] [SPOFF] ': [SPON] [NL][IN] [repeat declaration_or_statement] [EX]
+end define 
+
+
+
+% Every end of line may have an optional trailing comment
+define endofline
+    [opt comment] [NL] 
+end define
