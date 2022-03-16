@@ -1,14 +1,29 @@
 include "Java.Grm"
+
+
+compounds 
+    self.
+end compounds 
 redefine boolean_operator
     'and
     | 'or
 end redefine
 
+
+redefine variable_name
+    ...
+    |   'self._ [SPOFF] [id] [SPON]
+end redefine
 redefine assignment
     ...
-    |   [id] '= [value] [NL]
+    |   [variable_name] '= [value] [NL]
 end redefine
 
+redefine value
+    ...
+    | 'True
+    | 'False
+end redefine
 redefine statement
     ...
     |   [function_call] [NL]
@@ -22,7 +37,7 @@ end redefine
 
 redefine for_loop
     ...
-    |'for( [id] 'in [id] '): [NL] [IN] [repeat statement] [EX] [NL]
+    |'for( [id] 'in [variable_name] '): [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine if 
@@ -50,18 +65,19 @@ redefine method_parameter
     | [id]
 end redefine
 
-redefine method_decl
+redefine method_declaration
     ...
-    |   'def [id] '(self, [list id] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+    |   'def  [id] [SPOFF]'(self, [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+    |   'def  [id] [SPOFF]'(self): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
 end redefine
 
 redefine constructor
     ...
-    | 'def '__init__(self,  [list id] '): [NL] [IN] [repeat statement] [EX] [NL]
+    | 'def '__init__(self,  [list id] [SPOFF]'): [SPON] [NL] [IN] [repeat statement] [EX] [NL]
     | 'def '__init__(self): [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
-redefine class_decl
+redefine class_declaration
     ... 
     | 'class [id] ': [NL] [IN] [class_body_decl] [NL] [EX] [NL]
 end redefine
@@ -69,16 +85,16 @@ end redefine
 redefine class_body_decl
     ...
     | 'pass
-    | [opt constructor] [repeat method_decl]
+    | [opt constructor] [repeat method_declaration]
 end define
 
-redefine var_decl
+redefine variable_declaration
     ...
-    |   [id] [assignment] [NL]
+    |   [assignment] [FL]
+    |   [variable_name]
 end define
 
 redefine function_call
     ...
-    |    [id]'. [id]'( [repeat function_call_parameter]')
-    |   [id]'( [repeat function_call_parameter]')
+    |   'self. [SPOFF] [id]'( [SPON][list value]')
 end define

@@ -7,6 +7,10 @@ end comments
 %     Statements     %
 %--------------------%
 
+keys
+ return true false
+end keys
+
 define acess_modifier
         'private
     |   'public
@@ -53,21 +57,27 @@ define arithmatic_expression
     | [value]
 end define
 
+define variable_name
+    [id]
+end define
+
 define value
-        [id]
+        [variable_name]
     |   [number]
     |   [function_call]
     |   [arithmatic_expression]
     |   [boolean_expression]
     |   [stringlit]
+    |   'true
+    |   'false
 end define
-define var_decl
+define variable_declaration
         [id] [assignment]
-    |   [id] [id]';
+    |   [id] [variable_name]';
 end define
 
 define assignment
-        [id] '= [value] '; [NL]
+        [variable_name] '= [value] '; [NL]
 end define
 
 define stmt_return
@@ -75,7 +85,7 @@ define stmt_return
 end define
 
 define statement
-        [var_decl]
+        [variable_declaration]
     |   [stmt_return]
     |   [conditional_block]
     |   [for_loop]
@@ -84,7 +94,7 @@ define statement
 end define
 
 define for_loop
-    'for( [id] [id] ': [id] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+    'for( [id] [id] ': [variable_name] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
 define conditional_block
@@ -104,15 +114,10 @@ define else
 end define
 
 define function_call
-        [id]'. [id]'( [repeat function_call_parameter]')
-    |   [id]'( [repeat function_call_parameter]')
+        [variable_name] [SPOFF] '. [id]'( [SPON] [list value]')
+    |   [id] [SPOFF]'( [SPON][list value]')
 end define
 
-define function_call_parameter
-        [id]
-    |   [number]
-    |   [function_call]
-end define
 
 define boolean_expression
         '( [boolean_expression] ')
@@ -122,23 +127,20 @@ define boolean_expression
 end define
 
 define condition
-        [id] [comparator] [id]
-    |   [number] [comparator] [id]
-    |   [id] [comparator] [number]
-    |   [function_call]
-    |   [id]
+        [value] [comparator] [value]
+    |   [value]
 end define
 
 define statement_or_method
         [statement]
-    |   [method_decl]
+    |   [method_declaration]
 end define
 
 define method_parameter
     [id] [id]
 end define
 
-define method_decl
+define method_declaration
         [acess_modifier] [id] [id]'( [list method_parameter] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
@@ -146,7 +148,7 @@ end define
 %--------------------%
 %        Class       %
 %--------------------%
-define class_decl
+define class_declaration
     [acess_modifier] 'class [id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
    
 end define
@@ -156,9 +158,9 @@ define constructor
 end define
 
 define member_variable_declaration
-    [opt acess_modifier] [var_decl]
+    [opt acess_modifier] [variable_declaration]
 end define
 
 define class_body_decl
-    [repeat member_variable_declaration] [opt constructor] [repeat method_decl]
+    [repeat member_variable_declaration] [opt constructor] [repeat method_declaration]
 end define
