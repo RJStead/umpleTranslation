@@ -71,9 +71,10 @@ define value
     |   'true
     |   'false
 end define
+
 define variable_declaration
-        [id] [assignment]
-    |   [id] [variable_name]';
+        [opt acess_modifier] [id] [assignment]
+    |   [opt acess_modifier] [id] [variable_name]';
 end define
 
 define assignment
@@ -141,7 +142,8 @@ define method_parameter
 end define
 
 define method_declaration
-        [acess_modifier] [id] [id]'( [list method_parameter] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+        [acess_modifier] [id] [id] '( [list method_parameter] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+    |   [acess_modifier] [id] [id] '( [list method_parameter] '); [NL]
 end define
 
 
@@ -149,8 +151,12 @@ end define
 %        Class       %
 %--------------------%
 define class_declaration
-    [acess_modifier] 'class [id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
-   
+    [acess_modifier] [class_type] [id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
+end define
+
+define class_type
+        'class
+    |   'interface
 end define
 
 define constructor

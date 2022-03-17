@@ -73,13 +73,13 @@ end redefine
 
 redefine constructor
     ...
-    | 'def '__init__(self,  [list id] [SPOFF]'): [SPON] [NL] [IN] [repeat statement] [EX] [NL]
-    | 'def '__init__(self): [NL] [IN] [repeat statement] [EX] [NL]
+    | 'def '__init__ [SPOFF] '(self, [SPON] [list id] [SPOFF]'): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+    | 'def '__init__ [SPOFF] '(self): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
 end redefine
 
 redefine class_declaration
     ... 
-    | 'class [id] ': [NL] [IN] [class_body_decl] [NL] [EX] [NL]
+    | 'class [id] [SPOFF] ': [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
 end redefine
 
 redefine class_body_decl
