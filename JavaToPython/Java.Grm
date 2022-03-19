@@ -17,17 +17,6 @@ define acess_modifier
     |   'protected
 end define
 
-define type
-        'byte
-    |   'short
-    |   'int
-    |   'long
-    |   'float
-    |   'double
-    |   'char
-    |   'String 
-    |   'boolean
-end define
 
 define boolean_operators
         '&&
@@ -118,7 +107,6 @@ define function_call
     |   [id] [SPOFF]'( [SPON][list value]')
 end define
 
-
 define boolean_expression
         '( [boolean_expression] ')
     |   [boolean_expression] [boolean_operator] [boolean_expression]
@@ -129,11 +117,6 @@ end define
 define condition
         [value] [comparator] [value]
     |   [value]
-end define
-
-define statement_or_method
-        [statement]
-    |   [method_declaration]
 end define
 
 define method_parameter
