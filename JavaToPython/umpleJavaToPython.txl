@@ -1,4 +1,3 @@
-include "Java.Grm"
 include "Python.Grm"
 
 
@@ -63,9 +62,9 @@ end rule
 %--------------------%
 rule replaceClasses
     replace $ [class_declaration]
-        _ [acess_modifier] 'class className [id] '{ classBody [class_body_decl] '} 
+        _ [acess_modifier] _ [class_type] className [id] '{ classBody [class_body_decl] '} 
     by
-    'class className ':  classBody [replaceClassBody] 
+    'class className ':  classBody [replaceClassBody] [replaceClassBodyNoConstructor]
 end rule
 
 
@@ -78,6 +77,15 @@ function replaceClassBody
         oldConstructor [replaceMemberVariableNames memberVariables] [replaceContructor] [replaceContructorNoArgs]
     by
         newContructor methods  [replaceAllMethods memberVariables]
+end function
+
+function replaceClassBodyNoConstructor
+    replace [class_body_decl]
+        declarations [repeat member_variable_declaration] methods [repeat method_declaration]
+    construct memberVariables [repeat id]
+        _ [addMemberVariable each declarations]
+    by
+        'def __init__(self): 'raise 'NotImplementedError("The interface is not implemented") methods [replaceAllMethods memberVariables]
 end function
 
 function replaceContructor
@@ -108,8 +116,10 @@ function replaceAllMethods memberVariables [repeat id]
         methods 
             [replaceMemberVariableNames memberVariables] 
             [replaceToString]
+            [replaceAbstractMethod]
+            [replaceAbstractMethodNoArgs]
             [replaceMethod] 
-            [replaceMethodNoArgs] 
+            [replaceMethodNoArgs]
             
 end function
 
@@ -126,6 +136,21 @@ rule replaceMethodNoArgs
         _[acess_modifier] _[id] methodName [id]'() '{ statements [repeat statement] '}
     by
         'def methodName '(self):  statements [replaceStatements]
+end rule
+
+rule replaceAbstractMethod
+    replace [method_declaration]
+        _[acess_modifier] _[id] methodName [id] '( params [list method_parameter +] ');
+    construct newParams [list id]
+    by
+        'def methodName '(self, newParams [translateParams each params] '): 'raise 'NotImplementedError("The interface is not implemented")
+end rule
+
+rule replaceAbstractMethodNoArgs
+    replace [method_declaration]
+        _[acess_modifier] _[id] methodName [id]'();
+    by
+        'def methodName '(self): 'raise 'NotImplementedError("The interface is not implemented")
 end rule
 
 rule replaceToString
