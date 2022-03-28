@@ -1,28 +1,30 @@
 include "Java.Grm"
 
-
-compounds 
-    self.
-end compounds 
 redefine boolean_operator
-    'and
+    ...
+    |'and
     | 'or
 end redefine
 
-
-redefine variable_name
+redefine comparator
     ...
-    |   'self._ [SPOFF] [id] [SPON]
+    |   'is
+end redefine
+
+
+redefine nested_identifier
+    ...
+    |   'self
 end redefine
 redefine assignment
     ...
-    |   [variable_name] '= [value] [NL]
+    |   [nested_identifier] '= [value] [NL]
 end redefine
 
-redefine value
-    ...
-    | 'True
+redefine condition_element
+     'True
     | 'False
+    | ...
 end redefine
 redefine statement
     ...
@@ -35,9 +37,19 @@ redefine stmt_return
     |   'return [value] [NL]
 end redefine
 
+redefine value
+    ...
+    |   'None
+end redefine
+
 redefine for_loop
     ...
-    |'for( [id] 'in [variable_name] '): [NL] [IN] [repeat statement] [EX] [NL]
+    |'for( [id] 'in [nested_identifier] '): [NL] [IN] [repeat statement] [EX] [NL]
+end redefine
+
+redefine while_loop
+    ...
+    | 'while [boolean_expression] ': [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine if 
@@ -65,10 +77,14 @@ redefine method_parameter
     | [id]
 end redefine
 
+define decorator
+    '@ [SPOFF] [id] [SPON] [NL]
+end define
 redefine method_declaration
     ...
-    |   'def  [id] [SPOFF]'(self, [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
-    |   'def  [id] [SPOFF]'(self): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+    |   [opt decorator] 'def  [id] [SPOFF]'(self, [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+    |   [opt decorator] 'def  [id] [SPOFF]'(self): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+    |   [opt decorator] 'def  [id] [SPOFF]'(): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
 end redefine
 
 redefine constructor
@@ -79,7 +95,7 @@ end redefine
 
 redefine class_declaration
     ... 
-    | 'class [id] [SPOFF] ': [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
+    | 'class [class_name] [SPOFF] ': [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
 end redefine
 
 redefine class_body_decl
@@ -91,10 +107,5 @@ end define
 redefine variable_declaration
     ...
     |   [assignment] [FL]
-    |   [variable_name]
-end define
-
-redefine function_call
-    ...
-    |   'self. [SPOFF] [id]'( [SPON][list value]')
+    |   [nested_identifier]
 end define

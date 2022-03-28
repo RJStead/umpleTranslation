@@ -6,14 +6,10 @@ include "Python.Grm"
 %--------------------%
 function main
     replace [program] 
-	P [program]
+	_[repeat import_statement] Classes [repeat class_declaration]
     by
-	P [replaceClasses]
+	Classes [replaceClasses]
 end function
-
-define program
-    [repeat class_declaration]
-end define
 
 %--------------------%
 %     General        %
@@ -34,20 +30,38 @@ function addMemberVariable MemberVariable [member_variable_declaration]
     deconstruct MemberVariable
         _[opt acess_modifier] decl [variable_declaration]
     deconstruct decl
-        _ [id] memberName [id]';
+        _ [class_name] memberName [id]';
     by
         SequenceSoFar [. memberName]
 end function
 
+function replaceAllMemberVariableNames memberVariables [repeat id]
+    replace [any]
+        any [any]
+    by 
+        any [replaceMemberVariableNames memberVariables] [replaceMemberVariableNamesWithThis memberVariables]
+end function
+
 rule replaceMemberVariableNames memberVariables [repeat id]
-    replace [variable_name]
-        name [variable_name]
-    deconstruct name 
-        id [id]
+    replace [nested_identifier]
+         name [id] attributes [repeat attribute]
     where 
-        memberVariables [contains id]
+        memberVariables [contains name]
+    construct underscore [id]
+        '_
     by
-        'self._ id
+        'self '. underscore [+ name] attributes
+end rule
+
+rule replaceMemberVariableNamesWithThis memberVariables [repeat id]
+    replace [nested_identifier]
+        'this '. name [id] attributes [repeat attribute]
+    where 
+        memberVariables [contains name]
+    construct underscore [id]
+        '_
+    by
+        'self '. underscore [+ name] attributes
 end rule
 
 rule contains Object [id]
@@ -64,7 +78,7 @@ rule replaceClasses
     replace $ [class_declaration]
         _ [acess_modifier] _ [class_type] className [id] '{ classBody [class_body_decl] '} 
     by
-    'class className ':  classBody [replaceClassBody] [replaceClassBodyNoConstructor]
+    'class className ':  classBody [replaceClassBody]
 end rule
 
 
@@ -74,19 +88,11 @@ function replaceClassBody
     construct memberVariables [repeat id]
         _ [addMemberVariable each declarations]
     construct newContructor [constructor]
-        oldConstructor [replaceMemberVariableNames memberVariables] [replaceContructor] [replaceContructorNoArgs]
+        oldConstructor [replaceAllMemberVariableNames memberVariables] [replaceContructor] [replaceContructorNoArgs]
     by
         newContructor methods  [replaceAllMethods memberVariables]
 end function
 
-function replaceClassBodyNoConstructor
-    replace [class_body_decl]
-        declarations [repeat member_variable_declaration] methods [repeat method_declaration]
-    construct memberVariables [repeat id]
-        _ [addMemberVariable each declarations]
-    by
-        'def __init__(self): 'raise 'NotImplementedError("The interface is not implemented") methods [replaceAllMethods memberVariables]
-end function
 
 function replaceContructor
     replace [constructor]
@@ -114,18 +120,16 @@ function replaceAllMethods memberVariables [repeat id]
         methods [repeat method_declaration]
     by
         methods 
-            [replaceMemberVariableNames memberVariables] 
+            [replaceAllMemberVariableNames memberVariables] 
             [replaceToString]
-            [replaceAbstractMethod]
-            [replaceAbstractMethodNoArgs]
             [replaceMethod] 
             [replaceMethodNoArgs]
-            
+            [replaceStaticMethod]
 end function
 
 rule replaceMethod
     replace [method_declaration]
-        _[acess_modifier] _[id] methodName [id]'( params [list method_parameter +] ') '{ statements [repeat statement] '}
+        _[acess_modifier] _[class_name] methodName [id]'( params [list method_parameter +] ') '{ statements [repeat statement] '}
     construct newParams [list id]
     by
         'def methodName '(self, newParams [translateParams each params] '):  statements [replaceStatements]
@@ -133,31 +137,24 @@ end rule
 
 rule replaceMethodNoArgs
     replace [method_declaration]
-        _[acess_modifier] _[id] methodName [id]'() '{ statements [repeat statement] '}
+        _[acess_modifier] _[class_name] methodName [id]'() '{ statements [repeat statement] '}
     by
         'def methodName '(self):  statements [replaceStatements]
 end rule
 
-rule replaceAbstractMethod
-    replace [method_declaration]
-        _[acess_modifier] _[id] methodName [id] '( params [list method_parameter +] ');
-    construct newParams [list id]
-    by
-        'def methodName '(self, newParams [translateParams each params] '): 'raise 'NotImplementedError("The interface is not implemented")
-end rule
-
-rule replaceAbstractMethodNoArgs
-    replace [method_declaration]
-        _[acess_modifier] _[id] methodName [id]'();
-    by
-        'def methodName '(self): 'raise 'NotImplementedError("The interface is not implemented")
-end rule
 
 rule replaceToString
     replace [method_declaration]
-        _[acess_modifier] _[id]  'toString '() '{ statements [repeat statement] '}
+        _[acess_modifier] _[class_name]  'toString '() '{ statements [repeat statement] '}
     by
         'def '__str__ '(self):  statements [replaceStatements]
+end rule
+
+rule replaceStaticMethod
+    replace [method_declaration]
+        _[acess_modifier] _[static] _[class_name] methodName [id]'() '{ statements [repeat statement] '}
+    by
+        '@staticmethod 'def methodName'():  statements [replaceStatements]
 end rule
 
 %--------------------%
@@ -171,12 +168,20 @@ function replaceStatements
             [replaceAssignment] 
             [replaceReturn] 
             [replaceNoStateMents] 
-            [addSelfToFunctionCalls]
+            [addSelfToOwnMethodCalls]
+            [replaceThisFunctionCall]
+            [replaceFunctionCall]
             [replaceDecleration]
+            [replaceAllBoolean]
             [replaceDeclerationWithAssignment]
-            [replaceTrue]
-            [replaceFalse]
+            [replaceIf]
+            [replaceElseIf]
+            [replaceElse]
+            [replaceWhile]
+            [replaceNull]
+            [replaceThis]
 end function
+
 
 function replaceNoStateMents
     replace [repeat statement]
@@ -187,9 +192,9 @@ end function
 
 rule replaceAssignment
     replace [assignment]
-        name [variable_name] '= val [value] '; 
+        identifier [nested_identifier] '= val [value] '; 
     by 
-        name '= val
+        identifier '= val
 end rule
 
 rule replaceReturn
@@ -199,11 +204,38 @@ rule replaceReturn
         'return val
 end rule
 
-rule addSelfToFunctionCalls
+rule addSelfToOwnMethodCalls
     replace [function_call]
-        funcName [id]'( values [list value]')
+        nested [nested_identifier] '( values [list value]')
+    deconstruct nested  
+        id [id]
     by
-        'self. funcName '( values')
+        'self '. id '( values')
+end rule
+
+rule replaceThisFunctionCall
+    replace [function_call]
+        'this funcName [repeat attribute]'( values [list value]')
+    by
+        'self funcName '( values')
+end rule
+
+
+rule replaceFunctionCall
+    replace [statement]
+        stmt [statement]
+    deconstruct stmt
+        call [function_call] ';
+    by
+        call
+end rule
+
+
+rule replaceThis
+    replace [value]
+        'this
+    by 
+        'self
 end rule
 
 rule replaceDeclerationWithAssignment
@@ -215,20 +247,113 @@ end rule
 
 rule replaceDecleration
     replace [variable_declaration]
-        _[id] varName [variable_name]';
+        _[class_name] varName [id]';
     by 
         varName
 end rule
 
-rule replaceTrue
+rule replaceIf
+    replace [if]
+        'if '( bool [boolean_expression] ') '{ statements [repeat statement]  '}
+    by 
+        'if bool ': statements
+end rule
+
+rule replaceElseIf
+    replace [else_if]
+        'else 'if '( bool [boolean_expression] ') '{  statements [repeat statement]  '} 
+    by 
+        'elif bool ': statements
+end rule
+
+
+rule replaceElse
+    replace [else]
+        'else '{  statements [repeat statement]  '} 
+    by 
+        'else ': statements
+end rule
+
+rule replaceWhile
+    replace [while_loop]
+        'while( bool [boolean_expression] ')  '{ statements [repeat statement] '} 
+    by
+        'while bool ':  statements 
+end rule
+
+rule replaceNull
     replace [value]
+        'null
+    by
+        'None
+end rule
+
+
+%---------------------%
+% Boolean expressions %
+%---------------------%
+
+function replaceAllBoolean
+    replace [repeat statement]
+        statements [repeat statement]
+
+    by
+        statements
+            [replaceNullCheck]
+            [replaceNotNullCheck]
+            [replaceBoolNegation]
+            [replaceBoolAnd]
+            [replaceBoolOr]
+            [replaceTrue]
+            [replaceFalse]
+end function
+
+rule replaceNullCheck
+    replace [condition]
+        elem [condition_element] '== 'null
+    by 
+        elem 'is 'None
+end rule
+
+rule replaceNotNullCheck
+    replace [boolean_expression]
+        cond [condition]
+    deconstruct cond
+        elem [condition_element] '!= 'null
+    by 
+        '( 'not elem 'is 'None ')
+end rule
+
+rule replaceBoolNegation
+    replace [boolean_expression]
+        '! expr [boolean_expression]
+    by 
+        'not expr
+end rule
+
+rule replaceBoolAnd
+    replace [boolean_operator]
+        '&&
+    by 
+        'and
+end rule
+
+rule replaceBoolOr
+    replace [boolean_operator]
+        '|'|
+    by 
+        'or
+end rule
+
+rule replaceTrue
+    replace [condition_element]
         'true
     by 
         'True
 end rule
 
 rule replaceFalse
-    replace [value]
+    replace [condition_element]
         'false
     by 
         'False
