@@ -7,12 +7,16 @@ compounds
     'self. '== '!=
 end compounds 
 
+tokens
+    number  "(-\s?)?\d+(.\d+)?"
+end tokens
+
 %--------------------%
 %     Statements     %
 %--------------------%
 
 keys
- return new if else for true false while this
+ return new if else for true false while this tuple len self True False + - * / ? ; :
 end keys
 
 define acess_modifier
@@ -45,13 +49,18 @@ define arithmatic_operator
 end define
 
 define program
-    [repeat import_statement]
     [repeat class_declaration]
+end define
+
+define package_statement 
+    'package [imported]';
 end define
 
 define import_statement 
     'import [imported]';
 end define
+
+
 
 define imported
         [id]
@@ -60,51 +69,69 @@ define imported
 end define
 
 define class_name
-        [id]
-    |   [id]'< [list id] '>
+    [id]'< [list id] '>
+    | [id]   
 end define
 
 define arithmatic_expression
-       [arithmatic_expression] [arithmatic_operator] [arithmatic_expression]
-    | [number]
-    | [nested_identifier]
-    | [stringlit]
-    | [function_call]
+       [value_no_recursion] [arithmatic_operator] [arithmatic_expression]
+    |   [value_no_recursion]
 end define
 
 define nested_identifier
-        [id] [repeat attribute]
-    |   'this [repeat attribute]
+        [nestable_value] [repeat attribute_access]
 end define
 
-define attribute
-        '. [SPOFF] [id] [SPON]
+define attribute_access
+       '. [nestable_value] 
 end define
 
-define value
-       [boolean_expression]
-    |   [arithmatic_expression]
-    |   [new_call]
-    |   [function_call] 
+define nestable_value 
+        [function_call]
+    |    [id]
+    |   'this
+end define
+
+define value_no_recursion %del 1 by 1
+        [new_call]
+    |   '( [value]')
     |   [nested_identifier]
     |   [number]
     |   [stringlit]
     |   'null
+    |   'true
+    |   'false
+    |   [casting]
+    |   '! [boolean_expression]
+end define
+
+define value
+       [value_no_ternary]
+end define
+
+define value_no_ternary
+        [value_no_recursion]
+    |   [boolean_expression]
+    |   [arithmatic_expression]
 end define
 
 define new_call
-    'new [class_name] '(')
-    |'new [class_name] '( [list value] ')
+    'new [class_name] '( [list value] ')
 end define
 
 define variable_declaration
-        [class_name] [assignment]
+        [class_name] [assignment] '; [NL]
     |   [class_name] [nested_identifier]';
 end define
 
 define assignment
-        [nested_identifier] '= [value] '; [NL]
+        [nested_identifier] '= [value] 
+    |    [nested_identifier]'++
+    |    [nested_identifier]'--
+    |   [nested_identifier] '+= [value]
+    |   [nested_identifier] '-= [value]
 end define
+
 
 define stmt_return
         'return [value] '; [NL]
@@ -115,17 +142,24 @@ define statement
     |   [stmt_return]
     |   [conditional_block]
     |   [for_loop]
+    |   [for_in_loop]
     |   [while_loop]
-    |   [function_call]'; [NL]
-    |   [assignment]
+    |   [nested_identifier]'; [NL]
+    |   [assignment] '; [NL]
+    |   [throw_statement]
 end define
 
 define while_loop
-    'while( [boolean_expression] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+    'while( [value] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
+
 define for_loop
-    'for( [class_name] [id] ': [id] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+    'for( [variable_declaration] [value]'; [assignment]') '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+end define
+
+define for_in_loop
+    'for( [class_name] [id] ': [nested_identifier]')'{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
 define conditional_block
@@ -133,41 +167,43 @@ define conditional_block
 end define
 
 define if 
-    'if '( [boolean_expression] ') '{  [repeat statement]  '}
+    'if '( [value] ') '{  [repeat statement]  '}
 end define
 
 define else_if
-    'else 'if '( [boolean_expression] ') [NL]'{ [NL] [IN] [repeat statement] [EX] '} [NL]
+    'else 'if '( [value] ') [NL]'{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
 define else
     'else [NL]'{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
+define throw_statement
+    'throw 'new [id] '( [stringlit] ');
+end define
+
+define casting
+    '( [class_name]') [nested_identifier]
+end define
+
 define function_call
-        [function_call] [SPOFF] '. [nested_identifier] ( [SPON] [list value]')
-    |   [nested_identifier] [SPOFF] '( [SPON] [list value]')
+        [id][SPOFF] '( [SPON] [list value]')    
 end define
 
 define boolean_expression
-        '( [boolean_expression] ')
-    |   [boolean_expression] [boolean_operator] [boolean_expression]
-    |   '! [boolean_expression]
-    |    [condition]
+       [condition] [boolean_operator] [boolean_expression]
+    |  [condition]
 end define
 
 define condition
-        [condition_element] [comparator] [condition_element]
-    | [condition_element]
+        [value_no_recursion] [comparator] [value]
+    |   [value_no_recursion]
 end define
 
-define condition_element
-    [nested_identifier]
-    | [function_call]
-    | [number]
-    | 'true
-    | 'false
+define boolean_element
+        [value_no_recursion]
 end define
+
 
 define method_parameter
     [class_name] [id]
@@ -183,6 +219,8 @@ end define
 %        Class       %
 %--------------------%
 define class_declaration
+    [repeat package_statement]  
+    [repeat import_statement]
     [acess_modifier] [class_type] [class_name] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
 end define
 

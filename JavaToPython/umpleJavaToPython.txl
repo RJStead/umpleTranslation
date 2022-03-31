@@ -6,7 +6,7 @@ include "Python.Grm"
 %--------------------%
 function main
     replace [program] 
-	_[repeat import_statement] Classes [repeat class_declaration]
+	 Classes [repeat class_declaration]
     by
 	Classes [replaceClasses]
 end function
@@ -23,6 +23,16 @@ function translateParams PreviousParam [method_parameter]
         SequenceSoFar [, paramName]
 end function
 
+function addListMemberVariable MemberVariable [member_variable_declaration]
+    replace [repeat id]
+        SequenceSoFar [repeat id]
+    deconstruct MemberVariable
+        _[opt acess_modifier] decl [variable_declaration]
+    deconstruct decl
+        'List '< _ [list id] '> memberName [id]';
+    by
+        SequenceSoFar [. memberName]
+end function
 
 function addMemberVariable MemberVariable [member_variable_declaration]
     replace [repeat id]
@@ -39,30 +49,49 @@ function replaceAllMemberVariableNames memberVariables [repeat id]
     replace [any]
         any [any]
     by 
-        any [replaceMemberVariableNames memberVariables] [replaceMemberVariableNamesWithThis memberVariables]
+        any 
+            [replaceMemberVariableNames memberVariables] 
+            [replaceMemberVariableNamesWithThis memberVariables]
+            [replaceMemberVariableNamesBrackets memberVariables]
 end function
 
 rule replaceMemberVariableNames memberVariables [repeat id]
     replace [nested_identifier]
-         name [id] attributes [repeat attribute]
+         name [id] rep [repeat attribute_access]
     where 
         memberVariables [contains name]
     construct underscore [id]
         '_
+    construct newName [id]
+        underscore [+ name] 
     by
-        'self '. underscore [+ name] attributes
+        'self '. newName rep
 end rule
 
 rule replaceMemberVariableNamesWithThis memberVariables [repeat id]
     replace [nested_identifier]
-        'this '. name [id] attributes [repeat attribute]
+        'this '. name [id] rep [repeat attribute_access]
     where 
         memberVariables [contains name]
     construct underscore [id]
         '_
     by
-        'self '. underscore [+ name] attributes
+        'self '. underscore [+ name] rep
 end rule
+
+rule replaceMemberVariableNamesBrackets memberVariables [repeat id]
+    replace [nested_identifier]
+         name [id] '[ val [value] ']  rep [repeat attribute_access]
+    where 
+        memberVariables [contains name]
+    construct underscore [id]
+        '_
+    construct newName [id]
+        underscore [+ name]
+    by
+        'self '. newName '[ val ']  rep
+end rule
+
 
 rule contains Object [id]
     match [id]
@@ -70,15 +99,121 @@ rule contains Object [id]
 end rule
 
 
+%--------------------%
+%  List replacement  %
+%--------------------%
+
+function replaceAllLists memberLists [repeat id]
+    replace [any]
+        any [any]
+    by 
+        any
+            [replaceListAssignement memberLists]
+            [replaceListUnmutable memberLists]
+            [replaceGetListContent memberLists]
+            [replaceListGetSize memberLists]
+            [replaceListGetIndex memberLists]
+            [replaceListContains memberLists]
+            [replaceListAddAtIndex memberLists]
+            [replaceListAddNoIndex memberLists]
+            [replaceListCopy]
+end function 
+
+rule replaceListAssignement memberLists [repeat id]
+    replace [assignment]
+        id [id] '= 'new 'ArrayList '< _[list id] '> '(') 
+    where
+        memberLists [contains id]
+    by 
+        id '= '[']
+end rule
+
+rule replaceListCopy
+    replace [assignment]
+        id [id] '= 'new 'ArrayList '< _[list id] '> '( oldList [nested_identifier]') 
+    deconstruct oldList
+        val [nestable_value] rep [repeat attribute_access]
+    construct newNested [repeat attribute_access]
+        '.copy()
+    by 
+        id '= val rep [. newNested]
+end rule
+
+rule replaceListUnmutable memberLists [repeat id]
+    replace [value]
+        'Collections.unmodifiableList( id [id] ')
+    where
+        memberLists [contains id]
+    by 
+        'tuple( id ')
+end rule
+
+
+rule replaceGetListContent memberLists [repeat id]
+    replace [nested_identifier]
+        id [id] '. 'get( index [value] ')  rest [repeat attribute_access]
+    where
+        memberLists [contains id]
+    by 
+        id '[ index '] rest 
+end rule
+
+rule replaceListGetSize memberLists [repeat id]
+    replace [nested_identifier]
+        id [id] '.size()
+    where
+        memberLists [contains id]
+    by 
+        'len( id ')
+end rule
+
+rule replaceListGetIndex memberLists [repeat id]
+    replace [nested_identifier]
+        id [id] '.indexOf( val [value] ')
+    where
+        memberLists [contains id]
+    by 
+        id '.index( val ')
+end rule
+
+rule replaceListContains memberLists [repeat id]
+    replace [value]
+        nested [nested_identifier]
+    deconstruct nested
+        id [id]'. 'contains '( val [value_no_recursion] ')
+    where
+        memberLists [contains id]
+    by 
+        val 'in id
+end rule
+
+rule replaceListAddAtIndex memberLists [repeat id]
+    replace [nested_identifier]
+        id [id] '.add( position [value] ', value [value] ')
+    where
+        memberLists [contains id]
+    by 
+        id '.insert( position ', value ')
+end rule
+
+rule replaceListAddNoIndex memberLists [repeat id]
+    replace [nested_identifier]
+        id [id] '.add( value [value] ')
+    where
+        memberLists [contains id]
+    by 
+        id '.append( value ')
+end rule
+
 
 %--------------------%
 %     Classes        %
 %--------------------%
 rule replaceClasses
     replace $ [class_declaration]
-        _ [acess_modifier] _ [class_type] className [id] '{ classBody [class_body_decl] '} 
+       _[repeat package_statement] _[repeat import_statement] _ [acess_modifier] _ [class_type] className [id] '{ classBody [class_body_decl] '} 
     by
-    'class className ':  classBody [replaceClassBody]
+    'class className ':  classBody  [replaceClassBody]
 end rule
 
 
@@ -87,10 +222,16 @@ function replaceClassBody
         declarations [repeat member_variable_declaration] oldConstructor [constructor] methods [repeat method_declaration]
     construct memberVariables [repeat id]
         _ [addMemberVariable each declarations]
+    construct listMemberVariables [repeat id]
+        _ [addListMemberVariable each declarations]
     construct newContructor [constructor]
-        oldConstructor [replaceAllMemberVariableNames memberVariables] [replaceContructor] [replaceContructorNoArgs]
+        oldConstructor 
+            [replaceAllLists listMemberVariables]
+            [replaceAllMemberVariableNames memberVariables] 
+            [replaceContructor] 
+            [replaceContructorNoArgs]
     by
-        newContructor methods  [replaceAllMethods memberVariables]
+        newContructor methods  [replaceAllMethods memberVariables listMemberVariables]
 end function
 
 
@@ -115,11 +256,12 @@ end function
 %     Methods        %
 %--------------------%
 
-function replaceAllMethods memberVariables [repeat id]
+function replaceAllMethods memberVariables [repeat id] memberLists [repeat id]
     replace [repeat method_declaration]
         methods [repeat method_declaration]
     by
         methods 
+            [replaceAllLists memberLists]
             [replaceAllMemberVariableNames memberVariables] 
             [replaceToString]
             [replaceMethod] 
@@ -165,12 +307,14 @@ function replaceStatements
         statements [repeat statement]
     by 
         statements 
-            [replaceAssignment] 
+            [replaceForLoop]
+            [replaceForInLoop]
+            [replaceAssignmentStatement] 
             [replaceReturn] 
             [replaceNoStateMents] 
             [addSelfToOwnMethodCalls]
             [replaceThisFunctionCall]
-            [replaceFunctionCall]
+            [replaceNestedStatement]
             [replaceDecleration]
             [replaceAllBoolean]
             [replaceDeclerationWithAssignment]
@@ -180,6 +324,12 @@ function replaceStatements
             [replaceWhile]
             [replaceNull]
             [replaceThis]
+            [replaceIncrement]
+            [replaceDecrement]
+            [replaceThrowError]
+            [replaceNewCall]
+            [replaceCasting]
+
 end function
 
 
@@ -190,8 +340,8 @@ function replaceNoStateMents
         'pass
 end function
 
-rule replaceAssignment
-    replace [assignment]
+rule replaceAssignmentStatement
+    replace [statement]
         identifier [nested_identifier] '= val [value] '; 
     by 
         identifier '= val
@@ -205,29 +355,26 @@ rule replaceReturn
 end rule
 
 rule addSelfToOwnMethodCalls
-    replace [function_call]
-        nested [nested_identifier] '( values [list value]')
-    deconstruct nested  
-        id [id]
+    replace [nested_identifier]
+        funcName [id] '( values [list value]') rep [repeat attribute_access]
     by
-        'self '. id '( values')
+        'self '. funcName '( values') rep
 end rule
 
 rule replaceThisFunctionCall
-    replace [function_call]
-        'this funcName [repeat attribute]'( values [list value]')
+    replace [nested_identifier]
+        'this. funcName [id] '( values [list value]')
     by
-        'self funcName '( values')
+        'self '. funcName '( values')
 end rule
 
-
-rule replaceFunctionCall
+rule replaceNestedStatement
     replace [statement]
         stmt [statement]
     deconstruct stmt
-        call [function_call] ';
+        value [nested_identifier] ';
     by
-        call
+        value
 end rule
 
 
@@ -240,7 +387,7 @@ end rule
 
 rule replaceDeclerationWithAssignment
     replace [variable_declaration]
-        _ [id] assignment [assignment]
+        _ [class_name] assignment [assignment] ';
     by 
         assignment
 end rule
@@ -254,14 +401,14 @@ end rule
 
 rule replaceIf
     replace [if]
-        'if '( bool [boolean_expression] ') '{ statements [repeat statement]  '}
+        'if '( bool [value] ') '{ statements [repeat statement]  '}
     by 
         'if bool ': statements
 end rule
 
 rule replaceElseIf
     replace [else_if]
-        'else 'if '( bool [boolean_expression] ') '{  statements [repeat statement]  '} 
+        'else 'if '( bool [value] ') '{  statements [repeat statement]  '} 
     by 
         'elif bool ': statements
 end rule
@@ -273,6 +420,7 @@ rule replaceElse
     by 
         'else ': statements
 end rule
+
 
 rule replaceWhile
     replace [while_loop]
@@ -288,6 +436,65 @@ rule replaceNull
         'None
 end rule
 
+
+rule replaceDecrement
+    replace [assignment]
+        nest [nestable_value] '--
+    construct test [arithmatic_expression]
+        nest '- '1
+    by 
+        nest '= test
+end rule
+
+rule replaceIncrement
+    replace [assignment]
+        nest [nestable_value] '++
+    by 
+        nest '= nest '+ '1
+end rule
+
+rule replaceForLoop
+    replace [statement]
+        'for( decl [variable_declaration] goal [value]'; assignment [assignment]') '{  stmts[repeat statement]  '} 
+    deconstruct decl
+        _[class_name] name [id] '= start [value] ';
+    construct declaration [variable_declaration]
+        name '= start
+    construct newStatements [repeat statement]
+        assignment
+    by 
+        declaration 'while goal ':  stmts  [. newStatements]
+end rule
+
+rule replaceForInLoop
+    replace [for_in_loop]
+        'for( _[class_name] var [id] ': nested [nested_identifier]')'{ stmts [repeat statement] '} 
+    by 
+        'for var 'in  nested':  stmts
+end rule
+
+rule replaceThrowError
+    replace [throw_statement]
+        'throw 'new _[id] '( message [stringlit] ');
+    by
+        'raise 'RuntimeError(  message ') 
+end rule 
+
+rule replaceCasting
+    replace [value]
+        '( _ [class_name]') name [nested_identifier]
+    by 
+        name 
+end rule
+
+rule replaceNewCall
+    replace [value]
+        'new class [class_name] '( vals [list value] ')
+    deconstruct class
+        id [id]
+    by
+        id '( vals ')
+end rule
 
 %---------------------%
 % Boolean expressions %
@@ -306,11 +513,12 @@ function replaceAllBoolean
             [replaceBoolOr]
             [replaceTrue]
             [replaceFalse]
+            [replaceClassMatchCheck]
 end function
 
 rule replaceNullCheck
     replace [condition]
-        elem [condition_element] '== 'null
+        elem [value_no_recursion] '== 'null
     by 
         elem 'is 'None
 end rule
@@ -319,13 +527,13 @@ rule replaceNotNullCheck
     replace [boolean_expression]
         cond [condition]
     deconstruct cond
-        elem [condition_element] '!= 'null
+        elem [value_no_recursion] '!= 'null
     by 
-        '( 'not elem 'is 'None ')
+        'not '( elem 'is 'None ')
 end rule
 
 rule replaceBoolNegation
-    replace [boolean_expression]
+    replace [value_no_recursion]
         '! expr [boolean_expression]
     by 
         'not expr
@@ -346,15 +554,23 @@ rule replaceBoolOr
 end rule
 
 rule replaceTrue
-    replace [condition_element]
+    replace [value]
         'true
     by 
         'True
 end rule
 
 rule replaceFalse
-    replace [condition_element]
+    replace [value]
         'false
     by 
         'False
 end rule
+
+rule replaceClassMatchCheck
+    replace [boolean_expression]
+        'getClass().equals( id2 [id] '.getClass())
+    by  
+        'type(self) 'is 'type( id2 ')
+end rule
+

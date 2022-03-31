@@ -9,26 +9,28 @@ end redefine
 redefine comparator
     ...
     |   'is
+    |   'in
 end redefine
 
-
-redefine nested_identifier
+redefine nestable_value
     ...
-    |   'self
+    | 'self
+    |  [array_access]
 end redefine
+
+
+define array_access
+    [id] [SPOFF] '[ [value] '] [SPON]
+end define
+
 redefine assignment
     ...
     |   [nested_identifier] '= [value] [NL]
 end redefine
 
-redefine condition_element
-     'True
-    | 'False
-    | ...
-end redefine
 redefine statement
     ...
-    |   [function_call] [NL]
+    |  [nested_identifier] [NL]
     | 'pass
 end redefine
 
@@ -37,29 +39,50 @@ redefine stmt_return
     |   'return [value] [NL]
 end redefine
 
-redefine value
+
+redefine value_no_recursion
     ...
+    |   'True
+    |   'False
     |   'None
+    |   '[ [list value] ']
+    |   'not [boolean_expression] 
 end redefine
+
+define python_function_name
+        'tuple
+    |   'len
+end define
+
+redefine function_call
+    ...
+    |   [python_function_name] [SPOFF] '( [SPON] [list value]')
+end redefine
+
 
 redefine for_loop
     ...
-    |'for( [id] 'in [nested_identifier] '): [NL] [IN] [repeat statement] [EX] [NL]
+    |'for [nestable_value] 'in 'range( [value] ', [value] ', [value] '): [NL] [IN] [repeat statement] [EX] [NL]
+end redefine
+
+redefine for_in_loop
+    ...
+    | 'for [id] 'in  [nested_identifier] [SPOFF] ': [SPON] [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine while_loop
     ...
-    | 'while [boolean_expression] ': [NL] [IN] [repeat statement] [EX] [NL]
+    | [opt variable_declaration] 'while [value] ': [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine if 
     ... 
-    |   'if [boolean_expression] ': [NL] [IN] [repeat statement] [EX] [NL]
+    |   'if [value] ': [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine else_if
     ...
-    |   'elif [boolean_expression] ': [NL] [IN] [repeat statement] [EX] [NL]
+    |   'elif [value] ': [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine else
@@ -67,10 +90,11 @@ redefine else
     |   'else:  [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
-redefine boolean_expression
+redefine throw_statement
     ...
-    |   'not [boolean_expression]
+    |   'raise 'RuntimeError( [stringlit] ') [NL]
 end redefine
+
 
 redefine method_parameter
     ...
@@ -107,5 +131,5 @@ end define
 redefine variable_declaration
     ...
     |   [assignment] [FL]
-    |   [nested_identifier]
+    |   [id] [FL]
 end define
