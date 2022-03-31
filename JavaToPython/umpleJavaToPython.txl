@@ -8,7 +8,7 @@ function main
     replace [program] 
 	P [program]
     by
-	P [replaceClasses]
+	P [replaceAllClasses]
 end function
 
 define program
@@ -55,18 +55,86 @@ rule contains Object [id]
         Object
 end rule
 
+function replaceAllClasses
+    replace [program]
+        class [repeat class_declaration]
+    by
+        class
+            [replaceConcreteClasses]
+            [replaceInterfaces]
+end function
 
+function replaceConcreteClasses
+    replace [repeat class_declaration]
+        class [concrete_class_declaration]
+    by
+        class
+            [replaceConcreteClassesNoInheritance]
+            [replaceConcreteClassesSingleInheritance]
+            [replaceConcreteClassesDoubleInheritance]
+end function
+
+function replaceInterfaces
+    replace [repeat class_declaration]
+        interface [interface_declaration]
+    by
+        interface
+            [replaceInterfacesNoInheritance]
+            [replaceInterfacesInheritance]
+end function
+
+function addImportStatement a [id]
+    replace [repeat import_statement]
+        _ [repeat import_statement]
+    by
+        'from a 'import a
+end function
 
 %--------------------%
-%     Classes        %
+%Classes & Interfaces%
 %--------------------%
-rule replaceClasses
-    replace $ [class_declaration]
-        _ [acess_modifier] _ [class_type] className [id] '{ classBody [class_body_decl] '} 
+rule replaceConcreteClassesNoInheritance
+    replace [concrete_class_declaration]
+        _ [acess_modifier] 'class className [id] '{ classBody [class_body_decl] '} 
     by
     'class className ':  classBody [replaceClassBody] [replaceClassBodyNoConstructor]
 end rule
 
+rule replaceConcreteClassesSingleInheritance
+    replace [concrete_class_declaration]
+        _ [acess_modifier] 'class className [id] _ [inheritanceStatement] inList [list id] '{ classBody [class_body_decl] '}
+    construct importBlock [repeat import_statement]
+        _ [addImportStatement each inList]
+    by
+        importBlock 'class className '( inList ') ':  classBody [replaceClassBody] [replaceClassBodyNoConstructor]
+end rule
+
+rule replaceConcreteClassesDoubleInheritance
+    replace [concrete_class_declaration]
+        _ [acess_modifier] 'class className [id] _ [inheritanceStatement] inListI [list id] _ [inheritanceStatement] inListII [list id] '{ classBody [class_body_decl] '}
+    construct firstImportBlock [repeat import_statement]
+        _ [addImportStatement each inListI]
+    construct secondImportBlock [repeat import_statement]
+        _ [addImportStatement each inListII]
+    by
+        firstImportBlock secondImportBlock 'class className '( inListI ', inListII ') ':  classBody [replaceClassBody] [replaceClassBodyNoConstructor]
+end rule
+
+rule replaceInterfacesNoInheritance
+    replace [interface_declaration]
+        _ [acess_modifier] 'interface className [id] '{ classBody [class_body_decl] '} 
+    by
+        'from 'abc 'import 'ABC, 'abstractmethod 'class className '(ABC):  classBody [replaceClassBody] [replaceClassBodyNoConstructor]
+end rule
+
+rule replaceInterfacesInheritance
+    replace [interface_declaration]
+        _ [acess_modifier] 'interface className [id] _ [inheritanceStatement] inList [list id] '{ classBody [class_body_decl] '} 
+    construct importBlock [repeat import_statement]
+        _ [addImportStatement each inList]
+    by
+        'from 'abc 'import 'ABC, 'abstractmethod importBlock 'class className '(ABC, inList '):  classBody [replaceClassBody] [replaceClassBodyNoConstructor]
+end rule
 
 function replaceClassBody
     replace [class_body_decl]
@@ -85,7 +153,7 @@ function replaceClassBodyNoConstructor
     construct memberVariables [repeat id]
         _ [addMemberVariable each declarations]
     by
-        'def __init__(self): 'raise 'NotImplementedError("The interface is not implemented") methods [replaceAllMethods memberVariables]
+        '@abstractmethod 'def __init__(self): 'pass methods [replaceAllMethods memberVariables]
 end function
 
 function replaceContructor
@@ -118,39 +186,39 @@ function replaceAllMethods memberVariables [repeat id]
             [replaceToString]
             [replaceAbstractMethod]
             [replaceAbstractMethodNoArgs]
-            [replaceMethod] 
-            [replaceMethodNoArgs]
+            [replaceConcreteMethod] 
+            [replaceConcreteMethodNoArgs]
             
 end function
 
-rule replaceMethod
-    replace [method_declaration]
+rule replaceConcreteMethod
+    replace [concrete_method_declaration]
         _[acess_modifier] _[id] methodName [id]'( params [list method_parameter +] ') '{ statements [repeat statement] '}
     construct newParams [list id]
     by
         'def methodName '(self, newParams [translateParams each params] '):  statements [replaceStatements]
 end rule
 
-rule replaceMethodNoArgs
-    replace [method_declaration]
+rule replaceConcreteMethodNoArgs
+    replace [concrete_method_declaration]
         _[acess_modifier] _[id] methodName [id]'() '{ statements [repeat statement] '}
     by
         'def methodName '(self):  statements [replaceStatements]
 end rule
 
 rule replaceAbstractMethod
-    replace [method_declaration]
+    replace [abstract_method_declaration]
         _[acess_modifier] _[id] methodName [id] '( params [list method_parameter +] ');
     construct newParams [list id]
     by
-        'def methodName '(self, newParams [translateParams each params] '): 'raise 'NotImplementedError("The interface is not implemented")
+        '@abstractmethod 'def methodName '(self, newParams [translateParams each params] '): 'pass
 end rule
 
 rule replaceAbstractMethodNoArgs
-    replace [method_declaration]
+    replace [abstract_method_declaration]
         _[acess_modifier] _[id] methodName [id]'();
     by
-        'def methodName '(self): 'raise 'NotImplementedError("The interface is not implemented")
+        '@abstractmethod 'def methodName '(self): 'pass
 end rule
 
 rule replaceToString
@@ -171,6 +239,8 @@ function replaceStatements
             [replaceAssignment] 
             [replaceReturn] 
             [replaceNoStateMents] 
+            [correctSuperInit]
+            [correctSuperFunctions]
             [addSelfToFunctionCalls]
             [replaceDecleration]
             [replaceDeclerationWithAssignment]
@@ -204,6 +274,20 @@ rule addSelfToFunctionCalls
         funcName [id]'( values [list value]')
     by
         'self. funcName '( values')
+end rule
+
+rule correctSuperInit
+    replace [function_call]
+        'super( params [list value] ')
+    by
+        'super().__init__( params ')
+end rule
+
+rule correctSuperFunctions
+    replace [function_call]
+        'super. func [subfunction_call]
+    by
+        'super(). func
 end rule
 
 rule replaceDeclerationWithAssignment

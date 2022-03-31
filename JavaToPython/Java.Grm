@@ -8,7 +8,7 @@ end comments
 %--------------------%
 
 keys
- return true false
+ return true false super
 end keys
 
 define acess_modifier
@@ -117,8 +117,15 @@ end define
 define function_call
         [variable_name] [SPOFF] '. [id]'( [SPON] [list value]')
     |   [id] [SPOFF]'( [SPON][list value]')
+    |   [SPOFF] 'super. [subfunction_call] [SPON]
+    |   'super( [SPOFF] [list value] [SPON] ') 
 end define
 
+define subfunction_call
+        [variable_name] [SPOFF] '. [id]'( [SPON] [list value]')
+    |   [id] [SPOFF]'( [SPON][list value]')
+    |   'delete()
+end define
 
 define boolean_expression
         '( [boolean_expression] ')
@@ -142,8 +149,21 @@ define method_parameter
 end define
 
 define method_declaration
+        [concrete_method_declaration]
+    |   [abstract_method_declaration]
+end define
+
+define concrete_method_declaration
         [acess_modifier] [id] [id] '( [list method_parameter] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
-    |   [acess_modifier] [id] [id] '( [list method_parameter] '); [NL]
+end define
+
+define abstract_method_declaration
+    [acess_modifier] [id] [id] '( [list method_parameter] '); [NL]
+end define
+
+define inheritanceStatement
+        'extends
+    |   'implements
 end define
 
 
@@ -151,12 +171,19 @@ end define
 %        Class       %
 %--------------------%
 define class_declaration
-    [acess_modifier] [class_type] [id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
+        [concrete_class_declaration]
+    |   [interface_declaration]
 end define
 
-define class_type
-        'class
-    |   'interface
+define concrete_class_declaration
+        [acess_modifier] 'class [id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
+    |   [acess_modifier] 'class [id] [inheritanceStatement] [list id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
+    |   [acess_modifier] 'class [id] [inheritanceStatement] [list id] [inheritanceStatement] [list id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
+end define
+
+define interface_declaration
+        [acess_modifier] 'interface [id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
+    |   [acess_modifier] 'interface [id] [inheritanceStatement] [list id] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
 end define
 
 define constructor
@@ -169,4 +196,9 @@ end define
 
 define class_body_decl
     [repeat member_variable_declaration] [opt constructor] [repeat method_declaration]
+end define
+
+define import_statement 
+    //Just used to be redefined in Python Grammar
+    [empty]
 end define

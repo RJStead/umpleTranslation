@@ -65,10 +65,16 @@ redefine method_parameter
     | [id]
 end redefine
 
-redefine method_declaration
+redefine concrete_method_declaration
     ...
     |   'def  [id] [SPOFF]'(self, [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
     |   'def  [id] [SPOFF]'(self): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+end redefine
+
+redefine abstract_method_declaration
+    ...
+    |   [SPOFF] '@abstractmethod [SPON] [NL] 'def  [id] [SPOFF]'(self, [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
+    |   [SPOFF] '@abstractmethod [SPON] [NL] 'def  [id] [SPOFF]'(self): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
 end redefine
 
 redefine constructor
@@ -77,24 +83,44 @@ redefine constructor
     | 'def '__init__ [SPOFF] '(self): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
 end redefine
 
-redefine class_declaration
+redefine concrete_class_declaration
     ... 
     | 'class [id] [SPOFF] ': [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
+    | [repeat import_statement] [NL] 'class [id] [SPOFF] '( [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
+    | [repeat import_statement] [repeat import_statement] [NL] 'class [id] [SPOFF] '( [SPON] [list id] [SPOFF] ', [SPON] [list id ] [SPOFF] '): [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
+end redefine
+
+redefine interface_declaration
+    ... 
+    | [import_statement] [NL] 'class [id] [SPOFF] '(ABC): [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
+    | [import_statement] [repeat import_statement] [NL] 'class [id] [SPOFF] '(ABC, [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
 end redefine
 
 redefine class_body_decl
     ...
     | 'pass
     | [opt constructor] [repeat method_declaration]
-end define
+end redefine
 
 redefine variable_declaration
     ...
     |   [assignment] [FL]
     |   [variable_name]
-end define
+end redefine
 
 redefine function_call
     ...
-    |   'self. [SPOFF] [id]'( [SPON][list value]')
-end define
+    |   'self. [SPOFF] [subfunction_call] [SPON]
+    |   'super [SPOFF] '(). [subfunction_call] [SPON]
+end redefine
+
+redefine subfunction_call
+    ...
+    |   '[SPOFF] [id] '( [SPON] [list value] [SPOFF] ') [SPON]
+end redefine
+
+redefine import_statement
+    ...
+    |   'from [id] 'import [id] [NL]
+    |   'from [id] 'import [list id] [NL]
+end redefine
