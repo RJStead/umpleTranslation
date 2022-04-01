@@ -19,12 +19,29 @@ keys
  return new if else for true false while this super self tuple len True False + - * / ? ; :
 end keys
 
+define id_or_default_type
+    [id]
+    | [java_default_type]
+end define
+
 define acess_modifier
         'private
     |   'public
     |   'protected
 end define
 
+define java_default_type
+        'byte
+    |   'short
+    |   'int
+    |   'long
+    |   'float
+    |   'double
+    |   'boolean
+    |   'char
+    |   'String
+    |   'Array
+end define
 
 define boolean_operator
         '&&
