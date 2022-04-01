@@ -14,7 +14,7 @@ function main
         [replaceConcreteClassesWithInheritance] 
         [replaceConcreteClassesNoInheritance]
         [replaceInterfacesWithInheritance]
-        [replaceInterfacesNoInheritance]
+        [replaceInterfacesNoInheritance] 
         
 end function
 
@@ -28,14 +28,14 @@ function getClassesToImport declaration [member_variable_declaration]
     construct classesToImport [repeat id]
         _ [extractListClass class] [extractRegularClass class]
     by 
-        empty [addToRepeatIfNotThere each classesToImport] %Something
+        empty [addToRepeatIfNotThere each classesToImport] 
 end function 
 
 function concatenateRepeatNoDuplicates elems [repeat id]
     replace [repeat id]
         currentList [repeat id]
     by
-        currentList [addToRepeatIfNotThere each elems]
+        currentList [addToRepeatIfNotThere each elems] 
 end function
 
 function addToRepeatIfNotThere elem [id]
@@ -70,24 +70,31 @@ end function
 function addIfNotDefaultType id [id]
     replace [repeat id]
         current [repeat id]
-    construct idOrDef [id_or_default_type]
-        id
     where not 
-        idOrDef [matchDefaultType]
+        id [matchDefaultType]
     by
-        current [. id]
+        current [. id] 
 end function
 
-function matchDefaultType 
-    match [id_or_default_type]
-        _ [java_default_type]
-end function
+rule matchDefaultType
+    match [id]
+        id [id]
+    construct defaults [repeat id]
+        'byte 'short 'int 'long 'float 'double 'boolean 'char 'String 'Array
+    where   
+        defaults [contains id]
+    
+        
+end rule
+
 
 function extractRegularClass class [class_name]
     replace [repeat id]
         empty [repeat id]
     deconstruct class
         id [id]
+    where not 
+        id [matchDefaultType]
     by
         empty [. id]
 end function
