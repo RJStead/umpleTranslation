@@ -1,6 +1,0 @@
-interface A {
-  boolean someMethod();
-  //Test
-  isA B;
-}
-

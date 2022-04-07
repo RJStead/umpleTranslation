@@ -1,7 +1,0 @@
-class OnOffSwitch
-{
-  bulb
-  {
-    On { push -> Final; }
-  }
-}

@@ -1,8 +1,0 @@
-// This generates the error
-// because the enumeration "X"
-// has the same name
-// as the class it's defined in
- 
-class X{
-  enum X { Red, Blue, Green }
-}

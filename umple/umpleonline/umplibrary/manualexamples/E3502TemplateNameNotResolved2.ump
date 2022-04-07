@@ -1,6 +1,0 @@
-//The error is resolved by
-//declaring the template
-class A {
-  template <<!output!>>
-  emit method()(template);
-}

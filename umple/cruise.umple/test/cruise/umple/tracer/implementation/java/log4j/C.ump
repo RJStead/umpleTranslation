@@ -1,6 +1,0 @@
-namespace example;
-
-class C
-{
-  str;
-}

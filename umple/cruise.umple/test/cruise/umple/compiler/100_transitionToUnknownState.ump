@@ -1,9 +1,0 @@
-class LightFixture
-{
-  bulb
-  {
-    On {
-      push -> Off;
-    }
-  }
-}

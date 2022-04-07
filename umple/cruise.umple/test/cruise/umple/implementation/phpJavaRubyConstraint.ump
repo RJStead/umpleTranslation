@@ -1,9 +1,0 @@
-generate Php;
-generate Java;
-generate Ruby;
-
-class Range {
-	Integer start;
-	Integer end;
-	[start < end];
-}

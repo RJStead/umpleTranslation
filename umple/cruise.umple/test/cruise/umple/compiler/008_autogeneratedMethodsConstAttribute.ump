@@ -1,4 +1,0 @@
-class X
-{
-  const Integer MAX = 100;
-}

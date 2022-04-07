@@ -1,5 +1,0 @@
-class Student
-{
-  immutable;
-  1 them <- 1 Student me;
-}

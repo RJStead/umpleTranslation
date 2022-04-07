@@ -1,6 +1,0 @@
-
-class LightFixture
-{
-  Integer x;
-  trace x where x > 5;
-}

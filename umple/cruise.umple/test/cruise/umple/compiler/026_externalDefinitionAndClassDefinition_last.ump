@@ -1,5 +1,0 @@
-class X {
-  abcd;
-}
-
-external X {}

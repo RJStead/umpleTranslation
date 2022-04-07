@@ -1,5 +1,0 @@
-class Teacher {
-  1 -- 0..* Person myStudents;
-}
-
-class Person {  abstract; }

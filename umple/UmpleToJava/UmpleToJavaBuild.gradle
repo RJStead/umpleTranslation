@@ -1,4 +1,0 @@
-ext {
-  umpleOutputDir = "src-gen-UmpleTL"
-  masterFile = "UmpleTLTemplates/Master.ump"
-}

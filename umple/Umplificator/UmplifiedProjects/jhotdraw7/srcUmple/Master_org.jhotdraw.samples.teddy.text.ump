@@ -1,4 +1,0 @@
-use NumberedViewFactory.ump;
-use NumberedEditorKit.ump;
-use package-info.ump;
-use NumberedParagraphView.ump;

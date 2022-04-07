@@ -1,2 +1,0 @@
-java.lang.ArrayIndexOutOfBoundsException: 1
-    at cruise.runtime.InMain.main(InMain.ump:10)

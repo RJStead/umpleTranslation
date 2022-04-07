@@ -1,1 +1,0 @@
-The material has been moved to https://github.com/mgarzon/experiments/

@@ -1,3 +1,0 @@
-interface ConstantDeprecated{
-  constant Integer I = 1;
-}

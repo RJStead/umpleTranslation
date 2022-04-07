@@ -1,9 +1,0 @@
-generate Java "../src-gen-umple";
-
-class AbstractMethod
-{
-    abstract;
-    abstract void foo() {
-        int a = 1 + 1;
-    }
-}

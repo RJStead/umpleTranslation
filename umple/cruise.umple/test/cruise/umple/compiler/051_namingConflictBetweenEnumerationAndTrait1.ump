@@ -1,5 +1,0 @@
-trait Y { 
-  name;
-}
-
-enum Y { Red, Blue, Green }

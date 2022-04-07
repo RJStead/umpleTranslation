@@ -1,9 +1,0 @@
-interface ISomething
-{
-	isA ISuper;
-}
-
-interface ISuper
-{
-
-}

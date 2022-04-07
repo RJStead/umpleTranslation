@@ -1,5 +1,0 @@
-require [opt MixsetA];
-require [not MixsetB];
-
-// opt and not should be captured by the feature model.
-

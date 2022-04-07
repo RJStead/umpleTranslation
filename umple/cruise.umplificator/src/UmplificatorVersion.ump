@@ -1,6 +1,0 @@
-namespace cruise.umplificator.core;
-
-class Umplificator
-{
-  const String VERSION_NUMBER = "@UMPLE_VERSION@";
-}

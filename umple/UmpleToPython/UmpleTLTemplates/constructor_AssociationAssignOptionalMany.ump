@@ -1,4 +1,0 @@
-class UmpleToJava {
-    constructor_AssociationAssignOptionalMany <<!<</*constructor_AssociationAssignOptionalMany*/>>
-    <<=gen.translate("associationMany",av)>> = new ArrayList<<<=gen.translate("type",av)>>>();!>>
-}

@@ -1,5 +1,0 @@
-namespace weka.attributeSelection;
-
-interface ErrorBasedMeritEvaluator
-{
-}

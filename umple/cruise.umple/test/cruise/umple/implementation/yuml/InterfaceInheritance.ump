@@ -1,8 +1,0 @@
-interface ITask
-{
-}
-
-class NightlyBillingTask
-{
-  isA ITask;
-}

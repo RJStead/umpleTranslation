@@ -1,6 +1,0 @@
-class X
-{
-  before m1 { 
-    System.out.println("accessing the name");
-  }
-}

@@ -1,8 +1,0 @@
-// This example causes the error
-enum Month {x,y,z}
-enum Month {o,p,q}
-
-class A{
-  Month m;
-  Month p;
-}

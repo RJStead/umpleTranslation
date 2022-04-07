@@ -1,9 +1,0 @@
-class Student
-{
-	Integer id;
-}
-class Mentor
-{
-	String name;
-	* sorted {name} -- * Student sorted {id};
-}

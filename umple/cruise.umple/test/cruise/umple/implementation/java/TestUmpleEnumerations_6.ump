@@ -1,7 +1,0 @@
-namespace example;
-
-enum Month {january, february, March}
-enum Fruit {apple, orange}
-
-class X{}
-class X2{}

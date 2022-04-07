@@ -1,8 +1,0 @@
-class OnOffSwitch
-{
-  bulb
-  {
-    On { push -> Off ;}
-    Off { afterEvery(5) -> On ;}
-  }
-}

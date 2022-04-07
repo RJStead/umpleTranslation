@@ -1,6 +1,0 @@
-Before_Custom.ump:10: error: cannot find symbol
-    b = 0;
-    ^
-  symbol:   variable b
-  location: class BeforeCustom
-1 error

@@ -1,5 +1,0 @@
-class X
-{
-  Integer a;
-  List<String> b;
-}

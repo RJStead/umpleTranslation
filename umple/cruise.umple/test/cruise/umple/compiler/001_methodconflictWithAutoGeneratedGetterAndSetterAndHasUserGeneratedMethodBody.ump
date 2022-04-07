@@ -1,9 +1,0 @@
-class A{
-    abc;
-    boolean setAbc(String data){
-    	int a;
-    }    
-    String getAbc(){
-    	int a;
-    }  
-}

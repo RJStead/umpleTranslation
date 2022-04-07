@@ -1,8 +1,0 @@
-class LightSwitch
-{ 
-  Light
-  {
-    On { push -> Off;}
-    Off {push -> On;}
-  }
-}

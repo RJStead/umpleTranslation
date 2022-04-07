@@ -1,6 +1,0 @@
-interface ISomething
-{
- const String aVariable = aValue;
- const String aSecondVariable = aSecondValue;
- String getMethod(String name); 
-}

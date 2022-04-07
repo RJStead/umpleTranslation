@@ -1,5 +1,0 @@
-namespace weka.core.scripting;
-
-interface JythonObject
-{
-}

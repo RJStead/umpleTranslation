@@ -1,8 +1,0 @@
-//The tags are not properly
-//nested, causing E4500
-<FIXML>
-  <tag>
-    <othertag>
-      </tag>
-  </othertag>
- </FIXML>

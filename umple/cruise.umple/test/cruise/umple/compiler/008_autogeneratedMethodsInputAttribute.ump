@@ -1,5 +1,0 @@
-class X
-{
-  ivar Double iDoub;
-  Double xDoub;
-}

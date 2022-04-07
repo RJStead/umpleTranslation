@@ -1,3 +1,0 @@
-java.lang.ArrayIndexOutOfBoundsException: 1
-    at cruise.runtime.IsATrait.Foo(IsATrait.ump:7)
-    at cruise.runtime.IsATrait.main(IsATrait.ump:17)

@@ -1,4 +1,0 @@
-// Test that this generates error 5
-class E {
-  * -> * BadTestInterface;
-}

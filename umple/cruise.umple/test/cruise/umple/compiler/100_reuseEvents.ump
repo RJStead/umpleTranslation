@@ -1,8 +1,0 @@
-class LightFixture
-{
-  bulb
-  {
-      On { flip -> Off; }
-      Off { flip -> On; }
-  }
-}

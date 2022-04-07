@@ -1,5 +1,0 @@
-use package-info.ump;
-use ODGInputFormat.ump;
-use DefaultODGFigureFactory.ump;
-use ODGStylesReader.ump;
-use ODGFigureFactory.ump;

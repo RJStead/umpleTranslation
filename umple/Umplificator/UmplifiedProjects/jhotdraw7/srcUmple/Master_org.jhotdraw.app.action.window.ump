@@ -1,8 +1,0 @@
-use ArrangeWindowsAction.ump;
-use ToggleVisibleAction.ump;
-use TogglePaletteAction.ump;
-use FocusWindowAction.ump;
-use MinimizeWindowAction.ump;
-use ToggleToolBarAction.ump;
-use package-info.ump;
-use MaximizeWindowAction.ump;

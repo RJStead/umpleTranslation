@@ -1,5 +1,0 @@
-class MultipleInexistentTemplateReferences {
-	template1 <<! <<@aTemplate>> <<@otherTemplate>> <<@anotherTemplate>>!>>
-	
-	emit method()(template1);
-}

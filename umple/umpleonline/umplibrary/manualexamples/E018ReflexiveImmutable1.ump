@@ -1,5 +1,0 @@
-// The following example generates the error message
-class X {
-    immutable;
-    0..1 -> 1 X other;
-}

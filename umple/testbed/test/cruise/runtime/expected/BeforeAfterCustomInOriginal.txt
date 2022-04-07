@@ -1,3 +1,0 @@
-java.lang.ArithmeticException: / by zero
-    at cruise.runtime.InAfterCustomMultipleReturns.foo(InAfterCustomMultipleReturns.ump:29)
-    at cruise.runtime.InAfterCustomMultipleReturns.main(InAfterCustomMultipleReturns.ump:17)

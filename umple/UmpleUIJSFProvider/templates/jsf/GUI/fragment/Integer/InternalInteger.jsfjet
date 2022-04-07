@@ -1,2 +1,0 @@
-<%@ jet package="cruise.ui.jsf.templates.impl.fragment.GUI" 
-class="InternalInteger" skeleton="../../../skeleton/IGenerator.skeleton" %>

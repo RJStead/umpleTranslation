@@ -1,8 +1,0 @@
-namespace example;
-
-class Student
-{
-  one;
-  two;
-  three = { one + ":" + two } 
-}

@@ -1,6 +1,0 @@
-class X{
-  * <- * Y;
-}
-class Y {
-  xs;
-}

@@ -1,5 +1,0 @@
-
-class LightFixture
-{ 
-  trace m1() execute { record("x"); }
-}

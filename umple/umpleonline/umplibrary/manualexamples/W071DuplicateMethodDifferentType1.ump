@@ -1,5 +1,0 @@
-// This example generates the message
-class A{
-  String test1(){return("hello world");}
-  int test1(){return(1);}
-}

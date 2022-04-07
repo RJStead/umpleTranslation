@@ -1,4 +1,0 @@
-interface IMe
-{
-  depend java.util.*;
-}

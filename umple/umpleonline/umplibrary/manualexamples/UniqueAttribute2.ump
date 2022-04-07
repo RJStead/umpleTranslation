@@ -1,8 +1,0 @@
-// Unique registration numbers (Integer)
-// are automatically assigned to every
-// new registration created
-
-class Registration
-{
-	autounique registrationNumber;
-}

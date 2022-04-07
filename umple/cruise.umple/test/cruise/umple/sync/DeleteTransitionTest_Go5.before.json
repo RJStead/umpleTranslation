@@ -1,1 +1,0 @@
-{"classId": "CourseSection", "fromStateId": "NotEnoughStudents", "toStateId": "Cancelled","event": "closeRegistration", "name": "NotEnoughStudents_closeRegistration_Cancelled" }

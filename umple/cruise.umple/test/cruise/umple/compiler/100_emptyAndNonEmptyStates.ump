@@ -1,8 +1,0 @@
-class LightFixture
-{
-  status
-  {
-    On { flip -> Off;  }
-    Off { }
-  }
-}

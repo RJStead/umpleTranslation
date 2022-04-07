@@ -1,3 +1,0 @@
-interface UninitializedConst{
-  const int I;
-}

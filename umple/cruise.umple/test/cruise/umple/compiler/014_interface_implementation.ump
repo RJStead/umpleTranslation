@@ -1,9 +1,0 @@
-
-interface ISomething
-{
-
-}
-
-class Something {
-	isA ISomething;
-}

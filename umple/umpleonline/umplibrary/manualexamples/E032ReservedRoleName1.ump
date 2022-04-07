@@ -1,5 +1,0 @@
-// This example generates the error message
-
-class Course {  
-  * -- * Course courses;  
-}

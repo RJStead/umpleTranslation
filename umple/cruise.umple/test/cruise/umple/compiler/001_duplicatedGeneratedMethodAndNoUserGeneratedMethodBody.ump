@@ -1,5 +1,0 @@
-class A{
-  name;
-  String getName() {
-  }
-}

@@ -1,4 +1,0 @@
-namespace cruise.util;
-class Student{}
-namespace cruise.core;
-class Mentor{}

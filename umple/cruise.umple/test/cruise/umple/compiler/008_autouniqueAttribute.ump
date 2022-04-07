@@ -1,5 +1,0 @@
-
-class Student
-{
-  autounique id;
-}

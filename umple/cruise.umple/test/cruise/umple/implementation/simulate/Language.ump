@@ -1,6 +1,0 @@
-generate Simulate;
-namespace example;
-
-class Student
-{
-}

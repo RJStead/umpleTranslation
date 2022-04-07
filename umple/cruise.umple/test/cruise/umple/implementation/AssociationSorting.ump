@@ -1,8 +1,0 @@
-class Student
-{
-  Integer id;
-}
-class Mentor
-{
-   * -- * Student sorted {id};
-}

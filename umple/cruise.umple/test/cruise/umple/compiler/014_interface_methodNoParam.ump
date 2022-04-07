@@ -1,4 +1,0 @@
-interface I_Something
-{
- String getSomething();
-}

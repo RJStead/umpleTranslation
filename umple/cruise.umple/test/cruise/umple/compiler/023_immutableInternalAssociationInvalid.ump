@@ -1,7 +1,0 @@
-class Student
-{
-  immutable * -> * Mentor aMentor;
-}
-
-class Mentor
-{}

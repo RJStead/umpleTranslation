@@ -1,9 +1,0 @@
-class Foo {
-  String[] someStrings = {"a","b","c"};
-  Integer[] numbers = {1,2,3,10};
-  Token[] objects = {new Token("first"),new Token("second")};
-}
-
-class Token {
-  attr;
-}

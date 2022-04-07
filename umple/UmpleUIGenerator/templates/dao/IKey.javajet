@@ -1,7 +1,0 @@
-<%@ jet package="cruise.data.impl.dao.generic.impl" 
-class="IKey"  skeleton="../skeleton/IGenerator.skeleton"  %>
-package dao.keys;
-
-public interface IKey {
-
-}

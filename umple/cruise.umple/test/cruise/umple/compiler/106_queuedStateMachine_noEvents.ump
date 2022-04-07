@@ -1,6 +1,0 @@
-class Course{
-  queued sm{
-    register {}
-    full {}
-  }
-}

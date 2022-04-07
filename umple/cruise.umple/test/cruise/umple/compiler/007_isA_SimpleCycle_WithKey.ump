@@ -1,6 +1,0 @@
-class Student
-{
-  Integer id;
-  key {id};
-  isA Student;
-}

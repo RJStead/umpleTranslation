@@ -1,3 +1,0 @@
-interface X {
-  void m1();
-}

@@ -1,9 +1,0 @@
-filter {include X;}
-
-trait Device {
-  serialNumber;   // attribute; String by default
-}
-
-class SmartLightConsole {
-  isA Device;
-}

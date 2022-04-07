@@ -1,3 +1,0 @@
-java.lang.ArithmeticException: / by zero
-    at cruise.runtime.SameFunctionMiddle.divideByZero(SameFunctionMiddle.ump:23)
-    at cruise.runtime.SameFunctionMiddle.main(SameFunctionMiddle.ump:10)

@@ -1,8 +1,0 @@
-class UmpleToPhp {
-    constructor_CallParentConstructor <<!<</*constructor_CallParentConstructor*/>>
-  private function callParentConstructor(<<= gClass.getParentClass().getLookup("constructorSignature") >>)
-  {
-    parent::__construct(<<= gClass.getParentClass().getLookup("constructorSignature_caller") >>);
-  }
-!>>
-}

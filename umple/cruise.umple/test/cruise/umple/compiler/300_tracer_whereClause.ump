@@ -1,6 +1,0 @@
-
-class LightFixture
-{ 
-  trace m4() execute { "y" } where attr7>5;
-}
-

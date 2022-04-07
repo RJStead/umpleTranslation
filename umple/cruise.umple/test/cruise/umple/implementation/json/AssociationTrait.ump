@@ -1,9 +1,0 @@
-class B {}
-
-trait AscTrait {
-  0..1 -> * B asc;
-}
-
-class A {
-  isA AscTrait;
-}

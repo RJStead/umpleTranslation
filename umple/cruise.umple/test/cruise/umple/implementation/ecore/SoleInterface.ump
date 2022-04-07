@@ -1,4 +1,0 @@
-generate Ecore;
-namespace example;
-
-interface A{}

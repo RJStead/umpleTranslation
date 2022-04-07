@@ -1,6 +1,0 @@
-generate Php;
-namespace example;
-
-class Mentor 
-{
-}

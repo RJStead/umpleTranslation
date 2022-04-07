@@ -1,6 +1,0 @@
-generate Ruby;
-namespace example;
-
-class Mentor 
-{
-}

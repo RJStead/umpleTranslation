@@ -1,8 +1,0 @@
-//Each tag is now correctly
-//closed
-<FIXML>
-  <tag>
-    <othertag>
-    </othertag>
-  </tag>
- </FIXML>

@@ -1,8 +1,0 @@
-
-class X
-{
-
-  Date d;
-  Date e;
-  [ d > e ];
-}

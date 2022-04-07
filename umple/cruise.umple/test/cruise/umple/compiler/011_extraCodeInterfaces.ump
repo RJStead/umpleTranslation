@@ -1,5 +1,0 @@
-interface A {
-  void FunB();
-  blah blah blah;
-  void FunA();
-}

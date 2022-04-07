@@ -1,7 +1,0 @@
-class X
-{
-  queued method1() {}
-  queued void method2() {}
-  
-  queued methodWithParameters(String a, int b) {}
-}

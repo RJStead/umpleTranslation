@@ -1,9 +1,0 @@
-class Student
-{
-  isA Proffesor;
-}
-
-class Proffesor
-{
-  isA Student;
-}

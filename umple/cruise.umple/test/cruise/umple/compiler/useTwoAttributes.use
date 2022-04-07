@@ -1,7 +1,0 @@
-model Company
-
-class Employee
-attributes
-  name : String
-  budget : Integer
-end

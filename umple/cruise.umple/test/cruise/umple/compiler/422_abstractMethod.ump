@@ -1,3 +1,0 @@
-class Foome {
-  protected abstract void barme();
-}

@@ -1,8 +1,0 @@
-enum Y { Red, Blue, Green }
-
-class X {
-  showY(Y attr) { System.out.println(attr); }
-  Y {
-   s1 {}
-  }
-}

@@ -1,6 +1,0 @@
-// This example below avoids the message
-class X {
-  name;
-  id;
-  key { name, id }
-}

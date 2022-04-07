@@ -1,9 +1,0 @@
-//Fixing the name of the
-//method removes the warning
-class A {
-  attr;
-  attr2;
-  
-  before getAttr*, !getAttr2 {
-  }
-}

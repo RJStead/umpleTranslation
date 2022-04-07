@@ -1,4 +1,0 @@
-interface ISomething
-{
- public void getCode();
-}

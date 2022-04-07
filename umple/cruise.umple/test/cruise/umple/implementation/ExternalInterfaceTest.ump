@@ -1,8 +1,0 @@
-namespace example;
-
-external interface Serializable {}
-
-class MyData
-{
-  isA Serializable;
-}

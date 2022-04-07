@@ -1,7 +1,0 @@
-use package-info.ump;
-use JAttributeSlider.ump;
-use JAttributeSliderBeanInfo.ump;
-use JAttributeTextFieldBeanInfo.ump;
-use JAttributeTextAreaBeanInfo.ump;
-use JAttributeTextArea.ump;
-use JAttributeTextField.ump;

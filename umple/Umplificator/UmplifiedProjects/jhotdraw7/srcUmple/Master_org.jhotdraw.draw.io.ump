@@ -1,8 +1,0 @@
-use TextInputFormat.ump;
-use OutputFormat.ump;
-use InputFormat.ump;
-use ImageOutputFormat.ump;
-use ImageInputFormat.ump;
-use DOMStorableInputOutputFormat.ump;
-use package-info.ump;
-use SerializationInputOutputFormat.ump;

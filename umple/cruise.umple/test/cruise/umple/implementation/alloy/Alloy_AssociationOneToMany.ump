@@ -1,6 +1,0 @@
-class A{
-    1 -- * B;
-    Integer a;
-}
-
-class B{ }

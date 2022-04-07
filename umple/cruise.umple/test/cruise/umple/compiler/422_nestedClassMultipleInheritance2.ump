@@ -1,8 +1,0 @@
-class Z {
-    class X {
-        class Y {
-            class X {
-            }
-        }
-    }
-}

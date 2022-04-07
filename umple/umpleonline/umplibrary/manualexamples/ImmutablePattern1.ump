@@ -1,7 +1,0 @@
-// A simple example of an immutable class
-class Point2D
-{
-  immutable;
-  Float x;
-  Float y;
-}

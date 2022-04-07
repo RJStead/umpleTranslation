@@ -1,1 +1,0 @@
-[NewClass|+name:String;-id:Integer;|+getRecords();-getInternalRecord();+getMethod();],

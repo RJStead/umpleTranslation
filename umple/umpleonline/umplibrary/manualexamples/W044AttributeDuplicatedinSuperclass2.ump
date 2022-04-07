@@ -1,9 +1,0 @@
-//This example solves the problem
-class A {
-  Integer attr;
-}
-
-class B {
-  isA A;
-  differentAttr;
-}

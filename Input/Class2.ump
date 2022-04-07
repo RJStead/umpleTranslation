@@ -1,9 +1,0 @@
-class Person {
-  String name;
-  int age;
-}
-
-class House {
-  String address;
-  float price;
-}

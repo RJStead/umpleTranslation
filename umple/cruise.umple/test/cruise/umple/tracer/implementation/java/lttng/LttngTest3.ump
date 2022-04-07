@@ -1,9 +1,0 @@
-namespace example;
-
-tracer Lttng;
-
-class Tracer
-{
-  x;
-  trace x;
-}

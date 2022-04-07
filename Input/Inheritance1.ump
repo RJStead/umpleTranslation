@@ -1,7 +1,0 @@
-class Person {
-  String name;
-}
-
-class Student {  
-  isA Person;  
-}  

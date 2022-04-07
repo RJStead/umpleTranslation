@@ -1,9 +1,0 @@
-
-class UmpleTToPhpUnit{
-
-assertion_true <<!<</*assertion_true*/>><<#
-
-	#>>assertTrueSomeCode  <<#
-#>>!>>
-
-}

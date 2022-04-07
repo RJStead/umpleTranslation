@@ -1,4 +1,0 @@
-Trait.ump:11: error: incompatible types: unexpected return value
-    return color;
-           ^
-1 error

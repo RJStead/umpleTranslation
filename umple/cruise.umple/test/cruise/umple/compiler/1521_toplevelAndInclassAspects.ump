@@ -1,8 +1,0 @@
-class Student
-{
-  name;
-  after setName { 
-  	//afterCodeInjection(); 
-  }
-}
-before {Student} setName { doSomething(); }  

@@ -1,8 +1,0 @@
-req R01{
-    this is a requirement for a method
-}
-
-class Example {
-    implementsReq R01;
-    void methodName(){  }
-}

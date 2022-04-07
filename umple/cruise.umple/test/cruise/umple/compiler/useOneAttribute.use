@@ -1,6 +1,0 @@
-model Company
-
-class Employee
-attributes
-  name : String
-end

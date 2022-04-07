@@ -1,9 +1,0 @@
-interface Student
-{
-  isA Proffesor;
-}
-
-interface Proffesor
-{
-  isA Student;
-}

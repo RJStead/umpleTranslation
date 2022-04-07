@@ -1,5 +1,0 @@
-class Student
-{
-  * self peer;
-  * self roleModel;
-}

@@ -1,7 +1,0 @@
-
-use 015_Student.ump;
-
-class Mentor
-{
-  isA Student;
-}

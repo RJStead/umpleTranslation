@@ -1,4 +1,0 @@
-Before_After_Custom.ump:17: error: incompatible types: int cannot be converted to String
-            return a;
-                   ^
-1 error

@@ -1,7 +1,0 @@
-associationClass VotesInPoll
-{
-  
-}
-
-class Candidature
-{}

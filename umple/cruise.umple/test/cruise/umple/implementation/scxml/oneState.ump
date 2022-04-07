@@ -1,5 +1,0 @@
-class SMClass {
-  sm {
-    stateOne {}
-  }
-}

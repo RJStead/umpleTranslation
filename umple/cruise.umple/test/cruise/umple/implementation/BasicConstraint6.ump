@@ -1,6 +1,0 @@
-class student
-{
-  Integer age;
-  Integer weight;
-  [ weight < 3 || age > 18]
- }

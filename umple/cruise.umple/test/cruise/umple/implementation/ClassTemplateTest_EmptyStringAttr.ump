@@ -1,5 +1,0 @@
-namespace example;
-
-class Student {
-   grade="";
-}

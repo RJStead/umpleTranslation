@@ -1,5 +1,0 @@
-//Since B is not defined,
-//the warning will be generated
-interface A {
-  isA B;
-}

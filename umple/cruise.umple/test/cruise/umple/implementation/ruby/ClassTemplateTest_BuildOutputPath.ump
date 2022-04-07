@@ -1,8 +1,0 @@
-generate Ruby "ruby_code";
-
-namespace example;
-
-class Student
-{
-
-}

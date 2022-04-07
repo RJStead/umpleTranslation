@@ -1,5 +1,0 @@
-// The following example shows how to fix
-// the error if this is a symmetric association.
-class X {
-    0..1 self right;
-}

@@ -1,5 +1,0 @@
-// This example generates the warning message
-class X {
-  singleton;
-  Integer x;
-}

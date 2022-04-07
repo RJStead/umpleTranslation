@@ -1,5 +1,0 @@
-statemachine myname
-{
-  On { push -> Off;}
-  Off {}
-}

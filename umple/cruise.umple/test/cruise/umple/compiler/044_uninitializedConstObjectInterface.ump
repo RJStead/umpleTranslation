@@ -1,3 +1,0 @@
-interface UninitializedConstObject{
-  const Object A;
-}

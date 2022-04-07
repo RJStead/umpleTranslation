@@ -1,3 +1,0 @@
-class MultivaluedAttributeAssignment {
-  String[] attr = {arbitraryCode();} // Should raise error 83
-}

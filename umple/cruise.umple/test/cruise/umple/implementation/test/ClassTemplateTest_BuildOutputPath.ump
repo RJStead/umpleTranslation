@@ -1,8 +1,0 @@
-generate Php "php_code";
-
-namespace example;
-
-class Student
-{
-
-}

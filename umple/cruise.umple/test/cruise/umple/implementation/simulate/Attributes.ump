@@ -1,8 +1,0 @@
-generate Simulate;
-namespace example;
-
-class Student
-{
-  name;
-  String[] id;
-}

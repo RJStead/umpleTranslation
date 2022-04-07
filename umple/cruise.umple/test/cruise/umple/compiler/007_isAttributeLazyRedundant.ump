@@ -1,3 +1,0 @@
-class Student {
-	lazy Boolean x = true;
-}

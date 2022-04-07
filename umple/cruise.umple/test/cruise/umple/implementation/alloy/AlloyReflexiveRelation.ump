@@ -1,3 +1,0 @@
-class Person{
-  0..1 father -- * Person children; 
-}

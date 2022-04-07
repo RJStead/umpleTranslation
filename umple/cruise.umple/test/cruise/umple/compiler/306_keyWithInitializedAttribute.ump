@@ -1,4 +1,0 @@
-class X {
-  Integer z = 1;
-  key { z  }
-}

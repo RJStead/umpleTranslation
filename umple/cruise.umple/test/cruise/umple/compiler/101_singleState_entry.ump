@@ -1,8 +1,0 @@
-class LightFixture
- 
- int x;
- bulb 
-{
-  On { entry / {int x=5;}
-   }
-}

@@ -1,5 +1,0 @@
-class Student {
-	singleton;
-	const FOO="foo";
-	bar = "bar";
-}

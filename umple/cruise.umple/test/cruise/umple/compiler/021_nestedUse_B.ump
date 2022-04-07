@@ -1,7 +1,0 @@
-
-class Student
-{
-  lastName;
-}
-
-use 021_nestedUse_C.ump;

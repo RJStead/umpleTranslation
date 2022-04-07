@@ -1,3 +1,0 @@
-host_name https://cruise.umple.org/test/umpleonline/
-	umpleonline_directory C:\Users\thier\Desktop\Umple\umple/umpleonline/
-	testing_env 

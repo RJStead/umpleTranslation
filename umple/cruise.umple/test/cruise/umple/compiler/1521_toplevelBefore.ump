@@ -1,5 +1,0 @@
-class Student
-{
-  name;
-}
-before {Student} setName { doSomething(); }  

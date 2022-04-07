@@ -1,6 +1,0 @@
-// The following shows how to avoid the error
-class Y {}
-
-class X {
-  isA Y;
-}

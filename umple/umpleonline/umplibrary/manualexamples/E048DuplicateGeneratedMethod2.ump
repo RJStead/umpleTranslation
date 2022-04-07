@@ -1,6 +1,0 @@
-//The following example is a
-//way to fix the error
-class A {
-  attr;
-  attr2;
-}

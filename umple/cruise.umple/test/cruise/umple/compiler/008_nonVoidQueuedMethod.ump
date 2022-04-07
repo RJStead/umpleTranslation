@@ -1,6 +1,0 @@
-class X
-{
-  queued Integer method() {}
-  queued String method2() {}
-  queued int method3() {}
-}

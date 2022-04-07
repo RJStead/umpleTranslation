@@ -1,7 +1,0 @@
-mixset M1 {
-
-}
-
-use M1;
-
-// This file is used to make sure that a mixset wih empty body does not cause failure.

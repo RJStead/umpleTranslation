@@ -1,7 +1,0 @@
-class X {
-  1 -- 0..1 Y;
-}
-
-interface Y {
-  
-}
