@@ -109,6 +109,7 @@ end define
 
 define value
        [value_no_ternary]
+    |   [ternary]
 end define
 
 define value_no_ternary
@@ -155,6 +156,9 @@ define while_loop
     'while( [value] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
+define ternary
+    [value_no_recursion] '? [value] ': [value]
+end define
 
 define for_loop
     'for( [variable_declaration] [value]'; [assignment]') '{ [NL] [IN] [repeat statement] [EX] '} [NL]
@@ -193,19 +197,17 @@ define function_call
 end define
 
 define boolean_expression
-       [condition] [boolean_operator] [boolean_expression]
-    |  [condition]
+        [condition] [repeat boolean_continuation]
+end define
+
+define boolean_continuation
+        [boolean_operator] [condition]
 end define
 
 define condition
         [value_no_recursion] [comparator] [value]
     |   [value_no_recursion]
 end define
-
-define boolean_element
-        [value_no_recursion]
-end define
-
 
 define method_parameter
     [class_name] [id]

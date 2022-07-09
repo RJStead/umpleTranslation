@@ -532,6 +532,7 @@ function replaceStatements
             [replaceThisFunctionCall]
             [replaceNestedStatement]
             [replaceDecleration]
+            [replaceTernary]
             [replaceAllBoolean]
             [replaceDeclerationWithAssignment]
             [replaceIf]
@@ -548,6 +549,7 @@ function replaceStatements
             [correctSuperInit]
             [correctSuperFunctions]
             [replaceSuperToString]
+            
 end function
 
 
@@ -629,7 +631,7 @@ rule replaceElseIf
         'else 'if '( bool [value] ') '{  statements [repeat statement]  '} 
     by 
         'elif bool ': statements
-end rule
+end rules
 
 
 rule replaceElse
@@ -637,6 +639,14 @@ rule replaceElse
         'else '{  statements [repeat statement]  '} 
     by 
         'else ': statements
+end rule
+
+
+rule replaceTernary
+    replace [ternary]
+        condition [value_no_recursion] '? opt1 [value] ': opt2 [value]
+    by
+        '( opt1 ') 'if condition 'else opt2
 end rule
 
 

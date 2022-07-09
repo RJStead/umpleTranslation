@@ -102,6 +102,11 @@ redefine method_parameter
     | [id]
 end redefine
 
+redefine ternary
+    ...
+    |   [value_no_ternary] 'if [value] 'else [value]
+end redefine
+
 define decorator
     '@ [SPOFF] [id] [SPON] [NL]
 end define
