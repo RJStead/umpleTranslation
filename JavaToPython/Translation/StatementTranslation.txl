@@ -33,6 +33,8 @@ function replaceStatements
             [correctSuperInit]
             [correctSuperFunctions]
             [replaceSuperToString]
+            [replaceNewLine]
+            [replaceHexIdentity]
             
 end function
 
@@ -229,4 +231,17 @@ rule replaceSuperToString
         'super().__str__() rep
 end rule
 
+rule replaceNewLine
+    replace [nested_identifier]
+        'System.getProperties().getProperty("line.separator")
+    by
+        'os.linesep
+end rule 
+
+rule replaceHexIdentity
+    replace [nested_identifier]
+        'Integer.toHexString(System.identityHashCode( val [value_no_recursion] '))
+    by
+        'format( 'id( val '), '"x")
+end rule
 

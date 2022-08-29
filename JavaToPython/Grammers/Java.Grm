@@ -80,7 +80,7 @@ define arithmatic_expression
 end define
 
 define nested_identifier
-        [nestable_value] [repeat attribute_access]
+     [nestable_value] [SPOFF] [repeat attribute_access] [SPON]
 end define
 
 define attribute_access

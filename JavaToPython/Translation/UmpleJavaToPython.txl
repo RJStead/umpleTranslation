@@ -4,7 +4,7 @@ include "StatementTranslation.txl"
 include "MethodTranslation.txl"
 include "ListTranslation.txl"
 include "ImportProcessing.txl"
-%--------------------%s
+%--------------------%
 %     Top level      %
 %--------------------%
 function main
@@ -37,7 +37,7 @@ rule replaceConcreteClassesWithInheritance
     construct inheritanceClasses [list class_name]
         _ [extractInheritanceBlockClasses each inheritances]
     construct imports [repeat import_statement]
-        _ [addImportStatement each allClassesToImport]
+        _ [addImportStatement each allClassesToImport] [addExternalImports classBody]
     by
         imports 'class className '( inheritanceClasses ')':  classBody  [replaceClassBody]
 end rule
@@ -50,7 +50,7 @@ rule replaceConcreteClassesNoInheritance
     construct declarationClassesToImport [repeat id]
         _ [getClassesToImport each decls] 
     construct imports [repeat import_statement]
-        _ [addImportStatement each declarationClassesToImport]
+        _ [addImportStatement each declarationClassesToImport] [addExternalImports classBody]
     by
     imports 'class className ':  classBody  [replaceClassBody]
 end rule
@@ -148,4 +148,32 @@ function replaceContructorNoArgs
          mod [acess_modifier] className [id]'() '{ statements [repeat statement]  '}
     by
         'def '__init__(self):  statements [replaceStatements]
+end function
+
+%--------------------%
+%    Extra imports   %
+%--------------------%
+
+function addExternalImports body [class_body_decl]
+    replace [repeat import_statement]
+        imports [repeat import_statement]
+    by
+        imports [addOSImportIfNeeded body]
+end function
+
+
+function addOSImportIfNeeded body [class_body_decl]
+    replace [repeat import_statement]
+        imports [repeat import_statement]
+    where
+        body [shouldOsImport]
+    construct newImport [import_statement]
+        'import 'os
+    by 
+        imports [. newImport]
+end function
+
+function shouldOsImport
+    match * [nested_identifier]
+        'System.getProperties().getProperty("line.separator")
 end function

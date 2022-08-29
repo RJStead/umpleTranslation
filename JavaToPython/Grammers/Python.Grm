@@ -1,5 +1,9 @@
 include "../Grammers/Java.Grm"
 
+%Num of char in a line before TXL splits it in two. Hopefully a temporary solution.
+#pragma -width 1073741824
+
+
 redefine boolean_operator
     ...
     |'and
@@ -162,4 +166,5 @@ redefine import_statement
     ...
     |   'from [class_name] 'import [class_name] [NL]
     |   'from [class_name] 'import [list class_name] [NL]
+    |   'import [id]
 end redefine 
