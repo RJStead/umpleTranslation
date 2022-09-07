@@ -135,12 +135,11 @@ rule replaceTernary
         '( opt1 ') 'if condition 'else opt2
 end rule
 
-
 rule replaceWhile
     replace [while_loop]
-        'while( bool [boolean_expression] ')  '{ statements [repeat statement] '} 
+        'while( val [value] ')  '{ statements [repeat statement] '} 
     by
-        'while bool ':  statements 
+        'while val ':  statements 
 end rule
 
 rule replaceNull
