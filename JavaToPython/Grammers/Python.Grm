@@ -166,5 +166,14 @@ redefine import_statement
     ...
     |   'from [class_name] 'import [class_name] [NL]
     |   'from [class_name] 'import [list class_name] [NL]
-    |   'import [id]
+    |   'import [id] [NL]
 end redefine 
+
+redefine enum_declaration
+    ...
+    | 'class [id] [SPOFF] '(Enum'): [SPON][NL] 
+        [IN] 'def '_generate_next_value_(name, 'start, 'count, 'last_values): [NL] 
+            [IN] 'return 'name [NL] 
+        [EX] [repeat variable_declaration] [NL]
+    [EX]
+end redefine

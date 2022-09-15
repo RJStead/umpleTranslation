@@ -270,10 +270,14 @@ define constructor
     [acess_modifier] [id]'( [list method_parameter] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
+define enum_declaration
+    [opt acess_modifier] 'enum [id] '{ [list id]'}
+end define
+
 define member_variable_declaration
     [opt acess_modifier] [opt static] [opt volatile] [variable_declaration]
 end define
 
 define class_body_decl
-    [repeat member_variable_declaration] [opt constructor] [repeat method_declaration]
+    [repeat enum_declaration] [repeat member_variable_declaration] [opt constructor] [repeat method_declaration]
 end define

@@ -1,3 +1,12 @@
+function addImportStatement a [id]
+    replace [repeat import_statement]
+        imports [repeat import_statement]
+    construct newImport [import_statement]
+        'from a 'import a
+    by
+        imports [. newImport]
+end function
+
 function getClassesToImport declaration [member_variable_declaration]
     replace [repeat id]
         empty [repeat id]
@@ -10,6 +19,27 @@ function getClassesToImport declaration [member_variable_declaration]
     by 
         empty [addToRepeatIfNotThere each classesToImport] 
 end function 
+
+function extractInheritanceBlockClasses inheritanceList [inheritance_list]
+    replace [list class_name]
+        classes [list class_name]
+    deconstruct inheritanceList
+        _[inheritance_statement] classesToAdd [list class_name]
+    by
+        classes [, classesToAdd] 
+end function
+
+function extractInheritanceImportClasses inheritanceList [inheritance_list]
+    replace [repeat id]
+        classesToImport [repeat id]
+    deconstruct inheritanceList
+        _[inheritance_statement] classesToAdd [list class_name]
+    construct classIds [repeat id]
+        _ [extractListClass each classesToAdd] [extractRegularClass each classesToAdd]
+    by
+        classesToImport [. classIds] 
+end function
+
 
 function concatenateRepeatNoDuplicates elems [repeat id]
     replace [repeat id]
@@ -79,11 +109,11 @@ function extractRegularClass class [class_name]
         empty [. id]
 end function
 
-function listToRepeat anys [list id]
+function listToRepeat ids [list id]
     replace [repeat id]
         aRep [repeat id]
     by 
-        aRep [addToRepeat each anys]
+        aRep [addToRepeat each ids]
 end function
 
 function addToRepeat a [id]
@@ -193,3 +223,48 @@ rule contains Object [id]
     match [id]
         Object
 end rule
+
+%--------------------%
+%    Extra imports   %
+%--------------------%
+
+function addExternalImports body [class_body_decl]
+    replace [repeat import_statement]
+        imports [repeat import_statement]
+    by
+        imports [addOSImportIfNeeded body]
+        [addEnumImportIfNeeded body]
+end function
+
+
+function addOSImportIfNeeded body [class_body_decl]
+    replace [repeat import_statement]
+        imports [repeat import_statement]
+    where
+        body [shouldOsImport]
+    construct newImport [import_statement]
+        'import 'os
+    by 
+        imports [. newImport]
+end function
+
+function shouldOsImport
+    match * [nested_identifier]
+        'System.getProperties().getProperty("line.separator")
+end function
+
+function addEnumImportIfNeeded body [class_body_decl]
+    replace [repeat import_statement]
+        imports [repeat import_statement]
+    where
+        body [shouldEnumImport]
+    construct newImport [import_statement]
+        'from 'enum 'import 'Enum, 'auto
+    by 
+        imports [. newImport]
+end function
+
+function shouldEnumImport
+    match * [enum_declaration]
+        _ [enum_declaration]
+end function
