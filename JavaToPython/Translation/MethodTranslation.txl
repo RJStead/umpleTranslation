@@ -7,9 +7,9 @@ function replaceAllMethods memberVariables [repeat id] memberLists [repeat id]
         methods [repeat method_declaration]
     by
         methods 
+            [replaceToString]
             [replaceAllLists memberLists]
             [replaceAllMemberVariableNames memberVariables] 
-            [replaceToString]
             [replaceAbstractMethod]
             [replaceAbstractMethodNoArgs]
             [replaceConcreteMethod] 
@@ -46,7 +46,6 @@ rule replaceAbstractMethodNoArgs
     by
         '@abstractmethod 'def methodName '(self): 'pass
 end rule
-
 
 rule replaceToString
     replace [method_declaration]
