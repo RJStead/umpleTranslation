@@ -7,7 +7,7 @@ rule replaceConcreteClassesWithInheritance
     replace $ [concrete_class_declaration]
         _ [acess_modifier] 'class className [class_name] inheritances [repeat inheritance_list+] '{ classBody [class_body_decl] '} 
     deconstruct classBody
-        _ [repeat enum_declaration] decls [repeat member_variable_declaration] _ [opt constructor] _ [repeat method_declaration]
+        _ [repeat enum_declaration] decls [repeat member_variable_declaration] _ [repeat constructor] _ [repeat method_declaration]
     construct declarationClassesToImport [repeat id]
         _ [getClassesToImport each decls]
     construct allClassesToImport [repeat id]
@@ -24,7 +24,7 @@ rule replaceConcreteClassesNoInheritance
     replace $ [concrete_class_declaration]
         _ [acess_modifier] 'class className [class_name] '{ classBody [class_body_decl] '}
     deconstruct classBody
-        _ [repeat enum_declaration] decls [repeat member_variable_declaration] _ [opt constructor] _ [repeat method_declaration]
+        _ [repeat enum_declaration] decls [repeat member_variable_declaration] _ [repeat constructor] _ [repeat method_declaration]
     construct declarationClassesToImport [repeat id]
         _ [getClassesToImport each decls] 
     construct imports [repeat import_statement]
