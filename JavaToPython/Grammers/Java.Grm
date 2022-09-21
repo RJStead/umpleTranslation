@@ -71,7 +71,12 @@ end define
 
 define class_name
     [id]'< [list id] '>
-    | [id]   
+    | [id] [repeat array_declaration]
+    | [id]
+end define
+
+define array_declaration
+    '[ [opt value] ']
 end define
 
 define arithmatic_expression
@@ -120,6 +125,7 @@ end define
 
 define new_call
     'new [class_name] '( [list value] ')
+    |   'new [class_name]
 end define
 
 define variable_declaration
