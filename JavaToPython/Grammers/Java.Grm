@@ -79,11 +79,6 @@ define arithmatic_expression
     |   [value_no_recursion]
 end define
 
-define nested_id_or_value
-        [value]
-    |   [nested_identifier]
-end define
-
 define nested_identifier
      [nestable_value] [SPOFF] [repeat attribute_access] [SPON]
 end define
@@ -194,7 +189,7 @@ define throw_statement
 end define
 
 define casting
-    '( [class_name]') [nested_id_or_value]
+    '( [class_name]') [value]
 end define
 
 define function_call
