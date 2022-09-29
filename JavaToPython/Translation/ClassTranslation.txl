@@ -9,9 +9,9 @@ rule replaceConcreteClassesWithInheritance
     deconstruct classBody
         _ [repeat enum_declaration] decls [repeat member_variable_declaration] _ [opt constructor] _ [repeat method_declaration]
     construct declarationClassesToImport [repeat id]
-        _ [getClassesToImport each decls]
+        _ [getClassesToImport classBody each decls]
     construct allClassesToImport [repeat id]
-        _ [extractInheritanceImportClasses each inheritances] [concatenateRepeatNoDuplicates declarationClassesToImport]
+        _ [extractInheritanceImportClasses classBody each inheritances] [concatenateRepeatNoDuplicates declarationClassesToImport]
     construct inheritanceClasses [list class_name]
         _ [extractInheritanceBlockClasses each inheritances]
     construct imports [repeat import_statement]
@@ -26,7 +26,7 @@ rule replaceConcreteClassesNoInheritance
     deconstruct classBody
         _ [repeat enum_declaration] decls [repeat member_variable_declaration] _ [opt constructor] _ [repeat method_declaration]
     construct declarationClassesToImport [repeat id]
-        _ [getClassesToImport each decls] 
+        _ [getClassesToImport classBody each decls] 
     construct imports [repeat import_statement]
         _ [addImportStatement each declarationClassesToImport] [addExternalImports classBody]
     by
@@ -46,7 +46,7 @@ rule replaceInterfacesWithInheritance
     construct inheritanceClasses [list class_name]
         _ [extractInheritanceBlockClasses each inheritances]
     construct classesToImport [repeat id]
-        _ [extractInheritanceImportClasses each inheritances]
+        _ [extractInheritanceImportClasses classBody each inheritances]
     construct imports [repeat import_statement]
         _ [addImportStatement each classesToImport]
     by

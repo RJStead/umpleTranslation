@@ -5,8 +5,10 @@ rule replaceEnumDeclaration
         _ [generateEnumValues vals]
     by
         'class enumName '(Enum'):
-            'def '_generate_next_value_(name, 'start, 'count, 'last_values):
+            'def '_generate_next_value_('name, 'start, 'count, 'last_values)':
                 'return 'name
+            'def '__str__'(self):
+                'return 'str(self.value)
         enumValDeclarations
 end rule
 

@@ -7,7 +7,7 @@ function addImportStatement a [id]
         imports [. newImport]
 end function
 
-function getClassesToImport declaration [member_variable_declaration]
+function getClassesToImport classBody [class_body_decl] declaration [member_variable_declaration]
     replace [repeat id]
         empty [repeat id]
     deconstruct declaration
@@ -15,10 +15,17 @@ function getClassesToImport declaration [member_variable_declaration]
     deconstruct varDec
         class [class_name] _ [id]';
     construct classesToImport [repeat id]
-        _ [extractListClass class] [extractRegularClass class]
+        _ [extractListClass classBody class] [extractRegularClass classBody class]
     by 
         empty [addToRepeatIfNotThere each classesToImport] 
 end function 
+
+function isTypeEnum typeName [id]
+    match * [enum_declaration]
+        _ [opt acess_modifier] 'enum enumName [id] '{ _ [list id]'}
+    where
+        enumName [= typeName]
+end function
 
 function extractInheritanceBlockClasses inheritanceList [inheritance_list]
     replace [list class_name]
@@ -29,13 +36,13 @@ function extractInheritanceBlockClasses inheritanceList [inheritance_list]
         classes [, classesToAdd] 
 end function
 
-function extractInheritanceImportClasses inheritanceList [inheritance_list]
+function extractInheritanceImportClasses classBody [class_body_decl] inheritanceList [inheritance_list]
     replace [repeat id]
         classesToImport [repeat id]
     deconstruct inheritanceList
         _[inheritance_statement] classesToAdd [list class_name]
     construct classIds [repeat id]
-        _ [extractListClass each classesToAdd] [extractRegularClass each classesToAdd]
+        _ [extractListClass classBody each classesToAdd] [extractRegularClass classBody each classesToAdd]
     by
         classesToImport [. classIds] 
 end function
@@ -57,7 +64,7 @@ function addToRepeatIfNotThere elem [id]
         currentList [. elem]
 end function
 
-function extractListClass class [class_name]
+function extractListClass classBody [class_body_decl] class [class_name]
     replace [repeat id]
         empty [repeat id]
     deconstruct class
@@ -65,23 +72,25 @@ function extractListClass class [class_name]
     construct unfiltered [repeat id]
         _ [listToRepeat ids] 
     construct filtered [repeat id]
-        _ [filterOutDefaultTypes unfiltered]
+        _ [filterOutUnwantedTypes classBody unfiltered]
     by
         filtered
 end function
 
-function filterOutDefaultTypes ids [repeat id]
+function filterOutUnwantedTypes classBody [class_body_decl] ids [repeat id]
     replace [repeat id]
         empty [repeat id]
     by 
-        empty [addIfNotDefaultType each ids]
+        empty [addIfNotDefaultTypeOrEnum classBody each ids]
 end function
 
-function addIfNotDefaultType id [id]
+function addIfNotDefaultTypeOrEnum classBody [class_body_decl] id [id]
     replace [repeat id]
         current [repeat id]
     where not 
         id [matchDefaultType]
+    where not 
+        classBody [isTypeEnum id]
     by
         current [. id] 
 end function
@@ -91,20 +100,19 @@ rule matchDefaultType
         id [id]
     construct defaults [repeat id]
         'byte 'short 'int 'long 'float 'double 'boolean 'char 'String 'Array
-    where   
-        defaults [contains id]
-    
-        
+    where
+        defaults [contains id]    
 end rule
 
-
-function extractRegularClass class [class_name]
+function extractRegularClass classBody [class_body_decl] class [class_name]
     replace [repeat id]
         empty [repeat id]
     deconstruct class
         id [id]
     where not 
         id [matchDefaultType]
+    where not 
+        classBody [isTypeEnum id]
     by
         empty [. id]
 end function
@@ -225,7 +233,7 @@ rule contains Object [id]
 end rule
 
 %--------------------%
-%    Extra imports   %
+%  External imports  %
 %--------------------%
 
 function addExternalImports body [class_body_decl]

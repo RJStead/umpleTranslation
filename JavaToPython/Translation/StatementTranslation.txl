@@ -1,4 +1,3 @@
-
 %--------------------%
 %     Statements     %
 %--------------------%
@@ -7,6 +6,7 @@ function replaceStatements
         statements [repeat statement]
     by 
         statements 
+            [reorderNestedIdentifier]
             [replaceForLoop]
             [replaceForInLoop]
             [replaceAssignmentStatement] 
@@ -35,9 +35,7 @@ function replaceStatements
             [replaceSuperToString]
             [replaceNewLine]
             [replaceHexIdentity]
-            
 end function
-
 
 function replaceNoStateMents
     replace [repeat statement]
@@ -63,6 +61,8 @@ end rule
 rule addSelfToOwnMethodCalls
     replace [nested_identifier]
         funcName [id] '( values [list value]') rep [repeat attribute_access]
+    where
+        funcName [~= 'str]
     by
         'self '. funcName '( values') rep
 end rule
@@ -243,4 +243,81 @@ rule replaceHexIdentity
     by
         'format( 'id( val '), '"x")
 end rule
+
+%--------------------------------%
+%  Nested Identifier reordering  %
+%--------------------------------%
+
+rule reorderNestedIdentifier
+    replace [nested_identifier]
+        nested [nested_identifier]
+    construct seeking [attribute_access]
+        '.toString()
+    where 
+        nested [containsAttributeAccess seeking]
+    by
+        nested [reorderToString]
+end rule
+
+function reorderToString
+    replace [nested_identifier]
+        nested [nested_identifier]
+    construct funcName [id]
+        'str
+    construct seeking [attribute_access]
+        '.toString()
+    by
+        nested [reorderSpecific seeking funcName]
+end function
+
+function reorderSpecific seeking [attribute_access] funcName [id]
+    replace [nested_identifier]
+        nested [nested_identifier]
+    deconstruct nested
+        root [nestable_value] rep [repeat attribute_access]
+    where 
+        nested [containsAttributeAccess seeking]
+    construct zero [number]
+        '0 
+    construct count [number]
+        zero [findCount seeking rep]
+    by
+        nested [swap count funcName]
+end function
+
+function findCount seeking [attribute_access] rep [repeat attribute_access]
+    replace [number]
+        count [number]
+    construct repLength [number]
+        _ [length rep]
+    construct head [repeat attribute_access]
+        rep [head 1]
+    where 
+        repLength [> 0]
+    construct remaining [repeat attribute_access]
+        rep [tail 2]
+    where not
+        head [containsAttributeAccess seeking] 
+    by
+        count [+ 1] [findCount seeking remaining]
+end function
+
+function swap count [number] funcName [id]
+    replace [nested_identifier]
+        root [nestable_value] rep [repeat attribute_access]
+    construct before [repeat attribute_access]
+        rep [head count]
+    construct countWithSkip [number]
+        count [+ 2]
+    construct after [repeat attribute_access]
+        rep [tail countWithSkip]
+    by
+        funcName '( root before ') after
+end function
+
+rule containsAttributeAccess seeking [attribute_access]
+    match [attribute_access]
+        seeking
+end rule
+
 

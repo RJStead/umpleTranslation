@@ -172,8 +172,10 @@ end redefine
 redefine enum_declaration
     ...
     | 'class [id] [SPOFF] '(Enum'): [SPON][NL] 
-        [IN] 'def '_generate_next_value_(name, 'start, 'count, 'last_values): [NL] 
+        [IN] 'def '_generate_next_value_ [SPOFF] '( [SPON] 'name, 'start, 'count, 'last_values) [SPOFF] ': [SPON] [NL] 
             [IN] 'return 'name [NL] 
+        [EX] 'def '__str__ [SPOFF] '(self): [SPON] [NL] 
+            [IN] 'return 'str [SPOFF] '(self.value) [SPON] [NL] 
         [EX] [repeat variable_declaration] [NL]
     [EX]
 end redefine
