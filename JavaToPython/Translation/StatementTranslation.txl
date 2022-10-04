@@ -5,13 +5,15 @@ function replaceStatements
     replace [repeat statement]
         statements [repeat statement]
     by 
-        statements 
+        statements
             [reorderNestedIdentifier]
+            [replaceSwitchCase]
+            [addClassPrefixToEnum]
             [replaceForLoop]
             [replaceForInLoop]
             [replaceAssignmentStatement] 
             [replaceReturn] 
-            [replaceNoStateMents] 
+            [replaceNoStatements] 
             [addSelfToOwnMethodCalls]
             [replaceThisFunctionCall]
             [replaceNestedStatement]
@@ -37,11 +39,10 @@ function replaceStatements
             [replaceHexIdentity]
 end function
 
-function replaceNoStateMents
+function replaceNoStatements
     replace [repeat statement]
-        _ [empty]
     by 
-        'pass
+        'pass  
 end function
 
 rule replaceAssignmentStatement
@@ -102,7 +103,7 @@ rule replaceDecleration
     replace [variable_declaration]
         _[class_name] varName [id]';
     by 
-        varName
+        varName 
 end rule
 
 rule replaceIf
@@ -244,6 +245,76 @@ rule replaceHexIdentity
         'format( 'id( val '), '"x")
 end rule
 
+rule replaceSwitchCase
+    replace [switch_case]
+        'switch( val [value] ') '{ cases [repeat switch_case_case]  default [opt switch_case_default] '}
+    by
+        'match val ': cases [replaceSwitchCaseCase]  default [replaceSwitchCaseDefault]
+end rule
+
+rule replaceSwitchCaseCase
+    replace [switch_case_case]
+        'case val [value] ': stmts [repeat statement] 'break;
+    by
+        'case val [fixEnumValueWithNoEnum] ': stmts [replaceNoStatements]
+end rule
+
+rule replaceSwitchCaseDefault
+    replace [switch_case_default]
+        'default ': stmts [repeat statement]
+    by
+        'case 'default ': stmts [replaceNoStatements]
+end rule
+
+rule fixEnumValueWithNoEnum
+    replace $ [value]
+        val [value]
+    deconstruct val
+        _ [id]
+    import enumeratorDeclerations [repeat enum_declaration]
+    by
+        val [fixEnumValueWithNoEnumCheck each enumeratorDeclerations]
+end rule
+
+rule fixEnumValueWithNoEnumCheck enum [enum_declaration]
+    replace [value]
+        identifier [id]
+    deconstruct enum 
+        _ [opt acess_modifier] 'enum enumName [id] '{ vals [list id]'}
+    where
+        identifier [= each vals]
+    by
+        enumName '. identifier
+end rule
+
+rule addClassPrefixToEnum
+    replace [nested_identifier]
+        enumName [id] '.  enumVal [id]
+    where
+        enumName [isAnEnum]
+    import className [class_name]
+    construct test [id]
+        enumName
+    by
+        className '. enumName '. enumVal [debug]
+end rule
+
+function isAnEnum
+    match [id]
+        name [id]
+    import enumeratorDeclerations [repeat enum_declaration]
+    where
+        name [isSpecificEnum each enumeratorDeclerations]
+end function
+
+function isSpecificEnum enum [enum_declaration]
+    match [id]
+        name [id]
+    deconstruct enum    
+        _ [opt acess_modifier] 'enum enumName [id] '{ _ [list id]'}
+    where
+        name [= enumName]
+end function
 %--------------------------------%
 %  Nested Identifier reordering  %
 %--------------------------------%

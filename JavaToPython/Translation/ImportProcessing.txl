@@ -1,3 +1,18 @@
+function createImports classBody [class_body_decl] inheritances [repeat inheritance_list]
+    replace [repeat import_statement]
+        empty [repeat import_statement]
+    construct declarations [repeat member_variable_declaration]
+        _ [^ classBody]
+    construct declarationClassesToImport [repeat id]
+        _ [getClassesToImport classBody each declarations]
+    construct allInternalClassesToImport [repeat id]
+        _ [extractInheritanceImportClasses classBody each inheritances] [concatenateRepeatNoDuplicates declarationClassesToImport]
+    construct allImports [repeat import_statement]
+        _ [addImportStatement each allInternalClassesToImport] [addExternalImports classBody]
+    by
+        allImports
+end function 
+
 function addImportStatement a [id]
     replace [repeat import_statement]
         imports [repeat import_statement]

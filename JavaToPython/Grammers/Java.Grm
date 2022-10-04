@@ -16,7 +16,7 @@ end tokens
 %--------------------%
 
 keys
- return new if else for true false while this super self tuple len True False + - * / ? ; :
+ return new if else for true false while this super self tuple len True False + - * / ? ; : pass
 end keys
 
 define acess_modifier
@@ -92,6 +92,7 @@ define nestable_value
     |    [id]
     |   'this
     |   'super
+    |   [class_name]
 end define
 
 define value_no_recursion 
@@ -150,6 +151,7 @@ define statement
     |   [nested_identifier]'; [NL]
     |   [assignment] '; [NL]
     |   [throw_statement]
+    |   [switch_case]
 end define
 
 define while_loop
@@ -166,6 +168,18 @@ end define
 
 define for_in_loop
     'for( [class_name] [id] ': [nested_identifier]')'{ [NL] [IN] [repeat statement] [EX] '} [NL]
+end define
+
+define switch_case
+    'switch( [value] ') '{ [repeat switch_case_case] [opt switch_case_default] '}
+end define
+
+define switch_case_case
+    'case [value] ': [repeat statement] 'break;
+end define
+
+define switch_case_default
+    'default ': [repeat statement]
 end define
 
 define conditional_block
@@ -213,8 +227,12 @@ define method_parameter
     [class_name] [id]
 end define
 
+define decorator
+    '@ [SPOFF] [id] [SPON] [NL]
+end define
+
 define concrete_method_declaration
-        [acess_modifier] [opt static] [class_name] [id] '( [list method_parameter] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+        [opt decorator] [acess_modifier] [opt static] [class_name] [id] '( [list method_parameter] ') [NL] '{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
 define method_declaration
@@ -279,5 +297,12 @@ define member_variable_declaration
 end define
 
 define class_body_decl
-    [repeat enum_declaration] [repeat member_variable_declaration] [opt constructor] [repeat method_declaration]
+    [repeat class_body_element]
+end define
+
+define class_body_element
+        [enum_declaration]
+    |   [member_variable_declaration]
+    |   [constructor]
+    |   [method_declaration]
 end define

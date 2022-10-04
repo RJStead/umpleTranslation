@@ -35,7 +35,7 @@ end redefine
 redefine statement
     ...
     |  [nested_identifier] [NL]
-    | 'pass
+    | 'pass [NL]
 end redefine
 
 redefine stmt_return
@@ -111,10 +111,6 @@ redefine ternary
     |   [value_no_ternary] 'if [value] 'else [value]
 end redefine
 
-define decorator
-    '@ [SPOFF] [id] [SPON] [NL]
-end define
-
 redefine concrete_method_declaration
     ...
     |   [opt decorator] 'def  [id] [SPOFF]'(self, [SPON] [list id] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
@@ -175,7 +171,26 @@ redefine enum_declaration
         [IN] 'def '_generate_next_value_ [SPOFF] '( [SPON] 'name, 'start, 'count, 'last_values) [SPOFF] ': [SPON] [NL] 
             [IN] 'return 'name [NL] 
         [EX] 'def '__str__ [SPOFF] '(self): [SPON] [NL] 
-            [IN] 'return 'str [SPOFF] '(self.value) [SPON] [NL] 
-        [EX] [repeat variable_declaration] [NL]
+            [IN] 'return 'str [SPOFF] '(self. 'value) [SPON] [NL] 
+        [EX] [repeat enum_value_declaration] [NL]
     [EX]
+end redefine
+
+define enum_value_declaration
+    [id] '= 'auto [SPOFF] () [SPON] [NL]
+end define
+
+redefine switch_case
+    ...
+    |   'match [value] ': [NL] [IN] [repeat switch_case_case] [opt switch_case_default] [EX]
+end redefine
+
+redefine switch_case_case
+    ...
+    |   'case [value] ': [NL] [IN] [repeat statement] [EX]
+end redefine
+
+redefine switch_case_default
+    ...
+    |   'case 'default ': [NL] [IN] [repeat statement] [EX]
 end redefine

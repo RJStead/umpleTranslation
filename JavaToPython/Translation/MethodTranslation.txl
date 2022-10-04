@@ -2,20 +2,26 @@
 %     Methods        %
 %--------------------%
 
-function replaceAllMethods memberVariables [repeat id] memberLists [repeat id]
-    replace [repeat method_declaration]
-        methods [repeat method_declaration]
+function replaceAllMethods
+    replace [repeat class_body_element]
+        elems [repeat class_body_element]
     by
-        methods 
+        elems
+            [removeOverrideDecorator]
             [replaceToString]
-            [replaceAllLists memberLists]
-            [replaceAllMemberVariableNames memberVariables] 
             [replaceAbstractMethod]
             [replaceAbstractMethodNoArgs]
-            [replaceConcreteMethod] 
+            [replaceConcreteMethod]
             [replaceConcreteMethodNoArgs]
             [replaceStaticMethod]
 end function
+
+rule removeOverrideDecorator
+    replace [opt decorator]
+        '@Override
+    by 
+        _
+end rule
 
 rule replaceConcreteMethod
     replace [concrete_method_declaration]
@@ -58,5 +64,5 @@ rule replaceStaticMethod
     replace [method_declaration]
         _[acess_modifier] _[static] _[class_name] methodName [id]'() '{ statements [repeat statement] '}
     by
-        '@staticmethod 'def methodName'():  statements [replaceStatements]
+        '@staticmethod 'def methodName '():  statements [replaceStatements]
 end rule
