@@ -246,25 +246,58 @@ rule replaceHexIdentity
 end rule
 
 rule replaceSwitchCase
-    replace [switch_case]
-        'switch( val [value] ') '{ cases [repeat switch_case_case]  default [opt switch_case_default] '}
+    replace [statement]
+        'switch( val [value_no_recursion] ') '{ cases [repeat switch_case_case]  default [opt switch_case_default] '}
+    construct firstCase [repeat switch_case_case]
+        cases [head 1]
+    construct otherCases [repeat switch_case_case]
+        cases [tail 2]
+    construct ifElses [repeat else_if]
+        _ [replaceSwitchCaseCase val each otherCases]
+    construct throwAwayIf [if]
+        'if 'a: 'pass
+    construct realIf [if]
+        throwAwayIf [replaceFirstSwitchCaseCase val each firstCase]
+    construct else [opt else]
+        _ [replaceSwitchCaseDefault default]
     by
-        'match val ': cases [replaceSwitchCaseCase]  default [replaceSwitchCaseDefault]
+        realIf ifElses else
 end rule
 
-rule replaceSwitchCaseCase
-    replace [switch_case_case]
+
+function replaceFirstSwitchCaseCase switch [value_no_recursion] case [switch_case_case] 
+    replace [if]
+        _ [if]
+    deconstruct case
         'case val [value] ': stmts [repeat statement] 'break;
-    by
-        'case val [fixEnumValueWithNoEnum] ': stmts [replaceNoStatements]
-end rule
+    construct condition [condition]
+        switch '== val [fixEnumValueWithNoEnum]
+    construct newIf [if]
+        'if condition ': stmts [replaceNoStatements]
+    by 
+        newIf
+end function
 
-rule replaceSwitchCaseDefault
-    replace [switch_case_default]
+function replaceSwitchCaseCase switch [value_no_recursion] case [switch_case_case] 
+    replace [repeat else_if]
+        rep [repeat else_if]
+    deconstruct case
+        'case val [value] ': stmts [repeat statement] 'break;
+    construct elseIf [else_if]
+        'elif switch '== val [fixEnumValueWithNoEnum] ': stmts [replaceNoStatements]
+    by 
+        rep [. elseIf]
+end function
+
+function replaceSwitchCaseDefault defaultCase [opt switch_case_default]
+    replace [opt else]
+        _ [opt else]
+    deconstruct defaultCase
         'default ': stmts [repeat statement]
     by
-        'case 'default ': stmts [replaceNoStatements]
-end rule
+        'else: stmts [replaceNoStatements]
+
+end function
 
 rule fixEnumValueWithNoEnum
     replace $ [value]

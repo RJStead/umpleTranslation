@@ -82,17 +82,17 @@ end redefine
 
 redefine if 
     ... 
-    |   'if [value] ': [NL] [IN] [repeat statement] [EX] [NL]
+    |   'if [value] ': [NL] [IN] [repeat statement] [EX] 
 end redefine
 
 redefine else_if
     ...
-    |   'elif [value] ': [NL] [IN] [repeat statement] [EX] [NL]
+    |   'elif [value] ': [NL] [IN] [repeat statement] [EX] 
 end redefine
 
 redefine else
     ...
-    |   'else:  [NL] [IN] [repeat statement] [EX] [NL]
+    |   'else:  [NL] [IN] [repeat statement] [EX] 
 end redefine
 
 redefine throw_statement
