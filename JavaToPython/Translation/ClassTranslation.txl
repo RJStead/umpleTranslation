@@ -5,8 +5,7 @@
 rule replaceConcreteClassesWithInheritance
     replace $ [concrete_class_declaration]
         _ [acess_modifier] 'class className [nested_class] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
-    export className [nested_class]
-        className
+    export className 
     construct inheritanceClasses [list nested_class]
         _ [extractInheritanceBlockClasses each inheritances]
     construct imports [repeat import_statement]
@@ -19,8 +18,7 @@ end rule
 rule replaceInterfacesWithInheritance
     replace [interface_declaration]
         _ [acess_modifier] 'interface className [nested_class] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
-    export className [nested_class]
-        className
+    export className
     construct inheritanceClasses [list nested_class]
         _ [extractInheritanceBlockClasses each inheritances]
     construct imports [repeat import_statement]

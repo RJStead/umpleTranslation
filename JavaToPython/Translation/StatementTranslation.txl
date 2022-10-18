@@ -275,10 +275,10 @@ rule replaceSwitchCase
 end rule
 
 
-function replaceFirstSwitchCaseCase switch [value_no_recursion] case [switch_case_case] 
+function replaceFirstSwitchCaseCase switch [value_no_recursion] firstCase [switch_case_case] 
     replace [if]
         _ [if]
-    deconstruct case
+    deconstruct firstCase
         'case val [value] ': stmts [repeat statement] 'break;
     construct condition [condition]
         switch '== val [fixEnumValueWithNoEnum]
@@ -288,10 +288,10 @@ function replaceFirstSwitchCaseCase switch [value_no_recursion] case [switch_cas
         newIf
 end function
 
-function replaceSwitchCaseCase switch [value_no_recursion] case [switch_case_case] 
+function replaceSwitchCaseCase switch [value_no_recursion] aCase [switch_case_case] 
     replace [repeat else_if]
         rep [repeat else_if]
-    deconstruct case
+    deconstruct aCase
         'case val [value] ': stmts [repeat statement] 'break;
     construct elseIf [else_if]
         'elif switch '== val [fixEnumValueWithNoEnum] ': stmts [replaceNoStatements]
@@ -370,10 +370,10 @@ rule fixEnumValueWithNoEnum
         val [fixEnumValueWithNoEnumCheck each enumeratorDeclerations]
 end rule
 
-rule fixEnumValueWithNoEnumCheck enum [enum_declaration]
+rule fixEnumValueWithNoEnumCheck aEnum [enum_declaration]
     replace [value]
         identifier [id]
-    deconstruct enum 
+    deconstruct aEnum 
         _ [opt acess_modifier] 'enum enumName [id] '{ vals [list id]'}
     where
         identifier [= each vals]
@@ -405,10 +405,10 @@ function isAnEnum
         name [isSpecificEnum each enumeratorDeclerations]
 end function
 
-function isSpecificEnum enum [enum_declaration]
+function isSpecificEnum aEnum [enum_declaration]
     match [id]
         name [id]
-    deconstruct enum    
+    deconstruct aEnum    
         _ [opt acess_modifier] 'enum enumName [id] '{ _ [list id]'}
     where
         name [= enumName]
