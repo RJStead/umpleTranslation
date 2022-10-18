@@ -217,7 +217,7 @@ define throw_statement
 end define
 
 define casting
-    '( [nested_class]') [nested_identifier]
+    '( [nested_class]') [value]
 end define
 
 define function_call

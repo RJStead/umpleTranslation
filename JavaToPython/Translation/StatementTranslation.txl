@@ -206,7 +206,7 @@ end rule
 
 rule replaceCasting
     replace [value]
-        '( _ [nested_class]') name [nested_identifier]
+        '( _ [nested_class]') name [value]
     by 
         name 
 end rule
