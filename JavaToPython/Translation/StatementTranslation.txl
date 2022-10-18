@@ -6,6 +6,7 @@ function replaceStatements
         statements [repeat statement]
     by 
         statements
+            [replaceDefaultReadObject]
             [reorderNestedIdentifier]
             [replaceSwitchCase]
             [addClassPrefixToEnum]
@@ -21,6 +22,7 @@ function replaceStatements
             [replaceTernary]
             [replaceAllBoolean]
             [replaceDeclerationWithAssignment]
+            [replaceInlineIf]
             [replaceIf]
             [replaceElseIf]
             [replaceElse]
@@ -37,6 +39,7 @@ function replaceStatements
             [replaceSuperToString]
             [replaceNewLine]
             [replaceHexIdentity]
+            [replaceComparator]
 end function
 
 function replaceNoStatements
@@ -94,14 +97,14 @@ end rule
 
 rule replaceDeclerationWithAssignment
     replace [variable_declaration]
-        _ [class_name] assignment [assignment] ';
+        _ [nested_class] assignment [assignment] ';
     by 
         assignment
 end rule
 
 rule replaceDecleration
     replace [variable_declaration]
-        _[class_name] varName [id]';
+        _[nested_class] varName [id]';
     by 
         varName 
 end rule
@@ -111,6 +114,13 @@ rule replaceIf
         'if '( bool [value] ') '{ statements [repeat statement]  '}
     by 
         'if bool ': statements
+end rule
+
+rule replaceInlineIf
+     replace [if]
+        'if '( bool [value] ')  statement [ statement]  
+    by 
+        'if bool ': statement
 end rule
 
 rule replaceElseIf
@@ -154,10 +164,10 @@ end rule
 rule replaceDecrement
     replace [assignment]
         nest [nestable_value] '--
-    construct test [arithmatic_expression]
+    construct decr [arithmatic_expression]
         nest '- '1
     by 
-        nest '= test
+        nest '= decr
 end rule
 
 rule replaceIncrement
@@ -171,7 +181,7 @@ rule replaceForLoop
     replace [statement]
         'for( decl [variable_declaration] goal [value]'; assignment [assignment]') '{  stmts[repeat statement]  '} 
     deconstruct decl
-        _[class_name] name [id] '= start [value] ';
+        _[nested_class] name [id] '= start [value] ';
     construct declaration [variable_declaration]
         name '= start
     construct newStatements [repeat statement]
@@ -182,7 +192,7 @@ end rule
 
 rule replaceForInLoop
     replace [for_in_loop]
-        'for( _[class_name] var [id] ': nested [nested_identifier]')'{ stmts [repeat statement] '} 
+        'for( _[nested_class] var [id] ': nested [nested_identifier]')'{ stmts [repeat statement] '} 
     by 
         'for var 'in  nested':  stmts
 end rule
@@ -196,14 +206,14 @@ end rule
 
 rule replaceCasting
     replace [value]
-        '( _ [class_name]') name [nested_identifier]
+        '( _ [nested_class]') name [nested_identifier]
     by 
         name 
 end rule
 
 rule replaceNewCall
     replace [value]
-        'new class [class_name] '( vals [list value] ')
+        'new class [nested_class] '( vals [list value] ')
     deconstruct class
         id [id]
     by
@@ -299,6 +309,57 @@ function replaceSwitchCaseDefault defaultCase [opt switch_case_default]
 
 end function
 
+function replaceDefaultReadObject
+    replace [repeat statement]
+        rep [repeat statement]
+    construct seeking [statement]
+        'in.defaultReadObject();
+    deconstruct seeking
+        seekingAny [any]
+    where 
+        rep [containsGeneric seekingAny]
+    construct repAny [repeat any]
+        _ [repeatStatementToAny each rep]
+    construct beforeAfter [repeat sequence_any]
+        _ [getBeforeAfter seekingAny repAny]
+    deconstruct beforeAfter 
+        beforeAfterRep [repeat sequence_any]
+    %reparse result to get back to original type
+    construct before [repeat sequence_any]
+        beforeAfterRep [select 1 1] 
+    construct after [repeat sequence_any]
+        beforeAfterRep [select 2 2]
+    construct beforeReparsed [repeat statement]
+        _ [reparse before]
+    construct afterReparsed [repeat statement]
+        _ [reparse after]
+    construct middle [repeat statement]
+        'self '.__dict__ '.clear()
+        'self '.__dict__ '.clear() '.update(pickle '.load(input) '.__dict__)
+    by 
+        beforeReparsed [. middle] [. afterReparsed]
+end function
+
+function repeatStatementToAny stmt [statement]
+    replace [repeat any]
+        rep [repeat any]
+    deconstruct stmt
+        stmtAny [any]
+    by
+        rep [. stmtAny]
+end function
+
+rule replaceComparator
+    replace [value]
+        'Comparator.comparing( class [nested_class] ':: funcName [id] ')
+    by
+        'lambda 'x ': 'x '. funcName '()
+end rule
+
+%--------------------------------%
+%  Switch case Enum correction   %
+%--------------------------------%
+
 rule fixEnumValueWithNoEnum
     replace $ [value]
         val [value]
@@ -321,15 +382,19 @@ rule fixEnumValueWithNoEnumCheck enum [enum_declaration]
 end rule
 
 rule addClassPrefixToEnum
-    replace [nested_identifier]
+    replace [value]
         enumName [id] '.  enumVal [id]
     where
         enumName [isAnEnum]
-    import className [class_name]
-    construct test [id]
-        enumName
+    import className [nested_class]
+    deconstruct className
+        root [nestable_class] accesses [repeat nested_class_access]
+    construct addedAccess [nested_class_access] 
+        '. enumName
+    construct newClassName [nested_class]
+        root accesses [. addedAccess]
     by
-        className '. enumName '. enumVal [debug]
+        newClassName '. enumVal
 end rule
 
 function isAnEnum
@@ -356,7 +421,7 @@ rule reorderNestedIdentifier
     replace [nested_identifier]
         nested [nested_identifier]
     construct seeking [attribute_access]
-        '.toString()
+        '.toString() 
     where 
         nested [containsAttributeAccess seeking]
     by
@@ -425,3 +490,63 @@ rule containsAttributeAccess seeking [attribute_access]
 end rule
 
 
+
+
+%--------------------------------%
+%  Generic Before/after search   %
+%--------------------------------%
+
+define sequence_any
+    [repeat any]
+end define
+
+function getBeforeAfter seeking [any] rep [repeat any]
+    replace [repeat sequence_any]
+    where 
+        rep [containsGeneric seeking]
+    deconstruct rep
+        repAny [repeat any]
+    construct zero [number]
+        '0 
+    construct index [number]
+        zero [getIndex seeking repAny]
+    by 
+        _ [createBeforeAfter index repAny]
+end function
+
+function createBeforeAfter index [number] rep [repeat any]
+    replace [repeat sequence_any]
+        empty [repeat sequence_any]
+    construct beforeIndex [number]
+        index
+    construct before [sequence_any]
+        rep [head beforeIndex]
+    construct countWithSkip [number]
+        index [+ 2]
+    construct after [sequence_any]
+        rep [tail countWithSkip]
+    by
+        empty [. before] [. after]
+end function
+
+function getIndex  seeking [any] rep [repeat any]
+    replace [number]
+        index [number]
+    construct repLength [number]
+        _ [length rep]
+    construct head [repeat any]
+        rep [head 1]
+    where 
+        repLength [> 0]
+    construct remaining [repeat any]
+        rep [tail 2]
+    where not
+        head [containsGeneric seeking] 
+    by
+        index [+ 1] [getIndex seeking remaining]
+end function
+
+rule containsGeneric seeking [any]
+    match [any]
+        seeking
+end rule
