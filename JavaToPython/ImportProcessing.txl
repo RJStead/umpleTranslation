@@ -109,18 +109,23 @@ function filterOutUnwantedTypes classBody [class_body_decl] ids [repeat id]
     replace [repeat id]
         empty [repeat id]
     by 
-        empty [addIfNotDefaultTypeOrEnum classBody each ids]
+        empty [importClassFilter classBody each ids]
 end function
 
-function addIfNotDefaultTypeOrEnum classBody [class_body_decl] id [id]
+function importClassFilter classBody [class_body_decl] type [id]
     replace [repeat id]
         current [repeat id]
     where not 
-        id [matchDefaultType]
+        type [matchDefaultType]
     where not 
-        classBody [isTypeEnum id]
+        classBody [isTypeEnum type]
+    import className [nested_class]
+    deconstruct className
+        classNameId [id]
+    where not
+        classNameId [= type]
     by
-        current [. id] 
+        current [. type]
 end function
 
 rule matchDefaultType
@@ -137,12 +142,8 @@ function extractRegularClass classBody [class_body_decl] class [nested_class]
         empty [repeat id]
     deconstruct class
         id [id]
-    where not 
-        id [matchDefaultType]
-    where not 
-        classBody [isTypeEnum id]
     by
-        empty [. id]
+        empty [importClassFilter classBody id]
 end function
 
 function listToRepeat ids [list id]
