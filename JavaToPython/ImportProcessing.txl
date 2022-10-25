@@ -3,12 +3,10 @@ function createImports classBody [class_body_decl] inheritances [repeat inherita
         empty [repeat import_statement]
     construct declarations [repeat member_variable_declaration]
         _ [^ classBody]
-    construct declarationClassesToImport [repeat id]
-        _ [getClassesToImport classBody each declarations]
-    construct allInternalClassesToImport [repeat id]
-        _ [extractInheritanceImportClasses classBody each inheritances] [concatenateRepeatNoDuplicates declarationClassesToImport]
+    construct inheritanceImports [repeat id]
+        _ [extractInheritanceImportClasses classBody each inheritances]
     construct allImports [repeat import_statement]
-        _ [addImportStatement each allInternalClassesToImport] [addExternalImports classBody]
+        _ [addImportStatement each inheritanceImports] [addExternalImports classBody]
     by
         allImports
 end function 
@@ -22,7 +20,7 @@ function addImportStatement a [id]
         imports [. newImport]
 end function
 
-function getClassesToImport classBody [class_body_decl] declaration [member_variable_declaration]
+function extractPossibleFunctionImports classBody [class_body_decl] declaration [member_variable_declaration]
     replace [repeat id]
         empty [repeat id]
     deconstruct declaration

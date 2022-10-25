@@ -36,7 +36,6 @@ function replaceStatements
             [replaceCasting]
             [correctSuperInit]
             [correctSuperFunctions]
-            [replaceSuperToString]
             [replaceNewLine]
             [replaceHexIdentity]
             [replaceComparator]
@@ -160,7 +159,6 @@ rule replaceNull
         'None
 end rule
 
-
 rule replaceDecrement
     replace [assignment]
         nest [nestable_value] '--
@@ -232,13 +230,6 @@ rule correctSuperFunctions
         'super rep [repeat attribute_access]
     by
         'super() rep
-end rule
-
-rule replaceSuperToString
-    replace [nested_identifier]
-        'super().toString() rep [repeat attribute_access]
-    by
-        'super().__str__() rep
 end rule
 
 rule replaceNewLine
