@@ -175,7 +175,7 @@ define while_loop
 end define
 
 define ternary
-    [value_no_recursion] '? [value] ': [value]
+    [boolean_expression] '? [value] ': [value]
 end define
 
 define for_loop
@@ -236,7 +236,7 @@ define boolean_continuation
 end define
 
 define condition
-        [value_no_recursion] [comparator] [value]
+        [value_no_recursion] [comparator] [value_no_ternary]
     |   [value_no_recursion]
 end define
 
