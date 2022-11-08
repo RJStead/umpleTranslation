@@ -454,7 +454,7 @@ function extractClassId target [any]
     replace [opt id]
         result [opt id]
     by
-        result [extractIdFromNonGenericClass target] [extractIdFromGenericClass target] [debug]
+        result [extractIdFromNonGenericClass target] [extractIdFromGenericClass target]
 end function
 
 function extractIdFromGenericClass class [any]
