@@ -55,28 +55,28 @@ end function
 
 rule replaceAssignementIncrementAfter
     replace [statement]
-        nest1 [nestable_value] '= nest2 [nestable_value] '++ ';
+        nest1 [nested_identifier] '= nest2 [nested_identifier] '++ ';
     by
         nest1 ', nest2 '= nest2 ', nest2 '+ '1
 end rule
 
 rule replaceAssignementDecrementAfter
     replace [statement]
-        nest1 [nestable_value] '= nest2 [nestable_value] '-- ';
+        nest1 [nested_identifier] '= nest2 [nested_identifier] '-- ';
     by
         nest1 ', nest2 '= nest2 ', nest2 '- '1
 end rule
 
 rule replaceAssignementIncrementBefore
     replace [statement]
-        nest1 [nestable_value] '= '++ nest2 [nestable_value]';
+        nest1 [nested_identifier] '= '++ nest2 [nested_identifier]';
     by
         nest1 '= nest2 '= nest2 '+ '1
 end rule
 
 rule replaceAssignementDecrementBefore
     replace [statement]
-        nest1 [nestable_value] '= '-- nest2 [nestable_value]';
+        nest1 [nested_identifier] '= '-- nest2 [nested_identifier]';
     by
         nest1 '= nest2 '= nest2 '- '1
 end rule
@@ -195,28 +195,28 @@ end rule
 
 rule replaceDecrementBefore
     replace [statement]
-        '-- nest [nestable_value]';
+        '-- nest [nested_identifier]';
     by 
         nest '-= 1
 end rule
 
 rule replaceIncrementBefore
     replace [statement]
-        '++ nest [nestable_value]';
+        '++ nest [nested_identifier]';
     by 
         nest '+= '1
 end rule
 
 rule replaceDecrementAfter
     replace [statement]
-        nest [nestable_value] '-- ';
+        nest [nested_identifier] '-- ';
     by 
         nest '-= 1
 end rule
 
 rule replaceIncrementAfter
     replace [statement]
-        nest [nestable_value] '++ ';
+        nest [nested_identifier] '++ ';
     by 
         nest '+= '1
 end rule
