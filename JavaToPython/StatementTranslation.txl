@@ -12,6 +12,10 @@ function replaceStatements
             [addClassPrefixToEnum]
             [replaceForLoop]
             [replaceForInLoop]
+            [replaceAssignementIncrementBefore]
+            [replaceAssignementDecrementBefore]
+            [replaceAssignementIncrementAfter]
+            [replaceAssignementDecrementAfter]
             [replaceAssignmentStatement] 
             [replaceReturn] 
             [replaceNoStatements] 
@@ -29,8 +33,10 @@ function replaceStatements
             [replaceWhile]
             [replaceNull]
             [replaceThis]
-            [replaceIncrement]
-            [replaceDecrement]
+            [replaceIncrementBefore]
+            [replaceDecrementBefore]
+            [replaceIncrementAfter]
+            [replaceDecrementAfter]
             [replaceThrowError]
             [replaceNewCall]
             [replaceCasting]
@@ -46,6 +52,34 @@ function replaceNoStatements
     by 
         'pass  
 end function
+
+rule replaceAssignementIncrementAfter
+    replace [statement]
+        nest1 [nestable_value] '= nest2 [nestable_value] '++ ';
+    by
+        nest1 ', nest2 '= nest2 ', nest2 '+ '1
+end rule
+
+rule replaceAssignementDecrementAfter
+    replace [statement]
+        nest1 [nestable_value] '= nest2 [nestable_value] '-- ';
+    by
+        nest1 ', nest2 '= nest2 ', nest2 '- '1
+end rule
+
+rule replaceAssignementIncrementBefore
+    replace [statement]
+        nest1 [nestable_value] '= '++ nest2 [nestable_value]';
+    by
+        nest1 '= nest2 '= nest2 '+ '1
+end rule
+
+rule replaceAssignementDecrementBefore
+    replace [statement]
+        nest1 [nestable_value] '= '-- nest2 [nestable_value]';
+    by
+        nest1 '= nest2 '= nest2 '- '1
+end rule
 
 rule replaceAssignmentStatement
     replace [statement]
@@ -159,20 +193,32 @@ rule replaceNull
         'None
 end rule
 
-rule replaceDecrement
-    replace [assignment]
-        nest [nestable_value] '--
-    construct decr [arithmatic_expression]
-        nest '- '1
+rule replaceDecrementBefore
+    replace [statement]
+        '-- nest [nestable_value]';
     by 
-        nest '= decr
+        nest '-= 1
 end rule
 
-rule replaceIncrement
-    replace [assignment]
-        nest [nestable_value] '++
+rule replaceIncrementBefore
+    replace [statement]
+        '++ nest [nestable_value]';
     by 
-        nest '= nest '+ '1
+        nest '+= '1
+end rule
+
+rule replaceDecrementAfter
+    replace [statement]
+        nest [nestable_value] '-- ';
+    by 
+        nest '-= 1
+end rule
+
+rule replaceIncrementAfter
+    replace [statement]
+        nest [nestable_value] '++ ';
+    by 
+        nest '+= '1
 end rule
 
 rule replaceForLoop

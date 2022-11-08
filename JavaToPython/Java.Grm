@@ -4,7 +4,7 @@ comments
 end comments
 
 compounds 
-    'self. '== '!= '>= '<=
+    'self. '== '!= '>= '<= '+= '-=
 end compounds 
 
 tokens
@@ -134,11 +134,17 @@ define variable_declaration
 end define
 
 define assignment
-        [nested_identifier] '= [value] 
-    |    [nested_identifier]'++
-    |    [nested_identifier]'--
+        [nested_identifier] '= [value]
+    |   [nested_identifier]'++
+    |   [nested_identifier]'--
+    |   '++ [nested_identifier]
+    |   '-- [nested_identifier]
     |   [nested_identifier] '+= [value]
     |   [nested_identifier] '-= [value]
+    |   [nested_identifier] '= [nested_identifier]'++
+    |   [nested_identifier] '= [nested_identifier]'--
+    |   [nested_identifier] '= '++ [nested_identifier]
+    |   [nested_identifier] '= '-- [nested_identifier]
 end define
 
 

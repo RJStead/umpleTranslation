@@ -29,8 +29,15 @@ end define
 
 redefine assignment
     ...
-    |   [nested_identifier] '= [value] [NL]
+    |   [nested_identifier] [repeat equality_statement] [NL]
+    |   [nested_identifier] '+= '1 [NL]
+    |   [nested_identifier] '-= '1 [NL]
+    |   [list nested_identifier+] '= [list value+] [NL]
 end redefine
+
+define equality_statement
+    '= [value]
+end define
 
 redefine statement
     ...
