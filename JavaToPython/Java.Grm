@@ -4,7 +4,7 @@ comments
 end comments
 
 compounds 
-    'self. '== '!= '>= '<=
+    'self. '== '!= '>= '<= '+= '-=
 end compounds 
 
 tokens
@@ -122,6 +122,7 @@ define value_no_ternary
         [value_no_recursion]
     |   [boolean_expression]
     |   [arithmatic_expression]
+    |   [assignment]
 end define
 
 define new_call
@@ -134,11 +135,13 @@ define variable_declaration
 end define
 
 define assignment
-        [nested_identifier] '= [value] 
-    |    [nested_identifier]'++
-    |    [nested_identifier]'--
-    |   [nested_identifier] '+= [value]
-    |   [nested_identifier] '-= [value]
+        [nested_identifier] [!] '=  [value]
+    |   [nested_identifier] [!] '++
+    |   [nested_identifier] [!] '--
+    |   '++ [nested_identifier]
+    |   '-- [nested_identifier]
+    |   [nested_identifier] [!] '+= [value]
+    |   [nested_identifier] [!] '-= [value]
 end define
 
 
