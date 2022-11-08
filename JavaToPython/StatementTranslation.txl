@@ -377,6 +377,7 @@ function replaceDefaultReadObject
         beforeReparsed [. middle] [. afterReparsed]
 end function
 
+
 function repeatStatementToAny stmt [statement]
     replace [repeat any]
         rep [repeat any]
