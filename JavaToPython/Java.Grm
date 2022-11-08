@@ -93,6 +93,7 @@ define nestable_value
     |   'this
     |   'super
     |   [generic_class]
+    |   [stringlit]
 end define
 
 define value_no_recursion 
