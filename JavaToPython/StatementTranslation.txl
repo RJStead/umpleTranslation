@@ -99,8 +99,9 @@ end rule
 rule addSelfToOwnMethodCalls
     replace [nested_identifier]
         funcName [id] '( values [list value]') rep [repeat attribute_access]
+    import classMethodNames [repeat id]
     where
-        funcName [~= 'str]
+        classMethodNames [containsId funcName]
     by
         'self '. funcName '( values') rep
 end rule
