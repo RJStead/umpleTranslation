@@ -131,8 +131,8 @@ define new_call
 end define
 
 define variable_declaration
-        [nested_identifier] [assignment] [!]'; [NL]
-    |   [nested_identifier] [nested_identifier] [!]';
+        [nested_identifier] [assignment]'; [NL]
+    |   [nested_identifier] [nested_identifier]';
 end define
 
 define assignment

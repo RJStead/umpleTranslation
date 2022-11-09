@@ -46,6 +46,7 @@ function replaceStatements
             [replaceComparator]
             [translateToStringCall]
             [translateEqualsCall]
+            [translateSelfEqualsCall]
 end function
 
 function replaceNoStatements
@@ -471,6 +472,13 @@ rule translateEqualsCall
         '.__eq__( val ')
 end rule
 
+
+rule translateSelfEqualsCall
+    replace [nested_identifier]
+        'equals( val [value] ')
+    by
+        'self '.__eq__( val ')
+end rule
 
 %--------------------------------%
 %  Generic Before/after search   %
