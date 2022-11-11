@@ -28,7 +28,7 @@ rule replaceConcreteMethod
     replace [concrete_method_declaration]
         _[acess_modifier] possibleStatic [opt static] _[nested_identifier] methodName [id]'( params [list method_parameter] ') _ [opt throws] '{ statements [repeat statement] '}
     construct newParams [list method_parameter]
-        _ [getPythonParams params]
+        _ [getPythonParams params possibleStatic]
     construct possibleStaticDecorator [repeat decorator]
         _ [createStaticDecorator possibleStatic]
     by
@@ -53,8 +53,10 @@ end function
 rule replaceAbstractMethod
     replace [abstract_method_declaration]
         _[acess_modifier] _[nested_identifier] methodName [id] '( params [list method_parameter] ');
+    construct empty [opt static]
+        _
     construct newParams [list method_parameter]
-        _ [getPythonParams params]
+        _ [getPythonParams params empty]
     by
         '@abstractmethod 'def methodName '( newParams '): 'pass
 end rule
@@ -63,24 +65,35 @@ rule replaceUserMethod
     replace [concrete_method_declaration]
         _[acess_modifier] possibleStatic [opt static] _[nested_identifier] methodName [id]'( params [list method_parameter] ') _ [opt throws] '{ content [usercode] '}
     construct newParams [list method_parameter]
-        _ [getPythonParams params]
+        _ [getPythonParams params possibleStatic]
     construct possibleStaticDecorator [repeat decorator]
         _ [createStaticDecorator possibleStatic]
     by
         possibleStaticDecorator 'def methodName '( newParams '):  content 
 end rule
 
-function getPythonParams javaParams [list method_parameter]
+function getPythonParams javaParams [list method_parameter] possibleStatic [opt static]
     replace [list method_parameter]
         _ [list method_parameter]
     construct selfParam [list method_parameter]
-        'self
+        _ [addSelfIfNotStatic possibleStatic]
     construct modifiedParams [list method_parameter]
         _ [translateParam each javaParams]
     by
         selfParam [, modifiedParams] [changeKeyArgumentNames]
     
 end function 
+
+function addSelfIfNotStatic possibleStatic [opt static]
+    replace [list method_parameter]
+        result [list method_parameter]
+    deconstruct possibleStatic
+        _ [empty]
+    construct selfParam [method_parameter]
+        'self
+    by 
+        result [, selfParam]
+end function
 
 rule replaceToString
     replace [method_declaration]
