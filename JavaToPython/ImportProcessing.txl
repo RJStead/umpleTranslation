@@ -185,54 +185,6 @@ function addListMemberVariable MemberVariable [member_variable_declaration]
         SequenceSoFar [. memberName]
 end function
 
-function replaceAllMemberVariableNames memberVariables [repeat id]
-    replace [any]
-        any [any]
-    by 
-        any 
-            [replaceMemberVariableNames memberVariables] 
-            [replaceMemberVariableNamesWithThis memberVariables]
-            [replaceMemberVariableNamesBrackets memberVariables]
-end function
-
-rule replaceMemberVariableNames memberVariables [repeat id]
-    replace [nested_identifier]
-         name [id] rep [repeat attribute_access]
-    where 
-        memberVariables [containsId name]
-    construct underscore [id]
-        '_
-    construct newName [id]
-        underscore [+ name] 
-    by
-        'self '. newName rep
-end rule
-
-rule replaceMemberVariableNamesWithThis memberVariables [repeat id]
-    replace [nested_identifier]
-        'this '. name [id] rep [repeat attribute_access]
-    where 
-        memberVariables [containsId name]
-    construct underscore [id]
-        '_
-    by
-        'self '. underscore [+ name] rep
-end rule
-
-rule replaceMemberVariableNamesBrackets memberVariables [repeat id]
-    replace [nested_identifier]
-         name [id] '[ val [value] ']  rep [repeat attribute_access]
-    where 
-        memberVariables [containsId name]
-    construct underscore [id]
-        '_
-    construct newName [id]
-        underscore [+ name]
-    by
-        'self '. newName '[ val ']  rep
-end rule
-
-
 rule containsId Object [id]
     match [id]
         Object

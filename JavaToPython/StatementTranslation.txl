@@ -47,6 +47,7 @@ function replaceStatements
             [translateToStringCall]
             [translateEqualsCall]
             [translateSelfEqualsCall]
+            [replaceAllMemberVariableNames]
 end function
 
 function replaceNoStatements
@@ -554,4 +555,74 @@ end function
 rule containsGeneric seeking [any]
     match [any]
         seeking
+end rule
+
+
+
+%--------------------------------%
+%  Member variable Corrections   %
+%--------------------------------%
+
+function replaceAllMemberVariableNames
+    replace [any]
+        any [any]
+    import memberVariables [repeat id]
+    by 
+        any 
+            [replaceMemberVariableNames memberVariables] 
+            [replaceMemberVariableNamesWithThis memberVariables]
+            [replaceMemberVariableNamesBrackets memberVariables]
+            [replaceStaticMemberVariableNames]
+end function
+
+rule replaceMemberVariableNames memberVariables [repeat id]
+    replace [nested_identifier]
+         name [id] rep [repeat attribute_access]
+    where 
+        memberVariables [containsId name]
+    construct underscore [id]
+        '_
+    construct newName [id]
+        underscore [+ name] 
+    by
+        'self '. newName rep
+end rule
+
+rule replaceStaticMemberVariableNames
+    replace [nested_identifier]
+         name [id] staticRep [repeat attribute_access]
+    import staticMemberVariables [repeat id]
+    import className [nested_identifier]
+    deconstruct className
+        root [nestable_value] rep [repeat attribute_access]
+    construct newAccess [repeat attribute_access]
+        '. name 
+    where 
+        staticMemberVariables [containsId name]
+    by
+        root rep [. newAccess] [. staticRep]
+end rule
+
+rule replaceMemberVariableNamesWithThis memberVariables [repeat id]
+    replace [nested_identifier]
+        'this '. name [id] rep [repeat attribute_access]
+    where 
+        memberVariables [containsId name]
+    construct underscore [id]
+        '_
+    by
+        'self '. underscore [+ name] rep
+end rule
+
+rule replaceMemberVariableNamesBrackets memberVariables [repeat id]
+    replace [nested_identifier]
+         name [id] '[ val [value] ']  rep [repeat attribute_access]
+    where 
+        memberVariables [containsId name]
+    construct underscore [id]
+        '_
+    construct newName [id]
+        underscore [+ name]
+    by
+        'self '. newName '[ val ']  rep
 end rule
