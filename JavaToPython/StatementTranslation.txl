@@ -323,7 +323,7 @@ function replaceFirstSwitchCaseCase switch [value_no_recursion] firstCase [switc
     construct condition [condition]
         switch '== val [fixEnumValueWithNoEnum]
     construct newIf [if]
-        'if condition ': stmts [replaceNoStatements]
+        'if condition ': stmts [replaceNoStatements] [removeBreak]
     by 
         newIf
 end function
@@ -334,7 +334,7 @@ function replaceSwitchCaseCase switch [value_no_recursion] aCase [switch_case_ca
     deconstruct aCase
         'case val [value_no_ternary] ': stmts [repeat statement] 'break;
     construct elseIf [else_if]
-        'elif switch '== val [fixEnumValueWithNoEnum] ': stmts [replaceNoStatements]
+        'elif switch '== val [fixEnumValueWithNoEnum] ': stmts [replaceNoStatements] [removeBreak]
     by 
         rep [. elseIf]
 end function
@@ -345,7 +345,7 @@ function replaceSwitchCaseDefault defaultCase [opt switch_case_default]
     deconstruct defaultCase
         'default ': stmts [repeat statement]
     by
-        'else: stmts [replaceNoStatements]
+        'else: stmts [replaceNoStatements] [removeBreak]
 
 end function
 
@@ -402,8 +402,8 @@ end rule
 %--------------------------------%
 
 rule fixEnumValueWithNoEnum
-    replace $ [value]
-        val [value]
+    replace $ [nested_identifier]
+        val [nested_identifier]
     deconstruct val
         _ [id]
     import enumeratorDeclerations [repeat enum_declaration]
@@ -412,18 +412,18 @@ rule fixEnumValueWithNoEnum
 end rule
 
 rule fixEnumValueWithNoEnumCheck aEnum [enum_declaration]
-    replace [value]
+    replace [nested_identifier]
         identifier [id]
     deconstruct aEnum 
         _ [opt acess_modifier] 'enum enumName [id] '{ vals [list id]'}
     where
-        identifier [= each vals]
+        vals [containsId identifier] 
     by
         enumName '. identifier
 end rule
 
 rule addClassPrefixToEnum
-    replace [value]
+    replace [nested_identifier]
         enumName [id] '.  enumVal [id]
     where
         enumName [isAnEnum]
@@ -454,6 +454,23 @@ function isSpecificEnum aEnum [enum_declaration]
     where
         name [= enumName]
 end function
+
+rule removeBreak
+    replace $ [repeat statement]
+        stmts [repeat statement]
+    construct zero [number]
+        '0
+    construct length [number]
+        zero [length stmts]
+    construct lastStatement [repeat statement]
+        stmts [tail length]
+    deconstruct lastStatement
+        'break;
+    construct lengthMinusOne [number]
+        length [- 1]
+    by  
+        stmts [head lengthMinusOne]
+end rule
 %--------------------------------%
 %  Attribute access translation  %
 %--------------------------------%

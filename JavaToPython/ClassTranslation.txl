@@ -8,10 +8,12 @@ rule replaceConcreteClassesWithInheritance
     export className 
     construct inheritanceClasses [list nested_identifier]
         _ [extractInheritanceBlockClasses each inheritances]
+    construct translatedBody [class_body_decl]
+        classBody  [replaceClassBody]
     construct imports [repeat import_statement]
-        _ [createImports classBody inheritances]
+        _ [createImports classBody inheritances translatedBody]
     by
-        imports 'class className '( inheritanceClasses ')':  classBody  [replaceClassBody]
+        imports 'class className '( inheritanceClasses ')':  translatedBody
 end rule
 
 %inheritance  imports
@@ -21,14 +23,16 @@ rule replaceInterfacesWithInheritance
     export className
     construct inheritanceClasses [list nested_identifier]
         _ [extractInheritanceBlockClasses each inheritances]
+    construct translatedBody [class_body_decl]
+        classBody  [replaceClassBody] [replaceInterfaceBody]
     construct imports [repeat import_statement]
-        _ [createImports classBody inheritances]
+        _ [createImports classBody inheritances translatedBody]
     construct AbcClass [list nested_identifier]
         'ABC
     construct finalInheritances [list nested_identifier]
         AbcClass [, inheritanceClasses]
     by
-        'from 'abc 'import 'ABC, 'abstractmethod imports 'class className '(  finalInheritances '):  classBody [replaceClassBody] [replaceInterfaceBody]
+        'from 'abc 'import 'ABC, 'abstractmethod imports 'class className '(  finalInheritances '):  translatedBody
 end rule
 
 function replaceInterfaceBody
