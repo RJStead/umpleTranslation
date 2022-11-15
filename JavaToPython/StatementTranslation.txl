@@ -6,6 +6,7 @@ function replaceStatements
         statements [repeat statement]
     by 
         statements
+            [replacePrivateAttributeSetting]
             [replaceDefaultReadObject]
             [replaceSwitchCase]
             [addClassPrefixToEnum]
@@ -25,6 +26,7 @@ function replaceStatements
             [replaceTernary]
             [replaceAllBoolean]
             [replaceDeclerationWithAssignment]
+            [replaceTryCatch]
             [replaceInlineIf]
             [replaceIf]
             [replaceElseIf]
@@ -146,6 +148,18 @@ rule replaceDecleration
         varName 
 end rule
 
+rule replaceTryCatch
+    replace [try_catch]
+        'try '{  tryStmts [repeat statement]  '} 'catch '( catchParam [method_parameter] ') '{ catchStmts [repeat statement] '}
+    deconstruct catchParam
+        'Exception _ [id]
+    by 
+        'try:
+            tryStmts
+        'except:
+            catchStmts
+end rule
+
 rule replaceIf
     replace [if]
         'if '( bool [value] ') '{ statements [repeat statement]  '}
@@ -247,7 +261,11 @@ end rule
 
 rule replaceThrowError
     replace [throw_statement]
-        'throw 'new _[id] '( message [stringlit] ');
+        'throw 'new _[id] '( vals [list value] ');
+    construct firstVal [list value]
+        vals [head 1]
+    deconstruct firstVal
+        message [stringlit]
     by
         'raise 'RuntimeError(  message ') 
 end rule 
@@ -273,6 +291,23 @@ rule correctSuperInit
         'super( params [list value] ')
     by
         'super().__init__( params ')
+end rule
+
+rule replacePrivateAttributeSetting
+    replace [repeat statement]
+        'java.lang.reflect.Field fieldVar [id] '= modified [id] '.getClass().getDeclaredField( attributeName [stringlit] ');
+        fieldVar '.setAccessible(true);
+        fieldVar '.set( modified ', val [value] ');
+    construct attributeAccessBeginning [stringlit]
+        "._"
+    construct unparsedAttributeAccess [stringlit]
+        attributeAccessBeginning [+ attributeName]
+    construct attributeAccessParsed [opt attribute_access]
+        _ [parse unparsedAttributeAccess]
+    deconstruct attributeAccessParsed
+        attributeAccess [attribute_access]
+    by
+        modified attributeAccess '= val
 end rule
 
 rule correctSuperFunctions

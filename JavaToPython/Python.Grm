@@ -199,3 +199,8 @@ redefine statement
     ...
     | [import_statement]
 end redefine
+
+redefine try_catch 
+    ...
+    |   'try ': [NL] [IN]  [repeat statement]  [EX] 'except [opt method_parameter] ': [NL] [IN] [repeat statement] [EX]
+end redefine
