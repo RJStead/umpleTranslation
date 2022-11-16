@@ -193,7 +193,7 @@ end rule
 
 rule replaceTernary
     replace [ternary]
-        condition [boolean_expression] '? opt1 [value] ': opt2 [value]
+        condition [value] '? opt1 [value] ': opt2 [value]
     by
         '( opt1 ') 'if condition 'else opt2
 end rule

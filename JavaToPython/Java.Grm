@@ -175,7 +175,7 @@ define while_loop
 end define
 
 define ternary
-    [boolean_expression] [!] '? [value] ': [value]
+    [value] '? [!] [value] ': [value]
 end define
 
 define for_loop
