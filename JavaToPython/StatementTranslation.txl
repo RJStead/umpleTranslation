@@ -567,13 +567,13 @@ rule translateNestedContainsCall
     construct lastAttrRep [repeat attribute_access]
         rep [tail repLength]
     deconstruct lastAttrRep 
-        '.contains( val [value_no_ternary] ')
+        '.contains( val [value_no_recursion] ')
     construct lengthMinusOne [number]
         repLength [- 1]
     construct firstAttrs [repeat attribute_access]
         rep [head lengthMinusOne]
     by
-        root firstAttrs 'in val
+        val 'in root rep
 end rule
 
 
