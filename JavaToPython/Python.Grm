@@ -36,7 +36,7 @@ end redefine
 
 redefine stmt_return
     ...
-    |   'return [value] [NL]
+    |   'return [opt value] [NL]
 end redefine
 
 
@@ -46,7 +46,7 @@ redefine value_no_recursion
     |   'False
     |   'None
     |   '[ [list value] ']
-    |   'not [boolean_expression] 
+    |   'not [value] 
     |   [lambda_function]
     |   '* [SPOFF] [nested_identifier] [SPON]
 end redefine

@@ -47,8 +47,9 @@ function replaceStatements
             [replaceHexIdentity]
             [replaceComparator]
             [translateToStringCall]
-            [translateEqualsCall]
             [translateSelfEqualsCall]
+            [translateNestedEqualsCall]
+            [translateNestedContainsCall]
             [replaceAllMemberVariableNames]
 end function
 
@@ -95,7 +96,7 @@ end rule
 
 rule replaceReturn
     replace [stmt_return]
-        'return val [value] ';
+        'return val [opt value] ';
     by 
         'return val
 end rule
@@ -416,7 +417,6 @@ function replaceDefaultReadObject
         beforeReparsed [. middle] [. afterReparsed]
 end function
 
-
 function repeatStatementToAny stmt [statement]
     replace [repeat any]
         rep [repeat any]
@@ -518,20 +518,65 @@ rule translateToStringCall
         '.__str__()
 end rule
 
-rule translateEqualsCall
-    replace [attribute_access]
-        '.equals( val [value] ')
-    by
-        '.__eq__( val ')
-end rule
-
 
 rule translateSelfEqualsCall
-    replace [nested_identifier]
-        'equals( val [value] ')
+    replace [value]
+        'equals( val [value_no_ternary] ')
     by
-        'self '.__eq__( val ')
+        'self '== val 
 end rule
+
+rule translateNestedEqualsCall
+    replace [value]
+        nested [nested_identifier]
+    deconstruct nested
+        root [nestable_value] rep [repeat attribute_access]
+    construct seeking [id]
+        'equals
+    where 
+        rep [containsId seeking]
+    construct zero [number]
+        '0
+    construct repLength [number]
+        zero [length rep]
+    construct lastAttrRep [repeat attribute_access]
+        rep [tail repLength]
+    deconstruct lastAttrRep 
+        '.equals( val [value_no_ternary] ')
+    construct lengthMinusOne [number]
+        repLength [- 1]
+    construct firstAttrs [repeat attribute_access]
+        rep [head lengthMinusOne]
+    by
+        root firstAttrs '== val
+end rule
+
+rule translateNestedContainsCall
+    replace [value]
+        nested [nested_identifier]
+    deconstruct nested
+        root [nestable_value] rep [repeat attribute_access]
+    construct seeking [id]
+        'contains
+    where 
+        rep [containsId seeking]
+    construct zero [number]
+        '0
+    construct repLength [number]
+        zero [length rep]
+    construct lastAttrRep [repeat attribute_access]
+        rep [tail repLength]
+    deconstruct lastAttrRep 
+        '.contains( val [value_no_ternary] ')
+    construct lengthMinusOne [number]
+        repLength [- 1]
+    construct firstAttrs [repeat attribute_access]
+        rep [head lengthMinusOne]
+    by
+        root firstAttrs 'in val
+end rule
+
+
 
 %--------------------------------%
 %  Generic Before/after search   %

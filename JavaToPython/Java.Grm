@@ -112,7 +112,7 @@ define value_no_recursion
     |   'true
     |   'false
     |   [casting]
-    |   '! [boolean_expression]
+    |   '! [value]
     |   [method_reference]
 end define
 
@@ -153,7 +153,7 @@ end define
 
 
 define stmt_return
-        'return [value] '; [NL]
+        'return [opt value] '; [NL]
 end define
 
 define statement
