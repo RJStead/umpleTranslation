@@ -50,6 +50,7 @@ function replaceStatements
             [translateSelfEqualsCall]
             [translateNestedEqualsCall]
             [translateNestedContainsCall]
+            [replaceIntegerValueOf]
             [replaceAllMemberVariableNames]
 end function
 
@@ -432,6 +433,13 @@ rule replaceComparator
     by
         'lambda 'x ': 'x '. funcName '()
 end rule
+
+rule replaceIntegerValueOf
+    replace [value]
+        'Integer '.valueOf( val [value] ')
+    by 
+        'int( val ')
+end rule 
 
 %--------------------------------%
 %  Switch case Enum correction   %

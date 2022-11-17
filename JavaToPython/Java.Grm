@@ -272,7 +272,7 @@ end define
 
 define method_content
         [repeat statement]
-    |   [usercode]
+    |   [repeat statement] [usercode] [repeat statement]
 end define
 
 define method_declaration

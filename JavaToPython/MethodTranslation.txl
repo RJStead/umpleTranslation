@@ -67,7 +67,7 @@ end rule
 
 rule replaceUserMethod
     replace [concrete_method_declaration]
-        _[acess_modifier] possibleStatic [opt static] _[nested_identifier] methodName [id]'( params [list method_parameter] ') _ [opt throws] '{ content [usercode] '}
+        _[acess_modifier] possibleStatic [opt static] _[nested_identifier] methodName [id]'( params [list method_parameter] ') _ [opt throws] '{ _ [repeat statement] content [usercode] _[repeat statement] '}
     construct newParams [list method_parameter]
         _ [getPythonParams params possibleStatic]
     construct possibleStaticDecorator [repeat decorator]
