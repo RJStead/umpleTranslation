@@ -103,28 +103,22 @@ rule replaceToString
     replace [method_declaration]
         _[acess_modifier] _[nested_identifier]  'toString '() _ [opt throws] '{ statements [repeat statement] '}
     by
-        'def '__str__ '(self):  statements [replaceStatements] [targetToStringArithmatic]
+        'def '__str__ '(self):  statements [replaceStatements] [addStrIfNeeded]
 end rule
 
-rule targetToStringArithmatic
-    replace $ [arithmatic_expression]
-        root [value_no_recursion] rep [repeat arithmatic_continuation+]
-    by
-        root rep [addStrIfNeeded]
-end rule
 
 rule addStrIfNeeded
-    skipping [arithmatic_expression]
-    replace $ [arithmatic_continuation]
-        '+ val [value_no_recursion]
+    skipping [parentheses_value]
+    replace $ [value]
+        baseVal [base_value] cont [value_continuation]
     where not
-        val [isString]
+        baseVal [isString]
     by
-        '+ 'str( val ')
+        'str( baseVal ') cont
 end rule
 
 function isString
-    match [value_no_recursion]
+    match [base_value]
         _ [stringlit]
 end function
 
@@ -284,11 +278,13 @@ function manageSpecialTypes params [list method_parameter]
         _ [extractListNameFromVariableDeclaration each allDeclarations]
     construct allLists [repeat id]
         _ [. listMemberVariables] [. paramLists] [. paramArrays] [. varArgRepeat] [. statementLists]
+    construct allHashMaps [repeat id]
+        _ [extractHashMapNameFromVariableDeclaration each allDeclarations]
     by
         stmts
             [changeVarArgTypeToList possibleVarArgName]
             [addAsterixToVarArgInSuperInit possibleVarArgName]
-            [replaceAllLists allLists]
+            [replaceAllSpecialTypes allLists allHashMaps]
             [addAsterixToInternalFuncCalls allLists]
 
 end function
@@ -340,7 +336,16 @@ function extractListNameFromVariableDeclaration decl [variable_declaration]
     replace [repeat id]
         results [repeat id]
     deconstruct decl
-        'ArrayList< _ [id] '> listName [id] '= _ [value] ';
+        'ArrayList '< _ [id] '> listName [id] '= _ [value] ';
+    by 
+        results [. listName]
+end function
+
+function extractHashMapNameFromVariableDeclaration decl [variable_declaration]
+    replace [repeat id]
+        results [repeat id]
+    deconstruct decl
+        'HashMap< _ [id] ', _ [id] '> listName [id] '= _ [value] ';
     by 
         results [. listName]
 end function
@@ -374,7 +379,7 @@ function extractArrayNameFromMethodParam param [method_parameter]
 end function
 
 rule addAsterixToVarArgInSuperInit possibleVarArgName [opt id]
-    replace $ [function_call]
+    replace $ [nested_identifier]
         'super( vals [list value] ')
     deconstruct possibleVarArgName
         varArgName [id]
@@ -488,7 +493,7 @@ end rule
 
 rule containConstructorWithSelfParam
     match [nested_identifier]
-        instantiatedClass [callable] '( params [list value]')
+        instantiatedClass [id] '( params [list value]')
     deconstruct instantiatedClass
         instantiatedClassGeneric [any]
     construct optInstantiatedClassName [opt id]
@@ -522,8 +527,8 @@ end function
 function extractIdFromGenericClass class [any]
     replace [opt id]
         result [opt id]
-    deconstruct * [generic_class] class
-        genericClass [generic_class]
+    deconstruct * [nested_identifier] class
+        genericClass [nested_identifier]
     deconstruct genericClass
         className[id] '< _[list id] '>
     by

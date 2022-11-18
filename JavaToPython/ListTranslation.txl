@@ -2,24 +2,26 @@
 %  List replacement  %
 %--------------------%
 
-function replaceAllLists memberLists [repeat id]
+function replaceAllSpecialTypes lists [repeat id] hashMaps [repeat id]
     replace [any]
         any [any]
     by 
         any
-            [replaceListAssignement memberLists]
-            [replaceListUnmutable memberLists]
-            [replaceGetListContent memberLists]
-            [replaceListGetSize memberLists]
-            [replaceArrayLength memberLists]
-            [replaceListGetIndex memberLists]
-            [replaceListContains memberLists]
-            [replaceListAddAtIndex memberLists]
-            [replaceListAddNoIndex memberLists]
+            [replaceRemoveAll lists]
+            [replaceListAssignement lists]
+            [replaceListUnmutable lists]
+            [replaceGetListContent lists]
+            [replaceListGetSize lists]
+            [replaceArrayLength lists]
+            [replaceListGetIndex lists]
+            [replaceListContains lists]
+            [replaceListAddAtIndex lists]
+            [replaceListAddNoIndex lists]
             [replaceListCopy]
-            [replaceListSort memberLists]
-            [replaceAddAll memberLists]
-            [replaceToArray memberLists]
+            [replaceListSort lists]
+            [replaceAddAll lists]
+            [replaceToArray lists]
+            %[replacePut hashMaps]
 end function 
 
 rule replaceListAssignement memberLists [repeat id]
@@ -90,13 +92,13 @@ end rule
 
 rule replaceListContains memberLists [repeat id]
     replace [value]
-        nested [nested_identifier]
-    deconstruct nested
-        id [id]'. 'contains '( val [value_no_recursion] ')
+        id [id]'. 'contains '( val [value] ') cont [opt value_continuation]
     where
         memberLists [containsId id]
+    deconstruct val
+        baseContains [base_value] baseCont [opt value_continuation]
     by 
-        val 'in id
+        '( baseContains baseCont ') 'in id cont
 end rule
 
 rule replaceListAddAtIndex memberLists [repeat id]
@@ -142,5 +144,15 @@ rule replaceToArray memberLists [repeat id]
         memberLists [containsId id]
     by 
         id '.copy()
+end rule
+
+rule replaceRemoveAll memberLists [repeat id]
+    replace [value]
+        id [id] '.removeAll( otherList [value] ') cont [opt value_continuation]
+    where
+        memberLists [containsId id]
+    by
+        id '= 'list( 'filter( 'lambda 'a ': 'not 'a 'in otherList ', id ')) cont
+
 end rule
 

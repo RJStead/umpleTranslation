@@ -193,10 +193,31 @@ end rule
 
 
 rule replaceTernary
-    replace [ternary]
-        condition [value] '? opt1 [value] ': opt2 [value]
+    replace [value]
+        val [value]
+    skipping[parentheses_value]
+    deconstruct * [ternary_terminal] val
+        '? optTrue [value] ': optFalse [value]
+    construct blankString [stringlit]
+        ""
+    construct unparsed [stringlit]
+        blankString [unparse val]
+    construct zero [number]
+        '0
+    construct questionMark [stringlit]
+        "?"
+    construct questionMarkIndex [number]
+        zero [index unparsed questionMark]
+    construct questionMarkIndexMinusOne [number]
+        questionMarkIndex [- 1]
+    construct beforeQuestionMark [stringlit]
+        unparsed [: 1 questionMarkIndexMinusOne]
+    construct defaultShouldNotSee [value]
+        'uhOh
+    construct condition [value]
+        defaultShouldNotSee [parse beforeQuestionMark]
     by
-        '( opt1 ') 'if condition 'else opt2
+        '( optTrue ') 'if condition 'else optFalse
 end rule
 
 rule replaceWhile
@@ -281,9 +302,11 @@ end rule
 
 rule replaceNewCall
     replace [value]
-        'new funcCall [function_call]
-    deconstruct funcCall
-        className [callable] '( vals [list value] ')
+        'new nested [nested_identifier]
+    deconstruct nested 
+        className [id] ext [repeat nestable_extension]
+    deconstruct * [func_call_parentheses] ext
+        '( vals [list value] ')
     by
         className '( vals ')
 end rule
@@ -328,14 +351,14 @@ end rule
 
 rule replaceHexIdentity
     replace [nested_identifier]
-        'Integer.toHexString(System.identityHashCode( val [value_no_recursion] '))
+        'Integer.toHexString(System.identityHashCode( val [value] '))
     by
         'format( 'id( val '), '"x")
 end rule
 
 rule replaceSwitchCase
     replace [statement]
-        'switch( val [value_no_recursion] ') '{ cases [repeat switch_case_case]  default [opt switch_case_default] '}
+        'switch( val [value] ') '{ cases [repeat switch_case_case]  default [opt switch_case_default] '}
     construct firstCase [repeat switch_case_case]
         cases [head 1]
     construct otherCases [repeat switch_case_case]
@@ -353,26 +376,56 @@ rule replaceSwitchCase
 end rule
 
 
-function replaceFirstSwitchCaseCase switch [value_no_recursion] firstCase [switch_case_case] 
+function replaceFirstSwitchCaseCase switch [value] firstCase [switch_case_case] 
     replace [if]
         _ [if]
     deconstruct firstCase
-        'case val [value_no_ternary] ': stmts [repeat statement] 'break;
-    construct condition [condition]
-        switch '== val [fixEnumValueWithNoEnum]
+        'case val [value] ': stmts [repeat statement] 'break;
+    construct cont [value_continuation]
+        '== val [fixEnumValueWithNoEnum]
+    construct condition [value]
+        switch [appendToValue cont]
     construct newIf [if]
         'if condition ': stmts [replaceNoStatements] [removeBreak]
     by 
         newIf
 end function
 
-function replaceSwitchCaseCase switch [value_no_recursion] aCase [switch_case_case] 
+function appendToValue cont [value_continuation]
+    replace [value]
+        val [value]
+    construct emptyString [stringlit]
+        ""
+    construct unparsedVal [stringlit]
+        emptyString [unparse val]
+    construct unparsedCont [stringlit]
+        emptyString [unparse cont]
+    construct concatenated [stringlit]
+        unparsedVal [+ unparsedCont]
+    by
+        val [parse concatenated]
+end function
+
+function appendOptToValue cont [opt value_continuation]
+    replace [value]
+        val [value]
+    deconstruct cont
+        realCont [value_continuation]
+    by
+        val [appendToValue realCont]
+end function
+
+function replaceSwitchCaseCase switch [value] aCase [switch_case_case] 
     replace [repeat else_if]
         rep [repeat else_if]
     deconstruct aCase
-        'case val [value_no_ternary] ': stmts [repeat statement] 'break;
+        'case val [value] ': stmts [repeat statement] 'break;
+    construct cont [value_continuation]
+        '== val [fixEnumValueWithNoEnum]
+    construct condition [value]
+        switch [appendToValue cont]
     construct elseIf [else_if]
-        'elif switch '== val [fixEnumValueWithNoEnum] ': stmts [replaceNoStatements] [removeBreak]
+        'elif condition ': stmts [replaceNoStatements] [removeBreak]
     by 
         rep [. elseIf]
 end function
@@ -529,7 +582,7 @@ end rule
 
 rule translateSelfEqualsCall
     replace [value]
-        'equals( val [value_no_ternary] ')
+        'equals( val [value] ')
     by
         'self '== val 
 end rule
@@ -550,7 +603,7 @@ rule translateNestedEqualsCall
     construct lastAttrRep [repeat attribute_access]
         rep [tail repLength]
     deconstruct lastAttrRep 
-        '.equals( val [value_no_ternary] ')
+        '.equals( val [value] ')
     construct lengthMinusOne [number]
         repLength [- 1]
     construct firstAttrs [repeat attribute_access]
@@ -561,7 +614,7 @@ end rule
 
 rule translateNestedContainsCall
     replace [value]
-        nested [nested_identifier]
+        nested [nested_identifier] initalCont [opt value_continuation]
     deconstruct nested
         root [nestable_value] rep [repeat attribute_access]
     construct seeking [id]
@@ -575,13 +628,15 @@ rule translateNestedContainsCall
     construct lastAttrRep [repeat attribute_access]
         rep [tail repLength]
     deconstruct lastAttrRep 
-        '.contains( val [value_no_recursion] ')
+        '.contains( val [value] ')
     construct lengthMinusOne [number]
         repLength [- 1]
     construct firstAttrs [repeat attribute_access]
         rep [head lengthMinusOne]
+    construct cont [value_continuation]
+        'in root firstAttrs
     by
-        val 'in root rep
+        val [appendToValue cont] [appendOptToValue initalCont]
 end rule
 
 

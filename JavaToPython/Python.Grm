@@ -18,7 +18,6 @@ end redefine
 redefine nestable_value
     ...
     | 'self
-    |  [array_access]
 end redefine
 
 redefine assignment
@@ -26,6 +25,15 @@ redefine assignment
     |   [list nested_identifier+] [!] '=  [list value+] 
 end redefine
 
+redefine func_call_parentheses
+    ...
+    |   '( [list python_arguments] ')
+end redefine 
+
+define python_arguments
+    [value]
+    |   [id] '= [value]
+end define
 
 redefine statement
     ...
@@ -40,7 +48,7 @@ redefine stmt_return
 end redefine
 
 
-redefine value_no_recursion
+redefine base_value
     ...
     |   'True
     |   'False
@@ -54,13 +62,6 @@ end redefine
 define  lambda_function
     'lambda [list id] ': [value]
 end define 
-
-
-redefine function_call
-    ...
-    |   [generic_class] [!] [SPOFF] '( [SPON] [list value] [!] ')
-end redefine
-
 
 redefine for_loop
     ...
@@ -103,9 +104,9 @@ redefine method_parameter
     | [id]
 end redefine
 
-redefine ternary
+redefine ternary_terminal
     ...
-    |   [value_no_ternary] [!] 'if [value] 'else [value]
+    |   'if [!] [value] 'else [value]
 end redefine
 
 redefine var_arg
@@ -179,21 +180,6 @@ end redefine
 define enum_value_declaration
     [id] '= 'auto [SPOFF] () [SPON] [NL]
 end define
-
-redefine switch_case
-    ...
-    |   'match [value] ': [NL] [IN] [repeat switch_case_case] [opt switch_case_default] [EX]
-end redefine
-
-redefine switch_case_case
-    ...
-    |   'case [value] ': [NL] [IN] [repeat statement] [EX]
-end redefine
-
-redefine switch_case_default
-    ...
-    |   'case 'default ': [NL] [IN] [repeat statement] [EX]
-end redefine
 
 redefine statement
     ...
