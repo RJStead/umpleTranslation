@@ -25,7 +25,6 @@ function replaceStatements
             [replaceDecleration]
             [replaceTernary]
             [replaceAllBoolean]
-            [replaceDeclerationWithAssignment]
             [replaceTryCatch]
             [replaceInlineIf]
             [replaceIf]
@@ -136,18 +135,11 @@ rule replaceThis
         'self
 end rule
 
-rule replaceDeclerationWithAssignment
-    replace [variable_declaration]
-        _ [nested_identifier] assignment [assignment] ';
-    by 
-        assignment
-end rule
-
 rule replaceDecleration
-    replace [variable_declaration]
-        _[nested_identifier] varName [id]';
+    replace [statement]
+        _[nested_identifier] assignment [value]';
     by 
-        varName 
+        assignment 
 end rule
 
 rule replaceTryCatch
@@ -264,10 +256,10 @@ end rule
 
 rule replaceForLoop
     replace [statement]
-        'for( decl [variable_declaration] goal [value]'; assignment [assignment]') '{  stmts[repeat statement]  '} 
+        'for( decl [double_value] '; goal [value]'; assignment [value]') '{  stmts[repeat statement]  '} 
     deconstruct decl
-        _[nested_identifier] name [id] '= start [value] ';
-    construct declaration [variable_declaration]
+        _[nested_identifier] name [id] '= start [value]
+    construct declaration [value]
         name '= start
     construct newStatements [repeat statement]
         assignment
@@ -396,12 +388,14 @@ function appendToValue cont [value_continuation]
         val [value]
     construct emptyString [stringlit]
         ""
+    construct spaceString [stringlit]
+        " "
     construct unparsedVal [stringlit]
         emptyString [unparse val]
     construct unparsedCont [stringlit]
         emptyString [unparse cont]
     construct concatenated [stringlit]
-        unparsedVal [+ unparsedCont]
+        unparsedVal [+ spaceString] [+ unparsedCont]
     by
         val [parse concatenated]
 end function

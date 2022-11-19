@@ -123,6 +123,8 @@ define value_continuation
     |   '++ [opt value_continuation]
     |   '-- [opt value_continuation]
     |   '=  [value]
+    |   '+=  [value]
+    |   '-=  [value]
 end define
 
 define ternary_terminal
@@ -137,42 +139,25 @@ define new_call
     'new [nested_identifier]
 end define
 
-define variable_declaration
-        [nested_identifier] [assignment]'; [NL]
-    |   [nested_identifier] [nested_identifier]';
-end define
-
-define assignment
-        [nested_identifier] [assignment_post]
-    |   '++ [nested_identifier]
-    |   '-- [nested_identifier]
-end define
-
-define assignment_post
-        '++
-    |   '--
-    |   '+= [value]
-    |   '-= [value]
-    |   '=  [value]
-end define
-
 
 define stmt_return
         'return [opt value] '; [NL]
 end define
 
 define statement
-        [variable_declaration]
-    |   [stmt_return]
+        [stmt_return]
     |   [conditional_block]
     |   [for_loop]
     |   [for_in_loop]
     |   [while_loop]
-    |   [nested_identifier] [!]'; [NL]
-    |   [assignment] '; [NL]
+    |   [double_value] [opt ';] [NL]
     |   [throw_statement]
     |   [switch_case]
     |   [try_catch]
+end define
+
+define double_value
+    [value] [opt value]
 end define
 
 define while_loop
@@ -184,11 +169,11 @@ define ternary
 end define
 
 define for_loop
-    'for( [variable_declaration] [value]'; [assignment]') '{ [NL] [IN] [repeat statement] [EX] '} [NL]
+    'for( [double_value]'; [value]'; [value]') '{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
 define for_in_loop
-    'for( [nested_identifier] [id] ': [value]')'{ [NL] [IN] [repeat statement] [EX] '} [NL]
+    'for( [double_value] ': [value]')'{ [NL] [IN] [repeat statement] [EX] '} [NL]
 end define
 
 define switch_case
@@ -320,7 +305,7 @@ define enum_declaration
 end define
 
 define member_variable_declaration
-    [opt acess_modifier] [opt transient] [opt static] [opt volatile] [variable_declaration]
+    [opt acess_modifier] [opt transient] [opt static] [opt volatile] [double_value] ';
 end define
 
 define class_body_decl

@@ -111,7 +111,7 @@ function addIfTransient decl [member_variable_declaration]
     replace [repeat id]
         result [repeat id]
     deconstruct decl
-        _ [opt acess_modifier] 'transient _ [opt static] _ [opt volatile] _ [variable_declaration]
+        _ [opt acess_modifier] 'transient _ [opt static] _ [opt volatile] _ [double_value]';
     by
         result [addMemberVariable decl]
 end function
@@ -144,11 +144,11 @@ function addTranslatedStaticMember elem [class_body_element]
     construct declerations [repeat member_variable_declaration]
         _ [^ elem]
     deconstruct declerations
-        _[opt acess_modifier] _[opt transient] 'static _[opt volatile] staticDecl [variable_declaration]
+        _[opt acess_modifier] _[opt transient] 'static _[opt volatile] staticDecl [double_value] ';
     deconstruct staticDecl
-    _ [nested_identifier] staticMemberName [id] '= val [value]';
+    _ [nested_identifier] staticMemberName [id] '= val [value]
     construct elemToAdd [class_body_element]
-        staticMemberName '= val
+        staticMemberName '= val 
     by
         keepers [. elemToAdd]
 end function
@@ -157,9 +157,9 @@ function addMemberVariable MemberVariable [member_variable_declaration]
     replace [repeat id]
         SequenceSoFar [repeat id]
     deconstruct MemberVariable
-        _[opt acess_modifier] _[opt transient] _[opt volatile]  decl [variable_declaration]
+        _[opt acess_modifier] _[opt transient] _[opt volatile]  decl [double_value] ';
     deconstruct decl
-        _ [nested_identifier] memberName [id]';
+        _ [nested_identifier] memberName [id]
     by
         SequenceSoFar [. memberName]
 end function
@@ -168,9 +168,9 @@ function addStaticMemberVariable MemberVariable [member_variable_declaration]
     replace [repeat id]
         SequenceSoFar [repeat id]
     deconstruct MemberVariable
-        _[opt acess_modifier] _[opt transient] 'static _[opt volatile]  decl [variable_declaration]
+        _[opt acess_modifier] _[opt transient] 'static _[opt volatile]  decl [double_value] ';
     deconstruct decl
-        _ [nested_identifier] memberName [id] '= _ [value] ';
+        _ [nested_identifier] memberName [id] '= _ [value] 
     by
         SequenceSoFar [. memberName]
 end function

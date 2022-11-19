@@ -20,26 +20,11 @@ redefine nestable_value
     | 'self
 end redefine
 
-redefine assignment
-    ...
-    |   [list nested_identifier+] [!] '=  [list value+] 
-end redefine
-
-redefine func_call_parentheses
-    ...
-    |   '( [list python_arguments] ')
-end redefine 
-
-define python_arguments
-    [value]
-    |   [id] '= [value]
-end define
-
 redefine statement
     ...
-    |  [nested_identifier] [NL]
     | 'pass [NL]
-    |  [assignment] [NL]
+    |   [list nested_identifier+] [!] '=  [list value+] 
+    |   [import_statement]
 end redefine
 
 redefine stmt_return
@@ -75,7 +60,7 @@ end redefine
 
 redefine while_loop
     ...
-    | [opt variable_declaration] 'while [value] ': [NL] [IN] [repeat statement] [EX] [NL]
+    | [opt value] 'while [value] ': [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine if 
@@ -154,12 +139,6 @@ redefine class_body_decl
     | [opt constructor] [repeat method_declaration]
 end redefine
 
-redefine variable_declaration
-    ...
-    |   [assignment] [FL]
-    |   [id] [FL]
-end redefine
-
 redefine import_statement
     ...
     |   'from [nested_identifier] 'import [list nested_identifier] [NL]
@@ -181,12 +160,12 @@ define enum_value_declaration
     [id] '= 'auto [SPOFF] () [SPON] [NL]
 end define
 
-redefine statement
-    ...
-    | [import_statement]
-end redefine
-
 redefine try_catch 
     ...
     |   'try ': [NL] [IN]  [repeat statement]  [EX] 'except [opt method_parameter] ': [NL] [IN] [repeat statement] [EX]
+end redefine
+
+redefine member_variable_declaration
+    ...
+    |   [value]
 end redefine

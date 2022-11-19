@@ -25,7 +25,7 @@ function replaceAllSpecialTypes lists [repeat id] hashMaps [repeat id]
 end function 
 
 rule replaceListAssignement memberLists [repeat id]
-    replace [assignment]
+    replace [value]
         id [id] '= 'new 'ArrayList '< _[list id] '> '(')
     where
         memberLists [containsId id]
@@ -34,7 +34,7 @@ rule replaceListAssignement memberLists [repeat id]
 end rule
 
 rule replaceListCopy
-    replace [assignment]
+    replace [value]
         id [id] '= 'new 'ArrayList '< _[list id] '> '( oldList [nested_identifier]') 
     deconstruct oldList
         val [nestable_value] rep [repeat attribute_access]

@@ -272,14 +272,14 @@ function manageSpecialTypes params [list method_parameter]
         _ [extractArrayNameFromMethodParam each params]
     construct varArgRepeat [repeat id]
         _ [reparse possibleVarArgName]
-    construct allDeclarations [repeat variable_declaration]
-        _ [^ stmts]
+    construct allDeclerations [repeat statement]
+        _ [extractDeclarationFromStatement each stmts]
     construct statementLists [repeat id]
-        _ [extractListNameFromVariableDeclaration each allDeclarations]
+        _ [extractListNameFromVariableDeclaration each allDeclerations]
     construct allLists [repeat id]
         _ [. listMemberVariables] [. paramLists] [. paramArrays] [. varArgRepeat] [. statementLists]
     construct allHashMaps [repeat id]
-        _ [extractHashMapNameFromVariableDeclaration each allDeclarations]
+        _ [extractHashMapNameFromVariableDeclaration each allDeclerations]
     by
         stmts
             [changeVarArgTypeToList possibleVarArgName]
@@ -287,6 +287,15 @@ function manageSpecialTypes params [list method_parameter]
             [replaceAllSpecialTypes allLists allHashMaps]
             [addAsterixToInternalFuncCalls allLists]
 
+end function
+
+function extractDeclarationFromStatement stmt [statement]
+    replace [repeat statement]
+        result [repeat statement]
+    deconstruct stmt
+        _ [value] _ [value] ';
+    by
+        result [. stmt]
 end function
 
 rule addAsterixToInternalFuncCalls allIterables [repeat id]
@@ -332,20 +341,20 @@ rule doesMethodHaveVarArg seeking [id]
         varArgsLength [= 1]
 end rule
 
-function extractListNameFromVariableDeclaration decl [variable_declaration]
+function extractListNameFromVariableDeclaration decl [statement]
     replace [repeat id]
         results [repeat id]
     deconstruct decl
-        'ArrayList '< _ [id] '> listName [id] '= _ [value] ';
+        'ArrayList '< _ [id] '> listName [id] _ [opt value_continuation] ';
     by 
         results [. listName]
 end function
 
-function extractHashMapNameFromVariableDeclaration decl [variable_declaration]
+function extractHashMapNameFromVariableDeclaration decl [statement]
     replace [repeat id]
         results [repeat id]
     deconstruct decl
-        'HashMap< _ [id] ', _ [id] '> listName [id] '= _ [value] ';
+        'HashMap< _ [id] ', _ [id] '> listName [id] _ [opt value_continuation] ';
     by 
         results [. listName]
 end function
