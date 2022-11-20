@@ -17,7 +17,7 @@ end tokens
 %--------------------%
 
 keys
- return new if else for true false while this True False + - * / ? ; : pass not and or
+ return new if else for true false while this True False + - * / ? ; : pass not and or throw
 end keys
 
 define acess_modifier

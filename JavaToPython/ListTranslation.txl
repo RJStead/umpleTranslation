@@ -21,7 +21,9 @@ function replaceAllSpecialTypes lists [repeat id] hashMaps [repeat id]
             [replaceListSort lists]
             [replaceAddAll lists]
             [replaceToArray lists]
-            %[replacePut hashMaps]
+            [replacePut hashMaps]
+            [replaceContainsKey hashMaps]
+            [replaceDictAssignement hashMaps]
 end function 
 
 rule replaceListAssignement memberLists [repeat id]
@@ -156,3 +158,31 @@ rule replaceRemoveAll memberLists [repeat id]
 
 end rule
 
+
+rule replaceDictAssignement memberLists [repeat id]
+    replace [value]
+        id [id] '= 'new 'HashMap< _ [id] ', _ [id] '>()
+    where
+        memberLists [containsId id]
+    by 
+        id '= 'dict()
+end rule
+
+rule replacePut dicts [repeat id]
+    replace [value]
+        id [id] '.put( key [value] ', val [value] ')
+    where
+        dicts [containsId id]
+    by
+        id '[ key '] '= val
+
+end rule
+
+rule replaceContainsKey dicts [repeat id]
+    replace [value]
+        id [id] '.containsKey( key [value] ')
+    where
+        dicts [containsId id]
+    by
+        '( key ') 'in id
+end rule
