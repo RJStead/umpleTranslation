@@ -51,6 +51,7 @@ function replaceStatements
             [translateNestedContainsCall]
             [replaceIntegerValueOf]
             [replaceAllMemberVariableNames]
+            [removeSemiColonFromValues]
 end function
 
 function replaceNoStatements
@@ -58,6 +59,13 @@ function replaceNoStatements
     by 
         'pass  
 end function
+
+rule removeSemiColonFromValues
+    replace [statement]
+        val [value] ';
+    by  
+        val
+end rule
 
 rule replaceAssignementIncrementAfter
     replace [statement]
@@ -75,21 +83,21 @@ end rule
 
 rule replaceAssignementIncrementBefore
     replace [statement]
-        nest1 [nested_identifier] '= '++ nest2 [nested_identifier]';
+        nest1 [nested_identifier] '= '++ nest2 [nested_identifier] ';
     by
         nest1 '= nest2 '= nest2 '+ '1
 end rule
 
 rule replaceAssignementDecrementBefore
     replace [statement]
-        nest1 [nested_identifier] '= '-- nest2 [nested_identifier]';
+        nest1 [nested_identifier] '= '-- nest2 [nested_identifier] ';
     by
         nest1 '= nest2 '= nest2 '- '1
 end rule
 
 rule replaceAssignmentStatement
     replace [statement]
-        identifier [nested_identifier] '= val [value] '; 
+        identifier [nested_identifier] '= val [value] ';
     by 
         identifier '= val
 end rule
@@ -227,29 +235,29 @@ rule replaceNull
 end rule
 
 rule replaceDecrementBefore
-    replace [statement]
-        '-- nest [nested_identifier]';
+    replace [value]
+        '-- nest [nested_identifier]
     by 
         nest '-= 1
 end rule
 
 rule replaceIncrementBefore
-    replace [statement]
-        '++ nest [nested_identifier]';
+    replace [value]
+        '++ nest [nested_identifier]
     by 
         nest '+= '1
 end rule
 
 rule replaceDecrementAfter
-    replace [statement]
-        nest [nested_identifier] '-- ';
+    replace [value]
+        nest [nested_identifier] '--
     by 
         nest '-= 1
 end rule
 
 rule replaceIncrementAfter
-    replace [statement]
-        nest [nested_identifier] '++ ';
+    replace [value]
+        nest [nested_identifier] '++ 
     by 
         nest '+= '1
 end rule

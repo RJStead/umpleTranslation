@@ -60,7 +60,7 @@ end redefine
 
 redefine while_loop
     ...
-    | [opt value] 'while [value] ': [NL] [IN] [repeat statement] [EX] [NL]
+    | [opt value] [NL] 'while [value] ': [NL] [IN] [repeat statement] [EX] [NL]
 end redefine
 
 redefine if 
