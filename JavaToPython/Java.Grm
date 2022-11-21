@@ -86,6 +86,7 @@ end define
 define nestable_extension
         [func_call_parentheses]
     |   '< [SPON] [list id] '> [SPOFF]
+    |   '< [SPON] '? 'extends [id] '> [SPOFF]
     |   '[ [SPON] [list value] '] [SPOFF]
 end define 
 
@@ -225,7 +226,8 @@ define method_parameter
 end define
 
 define decorator
-    '@ [SPOFF] [id] [SPON] [NL]
+        '@ [SPOFF] [id] '( [SPON] [list base_value][SPOFF] ') [SPON] [NL]
+    |   '@ [SPOFF] [id] [SPON] [NL]
 end define
 
 define throws

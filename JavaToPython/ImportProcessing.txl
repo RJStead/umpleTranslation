@@ -272,5 +272,5 @@ end function
 
 function shouldImportMultipledispatch
     match * [decorator]
-        '@dispatch( _ [list nested_identifier] ')
+        '@dispatch( _ [list base_value] ')
 end function

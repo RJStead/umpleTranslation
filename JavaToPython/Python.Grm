@@ -109,10 +109,6 @@ redefine abstract_method_declaration
     |   [SPOFF] '@abstractmethod [SPON] [NL] 'def  [id] [SPOFF]'( [SPON] [list method_parameter] [SPOFF] '): [SPON] [NL] [IN] [repeat statement] [NL] [EX] [NL]
 end redefine
 
-redefine decorator
-    ...
-    |   '@ [SPOFF] [id] '( [SPON] [list nested_identifier][SPOFF] ') [SPON] [NL]
-end redefine
 
 redefine constructor
     ...

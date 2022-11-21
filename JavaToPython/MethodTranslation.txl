@@ -10,6 +10,7 @@ function replaceAllMethods memberVariables [repeat id]
             [replaceConstructor memberVariables]
             [fixMultipleConstructors]
             [removeOverrideDecorator]
+            [removeSurpressWarningDecorator]
             [replaceToString]
             [replaceAbstractMethod]
             [replaceUserMethod]
@@ -20,6 +21,13 @@ end function
 rule removeOverrideDecorator
     replace [opt decorator]
         '@Override
+    by 
+        _
+end rule
+
+rule removeSurpressWarningDecorator
+    replace [opt decorator]
+        '@SuppressWarnings( _ [list base_value] ')
     by 
         _
 end rule
@@ -570,7 +578,7 @@ function getOverloadingDecorator methodName [id] javaParams [list method_paramet
         result [repeat decorator]
     where
         methodName [isMethodOverloaded]
-    construct pythonTypes [list nested_identifier]
+    construct pythonTypes [list base_value]
         _ [extractPythonType each javaParams]
     by 
         '@dispatch( pythonTypes ')
