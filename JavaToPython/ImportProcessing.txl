@@ -24,9 +24,7 @@ function extractPossibleFunctionImports classBody [class_body_decl] declaration 
     replace [repeat id]
         empty [repeat id]
     deconstruct declaration
-        _[opt acess_modifier] _[opt static] _[opt volatile] varDec [double_value] ';
-    deconstruct varDec
-        class [nested_identifier] _ [id]
+        _[opt acess_modifier] _[opt static] _[opt volatile] class [nested_identifier] _[id] _[opt member_variable_assignment] ';
     construct classesToImport [repeat id]
         _ [extractListClass classBody class] [extractRegularClass classBody class]
     by 
@@ -178,9 +176,7 @@ function addListMemberVariable MemberVariable [member_variable_declaration]
     replace [repeat id]
         SequenceSoFar [repeat id]
     deconstruct MemberVariable
-        _[opt acess_modifier] decl [double_value] ';
-    deconstruct decl
-        'List '< _ [list id] '>  memberName [id]
+        _[opt acess_modifier] _[opt transient] _[opt static] _[opt volatile] 'List '< _ [list id] '> memberName [id] _[opt member_variable_assignment]';
     by
         SequenceSoFar [. memberName]
 end function

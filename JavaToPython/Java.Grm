@@ -253,7 +253,7 @@ define method_declaration
 end define
 
 define abstract_method_declaration
-    [acess_modifier] [nested_identifier] [id] '( [list method_parameter] '); [NL]
+    [acess_modifier] [opt 'abstract] [nested_identifier] [id] '( [list method_parameter] '); [NL]
 end define
 
 define inheritance_statement
@@ -272,7 +272,7 @@ define class_declaration
 end define
 
 define concrete_class_declaration
-    [acess_modifier] 'class [nested_identifier] [repeat inheritance_list] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
+    [acess_modifier] [opt 'abstract] 'class [nested_identifier] [repeat inheritance_list] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
 end define
 
 define inheritance_list
@@ -281,12 +281,7 @@ end define
 
 define interface_declaration
         [acess_modifier] 'interface [nested_identifier] [repeat inheritance_list] [NL] '{ [NL] [IN] [class_body_decl] [EX] '} [NL]
-end define
-
-define class_type
-        'class
-    |   'interface
-end define
+end define  
 
 define static
     'static
@@ -309,7 +304,11 @@ define enum_declaration
 end define
 
 define member_variable_declaration
-    [opt acess_modifier] [opt transient] [opt static] [opt volatile] [double_value] ';
+    [opt acess_modifier] [opt transient] [opt static] [opt volatile] [nested_identifier] [id] [opt member_variable_assignment]';
+end define
+
+define member_variable_assignment
+    '= [value]
 end define
 
 define class_body_decl

@@ -64,9 +64,11 @@ end function
 
 rule replaceAbstractMethod
     replace [abstract_method_declaration]
-        _[acess_modifier] _[nested_identifier] methodName [id] '( params [list method_parameter] ');
+        _[acess_modifier] _ [opt 'abstract] _[nested_identifier] methodName [id] '( params [list method_parameter] ');
     construct empty [opt static]
         _
+    construct test [id]
+        methodName [debug]
     construct newParams [list method_parameter]
         _ [getPythonParams params empty]
     by
@@ -586,12 +588,14 @@ function getOverloadingDecorator methodName [id] javaParams [list method_paramet
 end function
 
 function extractPythonType javaParam [method_parameter]
-    replace [list nested_identifier]
-        result [list nested_identifier]
+    replace [list base_value]
+        result [list base_value]
     deconstruct javaParam
         type [nested_identifier] _ [id]
-    construct adding [nested_identifier]
-        type 
+    construct typeBase [base_value]
+        type
+    construct adding [base_value]
+        typeBase 
             [translateStringType]
             [translateArrayListType]
             [translateArrayType]
@@ -603,21 +607,21 @@ function extractPythonType javaParam [method_parameter]
 end function
 
 function translateStringType
-    replace [nested_identifier]
+    replace [base_value]
         'String
     by
         'str
 end function
 
 function translateArrayListType
-    replace [nested_identifier]
+    replace [base_value]
         'ArrayList< _[list id] '>
     by
         'list
 end function
 
 function translateArrayType
-    replace [nested_identifier]
+    replace [base_value]
         nested [nested_identifier]
     construct nestables [repeat nestable_value]
         _ [^ nested]
@@ -634,14 +638,14 @@ function translateArrayType
 end function
 
 function translateBooleanType
-    replace [nested_identifier]
+    replace [base_value]
         'boolean
     by  
         'bool
 end function
 
 function translateDoubleType
-    replace [nested_identifier]
+    replace [base_value]
         'double
     by  
         'float

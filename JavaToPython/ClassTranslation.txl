@@ -13,7 +13,28 @@ rule replaceConcreteClassesWithInheritance
     construct imports [repeat import_statement]
         _ [createImports classBody inheritances translatedBody]
     by
-        imports 'class className '( inheritanceClasses ')':  translatedBody
+        imports 
+        'class className '( inheritanceClasses ')':  translatedBody
+end rule
+
+rule replaceAbstractClass
+    replace [concrete_class_declaration]
+        _ [acess_modifier] 'abstract 'class className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
+    export className
+    construct inheritanceClasses [list nested_identifier]
+        _ [extractInheritanceBlockClasses each inheritances]
+    construct translatedBody [class_body_decl]
+        classBody  [replaceClassBody]
+    construct imports [repeat import_statement]
+        _ [createImports classBody inheritances translatedBody]
+    construct AbcClass [list nested_identifier]
+        'ABC
+    construct finalInheritances [list nested_identifier]
+        AbcClass [, inheritanceClasses]
+    by
+        'from 'abc 'import 'ABC, 'abstractmethod 
+        imports 
+        'class className '(  finalInheritances '):  translatedBody
 end rule
 
 %inheritance  imports
@@ -32,7 +53,9 @@ rule replaceInterfacesWithInheritance
     construct finalInheritances [list nested_identifier]
         AbcClass [, inheritanceClasses]
     by
-        'from 'abc 'import 'ABC, 'abstractmethod imports 'class className '(  finalInheritances '):  translatedBody
+        'from 'abc 'import 'ABC, 'abstractmethod 
+        imports 
+        'class className '(  finalInheritances '):  translatedBody
 end rule
 
 function replaceInterfaceBody
@@ -111,7 +134,7 @@ function addIfTransient decl [member_variable_declaration]
     replace [repeat id]
         result [repeat id]
     deconstruct decl
-        _ [opt acess_modifier] 'transient _ [opt static] _ [opt volatile] _ [double_value]';
+        _[opt acess_modifier] 'transient _[opt static] _[opt volatile] _[nested_identifier] _[id] _[opt member_variable_assignment]';
     by
         result [addMemberVariable decl]
 end function
@@ -144,9 +167,7 @@ function addTranslatedStaticMember elem [class_body_element]
     construct declerations [repeat member_variable_declaration]
         _ [^ elem]
     deconstruct declerations
-        _[opt acess_modifier] _[opt transient] 'static _[opt volatile] staticDecl [double_value] ';
-    deconstruct staticDecl
-    _ [nested_identifier] staticMemberName [id] '= val [value]
+        _[opt acess_modifier] _[opt transient] 'static _[opt volatile] _ [nested_identifier] staticMemberName [id] '= val [value] ';
     construct elemToAdd [class_body_element]
         staticMemberName '= val 
     by
@@ -157,9 +178,7 @@ function addMemberVariable MemberVariable [member_variable_declaration]
     replace [repeat id]
         SequenceSoFar [repeat id]
     deconstruct MemberVariable
-        _[opt acess_modifier] _[opt transient] _[opt volatile]  decl [double_value] ';
-    deconstruct decl
-        _ [nested_identifier] memberName [id]
+        _[opt acess_modifier] _[opt transient] _[opt volatile]  _ [nested_identifier] memberName [id] _[opt member_variable_assignment] ';
     by
         SequenceSoFar [. memberName]
 end function
@@ -168,9 +187,7 @@ function addStaticMemberVariable MemberVariable [member_variable_declaration]
     replace [repeat id]
         SequenceSoFar [repeat id]
     deconstruct MemberVariable
-        _[opt acess_modifier] _[opt transient] 'static _[opt volatile]  decl [double_value] ';
-    deconstruct decl
-        _ [nested_identifier] memberName [id] '= _ [value] 
+        _[opt acess_modifier] _[opt transient] 'static _[opt volatile] _ [nested_identifier] memberName [id] '= _ [value] ';
     by
         SequenceSoFar [. memberName]
 end function
