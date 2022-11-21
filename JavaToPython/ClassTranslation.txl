@@ -4,7 +4,7 @@
 %decl and inheritance and external imports
 rule replaceConcreteClassesWithInheritance
     replace $ [concrete_class_declaration]
-        _ [acess_modifier] 'class className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
+        _ [opt acess_modifier] 'class className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
     export className 
     construct inheritanceClasses [list nested_identifier]
         _ [extractInheritanceBlockClasses each inheritances]
@@ -19,7 +19,7 @@ end rule
 
 rule replaceAbstractClass
     replace [concrete_class_declaration]
-        _ [acess_modifier] 'abstract 'class className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
+        _ [opt acess_modifier] 'abstract 'class className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
     export className
     construct inheritanceClasses [list nested_identifier]
         _ [extractInheritanceBlockClasses each inheritances]
@@ -40,7 +40,7 @@ end rule
 %inheritance  imports
 rule replaceInterfacesWithInheritance
     replace [interface_declaration]
-        _ [acess_modifier] 'interface className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
+        _ [opt acess_modifier] 'interface className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
     export className
     construct inheritanceClasses [list nested_identifier]
         _ [extractInheritanceBlockClasses each inheritances]

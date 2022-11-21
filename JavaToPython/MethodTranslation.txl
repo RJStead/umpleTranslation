@@ -67,8 +67,6 @@ rule replaceAbstractMethod
         _[acess_modifier] _ [opt 'abstract] _[nested_identifier] methodName [id] '( params [list method_parameter] ');
     construct empty [opt static]
         _
-    construct test [id]
-        methodName [debug]
     construct newParams [list method_parameter]
         _ [getPythonParams params empty]
     by
