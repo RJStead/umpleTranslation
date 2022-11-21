@@ -80,16 +80,17 @@ define nestable_value
         [id] [SPOFF] [repeat nestable_extension] [SPON]
     |   'this
     |   'super
+    |   [parentheses_value]
 end define
 
 define nestable_extension
         [func_call_parentheses]
-    |   '< [SPON] [list id] '>
-    |   '[ [SPON] [list value] ']
+    |   '< [SPON] [list id] '> [SPOFF]
+    |   '[ [SPON] [list value] '] [SPOFF]
 end define 
 
 define func_call_parentheses
-    '( [SPON] [list value] ')
+    '( [SPON] [list value] ') [SPOFF]
 end define
 
 define parentheses_value
@@ -99,6 +100,7 @@ define base_value
        'null
     |   'true
     |   'false
+    |   [casting]
     |   [number]
     |   [stringlit]
     |   [nested_identifier]
@@ -107,7 +109,7 @@ define base_value
     |   [parentheses_value]
     |   [new_call]
     |  '! [value]
-    |   [casting]
+
 end define
 
 define value

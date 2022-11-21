@@ -50,6 +50,7 @@ function replaceStatements
             [translateNestedEqualsCall]
             [translateNestedContainsCall]
             [replaceIntegerValueOf]
+            [replaceDoubleValueOf]
             [replaceAllMemberVariableNames]
             [removeSemiColonFromValues]
 end function
@@ -111,7 +112,11 @@ end rule
 
 rule addSelfToOwnMethodCalls
     replace [nested_identifier]
-        funcName [id] '( values [list value]') rep [repeat attribute_access]
+        funcName [id] extensions [repeat nestable_extension+] rep [repeat attribute_access]
+    construct firstExtension [repeat nestable_extension]
+        extensions [head 1]
+    deconstruct firstExtension
+        '( values [list value]')
     import classMethodNames [repeat id]
     where
         classMethodNames [containsId funcName]
@@ -494,6 +499,13 @@ rule replaceIntegerValueOf
         'Integer '.valueOf( val [value] ')
     by 
         'int( val ')
+end rule 
+
+rule replaceDoubleValueOf
+    replace [value]
+        'Double '.valueOf( val [value] ')
+    by 
+        'float( val ')
 end rule 
 
 %--------------------------------%
