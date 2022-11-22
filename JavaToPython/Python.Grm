@@ -117,8 +117,13 @@ end redefine
 
 redefine concrete_class_declaration
     ... 
-    | [repeat import_statement] [NL] 'class [nested_identifier] [SPOFF] [opt inheritance_group] ': [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL]
+    | [repeat import_statement] [NL] 'class [nested_identifier] [SPOFF] [opt inheritance_group] ': [SPON] [NL] [IN] [class_body_decl] [NL] [EX] [NL] [opt run_main]
 end redefine
+
+define run_main
+    'if '__name__ '== '"__main__" ': [NL] [IN]
+        [id] '.main [SPOFF] '( [SPON] 'sys.argv ')
+end define
 
 define inheritance_group
     '( [SPON] [list nested_identifier] [SPOFF] ')

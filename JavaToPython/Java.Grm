@@ -104,6 +104,7 @@ define base_value
     |   [casting]
     |   [number]
     |   [stringlit]
+    |   [charlit]
     |   [nested_identifier]
     |   '-- [nested_identifier]
     |   '++ [nested_identifier]

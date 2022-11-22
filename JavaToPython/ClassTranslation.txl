@@ -12,9 +12,11 @@ rule replaceConcreteClassesWithInheritance
         classBody  [replaceClassBody]
     construct imports [repeat import_statement]
         _ [createImports classBody inheritances translatedBody]
+    construct runMain [opt run_main]
+        _ [constructRunMain translatedBody]
     by
         imports 
-        'class className '( inheritanceClasses ')':  translatedBody
+        'class className '( inheritanceClasses ')':  translatedBody runMain
 end rule
 
 rule replaceAbstractClass
@@ -31,15 +33,38 @@ rule replaceAbstractClass
         'ABC
     construct finalInheritances [list nested_identifier]
         AbcClass [, inheritanceClasses]
+    construct runMain [opt run_main]
+        _ [constructRunMain translatedBody]
     by
         'from 'abc 'import 'ABC, 'abstractmethod 
         imports 
-        'class className '(  finalInheritances '):  translatedBody
+        'class className '(  finalInheritances '):  translatedBody runMain
 end rule
+
+function constructRunMain body [class_body_decl]
+    replace [opt run_main]
+        _ [opt run_main]
+    where
+        body [matchMainMethod]
+    import className [nested_identifier]
+    construct optClassId [opt id]
+        _ [extractClassId className]
+    deconstruct optClassId
+        classId [id]
+    by
+        'if '__name__ '== '"__main__" ': 
+        classId '.main(sys.argv)
+end function
+
+rule matchMainMethod
+    match [concrete_method_declaration]
+        '@staticmethod
+        'def 'main( _[list method_parameter+] '): _ [method_content]
+end rule 
 
 %inheritance  imports
 rule replaceInterfacesWithInheritance
-    replace [interface_declaration]
+    replace [class_declaration]
         _ [opt acess_modifier] 'interface className [nested_identifier] inheritances [repeat inheritance_list] '{ classBody [class_body_decl] '} 
     export className
     construct inheritanceClasses [list nested_identifier]

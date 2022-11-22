@@ -203,6 +203,7 @@ function addExternalImports translatedBody [class_body_decl]
         [addEnumImportIfNeeded translatedBody]
         [addPickleImportIfNeeded]
         [addMultipledispatchImportIfNeeded translatedBody]
+        [addSysImportIfNeeded translatedBody]
 end function
 
 
@@ -269,4 +270,15 @@ end function
 function shouldImportMultipledispatch
     match * [decorator]
         '@dispatch( _ [list base_value] ')
+end function
+
+function addSysImportIfNeeded body [class_body_decl]
+    replace [repeat import_statement]
+        imports [repeat import_statement]
+    where
+        body [matchMainMethod]
+    construct newImport [import_statement]
+        'import 'sys
+    by 
+        imports [. newImport]
 end function
