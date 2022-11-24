@@ -126,7 +126,11 @@ define value_continuation
     |   [ternary_terminal]
     |   '++ [opt value_continuation]
     |   '-- [opt value_continuation]
-    |   '=  [value]
+    |   [value_continuation_assignment]
+end define
+
+define value_continuation_assignment
+    '=  [value]
     |   '+=  [value]
     |   '-=  [value]
 end define

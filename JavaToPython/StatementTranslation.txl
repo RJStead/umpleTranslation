@@ -196,6 +196,10 @@ rule replaceElse
         'else ': statements
 end rule
 
+rule containsAssignment
+    match [value_continuation_assignment]
+        _ [value_continuation_assignment]
+end rule
 
 rule replaceTernary
     replace [value]
@@ -221,6 +225,8 @@ rule replaceTernary
         'uhOh
     construct condition [value]
         defaultShouldNotSee [parse beforeQuestionMark]
+    where not
+        condition [containsAssignment] 
     by
         '( optTrue ') 'if condition 'else optFalse
 end rule
