@@ -286,8 +286,9 @@ function manageSpecialTypes params [list method_parameter]
         _ [extractListNameFromVariableDeclaration each allDeclerations]
     construct allLists [repeat id]
         _ [. listMemberVariables] [. paramLists] [. paramArrays] [. varArgRepeat] [. statementLists]
+    import dictMemberVariables [repeat id]
     construct allHashMaps [repeat id]
-        _ [extractHashMapNameFromVariableDeclaration each allDeclerations]
+        _ [extractHashMapNameFromVariableDeclaration each allDeclerations] [. dictMemberVariables]
     by
         stmts
             [changeVarArgTypeToList possibleVarArgName]
