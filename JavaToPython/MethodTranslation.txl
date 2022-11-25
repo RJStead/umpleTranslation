@@ -39,12 +39,8 @@ rule replaceConcreteMethod
         _ [getPythonParams params possibleStatic]
     construct possibleStaticDecorator [repeat decorator]
         _ [createStaticDecorator possibleStatic]
-    construct possibleDispatchDecorator [repeat decorator]
-        _ [getOverloadingDecorator methodName params]
-    construct decorators [repeat decorator]
-        possibleStaticDecorator [. possibleDispatchDecorator]
     by
-        decorators 'def methodName '( newParams '):  statements 
+        possibleStaticDecorator 'def methodName '( newParams '):  statements 
             [manageSpecialTypes params] 
             [replaceStatements] 
             [changeKeyArgumentNameInNestedIdentifier] 
@@ -573,18 +569,6 @@ end rule
 %-----------------------%
 %   Overloaded methods  %
 %-----------------------%
-
-function getOverloadingDecorator methodName [id] javaParams [list method_parameter] 
-    replace [repeat decorator]
-        result [repeat decorator]
-    where
-        methodName [isMethodOverloaded]
-    construct pythonTypes [list base_value]
-        _ [extractPythonType each javaParams]
-    by 
-        '@dispatch( pythonTypes ')
-
-end function
 
 function extractPythonType javaParam [method_parameter]
     replace [list base_value]

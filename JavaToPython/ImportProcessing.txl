@@ -193,7 +193,6 @@ function addExternalImports translatedBody [class_body_decl]
         imports [addOSImportIfNeeded translatedBody]
         [addEnumImportIfNeeded translatedBody]
         [addPickleImportIfNeeded]
-        [addMultipledispatchImportIfNeeded translatedBody]
         [addSysImportIfNeeded translatedBody]
 end function
 
@@ -247,21 +246,6 @@ function shouldImportPickle
         'import 'java.io.Serializable;
 end function
 
-function addMultipledispatchImportIfNeeded body [class_body_decl]
-    replace [repeat import_statement]
-        imports [repeat import_statement]
-    where
-        body [shouldImportMultipledispatch]
-    construct newImport [import_statement]
-        'from 'multipledispatch 'import 'dispatch
-    by 
-        imports [. newImport]
-end function
-
-function shouldImportMultipledispatch
-    match * [decorator]
-        '@dispatch( _ [list base_value] ')
-end function
 
 function addSysImportIfNeeded body [class_body_decl]
     replace [repeat import_statement]
