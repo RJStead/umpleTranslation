@@ -11,7 +11,6 @@ function replaceAllMethods memberVariables [repeat id]
             [fixMultipleConstructors]
             [removeOverrideDecorator]
             [removeSurpressWarningDecorator]
-            [replaceToString]
             [replaceAbstractMethod]
             [replaceUserMethod]
             [replaceConcreteMethod]
@@ -41,7 +40,7 @@ rule replaceConcreteMethod
     construct possibleStaticDecorator [repeat decorator]
         _ [createStaticDecorator possibleStatic]
     by
-        possibleStaticDecorator 'def methodName [changeOverloadedMethodName params] '( newParams '):  statements 
+        possibleStaticDecorator 'def methodName [replaceSpecificMethodNames] [changeOverloadedMethodName params] '( newParams '):  statements 
             [manageSpecialTypes params] 
             [replaceStatements] 
             [changeKeyArgumentNameInNestedIdentifier] 
@@ -67,7 +66,7 @@ rule replaceAbstractMethod
     construct newParams [list method_parameter]
         _ [getPythonParams params empty]
     by
-        '@abstractmethod 'def methodName '( newParams '): 'pass
+        '@abstractmethod 'def methodName [replaceSpecificMethodNames] '( newParams '): 'pass
 end rule
 
 rule replaceUserMethod
@@ -104,7 +103,30 @@ function addSelfIfNotStatic possibleStatic [opt static]
         result [, selfParam]
 end function
 
-rule replaceToString
+function replaceSpecificMethodNames
+    replace [id]
+        funcName [id]
+    by
+        funcName
+            [replaceToStringMethodName]
+            [replaceHashCodeMethodName]
+end function
+
+function replaceToStringMethodName
+    replace [id]
+        'toString
+    by
+        '__str__
+end function
+
+function replaceHashCodeMethodName
+    replace [id]
+        'hashCode
+    by
+        '__hash__
+end function
+
+rule replaceHashCodeMethod
     replace [method_declaration]
         _[acess_modifier] _[nested_identifier]  'toString '() _ [opt throws] '{ statements [repeat statement] '}
     by
