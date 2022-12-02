@@ -5,8 +5,10 @@
 function replaceAllMethods memberVariables [repeat id]
     replace [repeat class_body_element]
         elems [repeat class_body_element]
+    construct filtered [repeat class_body_element]
+        _ [filterOutFunctions each elems]
     by
-        elems
+        filtered
             [replaceConstructor memberVariables]
             [fixMultipleConstructors]
             [removeOverrideDecorator]
@@ -911,4 +913,31 @@ function addArgvParam count [number] argLength [number]
         count [+ 1]
     by
         result [, param] [addArgvParam increment argLength]
+end function
+
+function filterOutFunctions elem [class_body_element]
+    replace $ [repeat class_body_element]
+        result [repeat class_body_element]
+    where not
+        elem
+            [checkAlreadyStrFunc]
+            [checkAlreadyHashFunc]
+    by
+        result [. elem]
+end function
+
+function checkAlreadyStrFunc
+    match [class_body_element]
+        _[opt decorator] _[acess_modifier] _[nested_identifier] 'toString '( _ [list method_parameter] ') '{ _ [method_content] '}
+    import classMethodNames [repeat id]
+    where
+        classMethodNames [containsId '__str__]
+end function
+
+function checkAlreadyHashFunc
+    match [class_body_element]
+        _[opt decorator] _[acess_modifier] _[nested_identifier] 'hashCode '( _ [list method_parameter] ') '{ _ [method_content] '}
+    import classMethodNames [repeat id]
+    where
+        classMethodNames [containsId '__hash__]
 end function
