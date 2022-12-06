@@ -508,7 +508,7 @@ end function
 
 rule existsOneToOneConstructor
     match [constructor] 
-        'def '__init__(self):  stmts [repeat statement]
+        'def '__init__( _ [list method_parameter] '):  stmts [repeat statement]
     where 
         stmts [containConstructorWithSelfParam]
 end rule
