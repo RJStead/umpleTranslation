@@ -484,12 +484,34 @@ function fixMultipleConstructors
     where
         constructorCount [> 1]
     by
-        rep [replaceExtraConstructorNoArgs] 
-        [replaceOneToOneConstructor]
-        [replaceOneToOneConstructorCall]
-        [targetRemainingConstructor]
+        rep [fixNoArgDefaultMultipleConstructors] [fixOneToOneMultipleConstructors] 
+        
 end function
 
+function fixOneToOneMultipleConstructors
+    replace [repeat class_body_element]
+        elems [repeat class_body_element]
+    where 
+        elems [existsOneToOneConstructor]
+    by
+        elems [replaceOneToOneConstructor] [targetRemainingConstructor]
+end function
+
+function fixNoArgDefaultMultipleConstructors
+    replace [repeat class_body_element]
+        elems [repeat class_body_element]
+    where not
+        elems [existsOneToOneConstructor]
+    by
+        elems [replaceExtraConstructorNoArgs]
+end function
+
+rule existsOneToOneConstructor
+    match [constructor] 
+        'def '__init__(self):  stmts [repeat statement]
+    where 
+        stmts [containConstructorWithSelfParam]
+end rule
 
 rule replaceExtraConstructorNoArgs
     replace [class_body_element]
