@@ -47,6 +47,7 @@ rule replaceConcreteMethod
             [replaceStatements] 
             [changeKeyArgumentNameInNestedIdentifier] 
             [addFunctionImports]
+            [addStrIfNeeded methodName]
 end rule
 
 function createStaticDecorator possibleStatic [opt static]
@@ -128,15 +129,8 @@ function replaceHashCodeMethodName
         '__hash__
 end function
 
-rule replaceHashCodeMethod
-    replace [method_declaration]
-        _[acess_modifier] _[nested_identifier]  'toString '() _ [opt throws] '{ statements [repeat statement] '}
-    by
-        'def '__str__ '(self):  statements [replaceStatements] [addStrIfNeeded]
-end rule
-
-
-rule addStrIfNeeded
+rule addStrIfNeeded functionName [id]
+    where functionName [= 'toString]
     skipping [parentheses_value]
     replace $ [value]
         baseVal [base_value] cont [value_continuation]
