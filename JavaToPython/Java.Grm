@@ -111,7 +111,7 @@ define base_value
     |   'true
     |   'false
     |   [casting]
-    |   [opt '-] [number] [opt 'f]
+    |   [opt '-] [SPOFF] [number] [opt 'f] [SPON]
     |   [stringlit]
     |   [charlit]
     |   [nested_identifier]

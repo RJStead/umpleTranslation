@@ -225,7 +225,6 @@ end rule
 %Java: condition ? a : b
 %Python: a if condition else b
 %This one is a little complicated, so here is a breakdown
-%TODO
 rule replaceTernary
     replace [value]
         val [value]
@@ -442,7 +441,6 @@ function replaceFirstSwitchCaseCase switch [value] firstCase [switch_case_case]
         newIf
 end function
 
-%TODO
 %Values are recursive types. Values have optional continuations which often contain values. 
 %It can then be a bother to, for example,  add a "+ 3" to an existing value.
 %This function simplifies the process.
