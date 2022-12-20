@@ -111,7 +111,7 @@ define base_value
     |   'true
     |   'false
     |   [casting]
-    |   [opt '-] [SPOFF] [number] [opt 'f] [SPON]
+    |   [opt negative_number] [number] [opt 'f] [SPON]
     |   [stringlit]
     |   [charlit]
     |   [nested_identifier]
@@ -121,6 +121,10 @@ define base_value
     |   [new_call]
     |  '! [value]
 
+end define
+
+define negative_number
+    '- [SPOFF]
 end define
 
 %Important concept
