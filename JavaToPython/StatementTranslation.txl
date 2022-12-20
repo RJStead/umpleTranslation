@@ -172,15 +172,21 @@ end rule
 
 rule replaceTryCatch
     replace [try_catch]
-        'try '{  tryStmts [repeat statement]  '} 'catch '( catchParam [method_parameter] ') '{ catchStmts [repeat statement] '}
-    deconstruct catchParam
-        'Exception _ [id]
+        'try '{  tryStmts [repeat statement]  '} 'catch '( _ [method_parameter] ') '{ catchStmts [repeat statement] '} finally [opt finally]
     by 
         'try:
-            tryStmts
+            tryStmts [replaceNoStatements]
         'except:
-            catchStmts
+            catchStmts [replaceNoStatements]
+        finally [replaceFinally]
 end rule
+
+function replaceFinally
+    replace [opt finally]
+        'finally '{ stmts [repeat statement] '}
+    by  
+        'finally: stmts [replaceNoStatements]
+end function
 
 rule replaceIf
     replace [if]

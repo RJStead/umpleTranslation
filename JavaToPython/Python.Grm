@@ -174,7 +174,12 @@ end define
 
 redefine try_catch 
     ...
-    |   'try ': [NL] [IN]  [repeat statement]  [EX] 'except [opt method_parameter] ': [NL] [IN] [repeat statement] [EX]
+    |   'try ': [NL] [IN]  [repeat statement]  [EX] 'except [opt method_parameter] ': [NL] [IN] [repeat statement] [EX] [opt finally]
+end redefine
+
+redefine finally
+    ...
+    |   'finally: [NL] [IN] [repeat statement] [EX]
 end redefine
 
 redefine member_variable_declaration

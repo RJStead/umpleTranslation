@@ -20,7 +20,7 @@ end tokens
 
 %Keys can only be defined once, so this includes python terms as well
 keys
- return new if else for true false while this True False + - * / ? ; : pass not and or throw
+ return new if else for true false while this True False + - * / ? ; : pass not and or throw try catch finally
 end keys
 
 define acess_modifier
@@ -218,7 +218,11 @@ define conditional_block
 end define
 
 define try_catch 
-    'try '{  [repeat statement]  '} 'catch '( [method_parameter] ') '{ [repeat statement] '}
+    'try '{  [repeat statement]  '} 'catch '( [method_parameter] ') '{ [repeat statement] '} [opt finally]
+end define
+
+define finally
+    'finally '{ [repeat statement] '}
 end define
 
 define if 
